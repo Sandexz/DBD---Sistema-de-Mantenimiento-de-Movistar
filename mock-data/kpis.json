@@ -1,0 +1,57 @@
+{
+  "kpis": [
+    {
+      "id": "core-network",
+      "title": "Red Troncal / Core Network",
+      "segment": "CORE",
+      "value": "99.98%",
+      "target": "99.95%",
+      "status": "ok",
+      "statusColor": "celeste",
+      "statusLabel": "OPERATIVO ÓPTIMO",
+      "nodesActive": 142,
+      "nodesTotal": 142,
+      "trafficPeak": "42.8 Gbps",
+      "latencyAvg": "3.8 ms",
+      "mttr": "18 min",
+      "trend": "+0.04% vs ayer"
+    },
+    {
+      "id": "planta-externa",
+      "title": "Planta Externa (FO / Postería)",
+      "segment": "OSP",
+      "value": "87.40%",
+      "target": "95.00%",
+      "status": "critical",
+      "statusColor": "naranja",
+      "statusLabel": "CRITICIDAD ALTA",
+      "incidentsOpen": 7,
+      "fiberCuts": 2,
+      "cuadrillasDispatched": 5,
+      "affectedNaps": 38,
+      "mttr": "2h 45m",
+      "trend": "-4.20% corte FO troncal"
+    },
+    {
+      "id": "ultima-milla",
+      "title": "Última Milla / Accesos FTTx",
+      "segment": "ACCESS",
+      "value": "94.20%",
+      "target": "92.00%",
+      "status": "warning",
+      "statusColor": "celeste",
+      "statusLabel": "EN METRICA DE SLA",
+      "onusOnline": "24,850",
+      "powerLowAlerts": 19,
+      "pendingInstalls": 12,
+      "mttr": "45 min",
+      "trend": "+1.10% estabilizado"
+    }
+  ],
+  "summary": {
+    "totalOtsActive": 24,
+    "slaGlobal": "96.4%",
+    "cuadrillasActive": "18/22",
+    "updatedAt": "2026-09-19T22:15:00-05:00"
+  }
+}

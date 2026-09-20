@@ -1,0 +1,80 @@
+[
+  {
+    "id": "OT-2026-9041",
+    "origin": "Alarma NOC Automática (NMS)",
+    "criticality": "ALTA",
+    "slaHours": "2 horas",
+    "infra": "POP-03 / ODF Troncal 96FO",
+    "crew": "Cuadrilla Alfa 01 (L. Ramos)",
+    "status": "EN RUTA",
+    "statusBadge": "naranja",
+    "coordinates": "-12.0463, -77.0427",
+    "createdAt": "2026-09-19 21:30",
+    "materials": "Empalmadora Fusión, Pigtails SC-APC (x4)"
+  },
+  {
+    "id": "OT-2026-9042",
+    "origin": "Reclamo Cliente VIP Corp",
+    "criticality": "CRÍTICA",
+    "slaHours": "1 hora",
+    "infra": "Switch Core Huawei S6730 (Puerto 24)",
+    "crew": "Cuadrilla Beta 03 (M. Silva)",
+    "status": "EN ATENCIÓN",
+    "statusBadge": "naranja",
+    "coordinates": "-12.0894, -77.0182",
+    "createdAt": "2026-09-19 21:45",
+    "materials": "Módulo SFP+ 10G-LR 1310nm"
+  },
+  {
+    "id": "OT-2026-9043",
+    "origin": "Inspección Preventiva Trimestral",
+    "criticality": "MEDIA",
+    "slaHours": "8 horas",
+    "infra": "Caja NAP-882 Postería Urbana",
+    "crew": "Cuadrilla Delta 02 (C. Prado)",
+    "status": "PENDIENTE",
+    "statusBadge": "celeste",
+    "coordinates": "-12.1129, -77.0298",
+    "createdAt": "2026-09-19 20:10",
+    "materials": "Cinta vulcanizante, Tubos termo retráctiles"
+  },
+  {
+    "id": "OT-2026-9044",
+    "origin": "Fallo Energía Comercial",
+    "criticality": "ALTA",
+    "slaHours": "3 horas",
+    "infra": "Nodo Repetidor San Cristóbal",
+    "crew": "Cuadrilla Gamma 05 (J. Gómez)",
+    "status": "EN ATENCIÓN",
+    "statusBadge": "naranja",
+    "coordinates": "-12.0311, -77.0194",
+    "createdAt": "2026-09-19 21:05",
+    "materials": "Fusible 63A, Banco Baterías 48V"
+  },
+  {
+    "id": "OT-2026-9045",
+    "origin": "Migración Red FTTx",
+    "criticality": "BAJA",
+    "slaHours": "24 horas",
+    "infra": "Mufa Subterránea MUF-109",
+    "crew": "Cuadrilla Épsilon 01 (R. Vega)",
+    "status": "CERRADA",
+    "statusBadge": "celeste",
+    "coordinates": "-12.1402, -76.9951",
+    "createdAt": "2026-09-19 18:00",
+    "materials": "Bandeja de empalme 24FO"
+  },
+  {
+    "id": "OT-2026-9046",
+    "origin": "Avería Masiva por Obras Civiles",
+    "criticality": "CRÍTICA",
+    "slaHours": "1.5 horas",
+    "infra": "Troncal Subterránea Vía Expresa",
+    "crew": "Cuadrilla Especial FO 09 (E. Torre)",
+    "status": "EN RUTA",
+    "statusBadge": "naranja",
+    "coordinates": "-12.0955, -77.0321",
+    "createdAt": "2026-09-19 21:55",
+    "materials": "Bobina FO 144 hilos (80m), Mufa 3M"
+  }
+]

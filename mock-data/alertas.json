@@ -1,0 +1,46 @@
+[
+  {
+    "id": "ALT-2026-8801",
+    "timestamp": "22:12:04",
+    "severity": "CRITICAL",
+    "severityColor": "naranja",
+    "title": "Corte de Fibra Troncal 48FO Anillo Norte",
+    "location": "Av. Panamericana Km 18.5 (POP-NORTE-01)",
+    "impact": "1,420 Clientes corporativos sin enlace",
+    "status": "Cuadrilla 04 en camino",
+    "slaRemaining": "00:48:15"
+  },
+  {
+    "id": "ALT-2026-8802",
+    "timestamp": "21:58:30",
+    "severity": "WARNING",
+    "severityColor": "celeste",
+    "title": "Atenuación Óptica Severa (-28.4 dBm) en NAP-204",
+    "location": "Sector Industrial Zona B - Puerto 08",
+    "impact": "Degradación de señal en 16 accesos FTTH",
+    "status": "Monitoreo NOC activo",
+    "slaRemaining": "02:15:00"
+  },
+  {
+    "id": "ALT-2026-8803",
+    "timestamp": "21:40:12",
+    "severity": "CRITICAL",
+    "severityColor": "naranja",
+    "title": "Fallo de Alimentación Rectificador AC/DC",
+    "location": "Subestación Repetidor Cerro Verde",
+    "impact": "Banco de baterías en descarga (78% restante)",
+    "status": "Generador de respaldo iniciado",
+    "slaRemaining": "01:10:00"
+  },
+  {
+    "id": "ALT-2026-8804",
+    "timestamp": "21:15:45",
+    "severity": "INFO",
+    "severityColor": "celeste",
+    "title": "Cierre de Mantenimiento Preventivo OSP-89",
+    "location": "Troncal Este Empalme #12",
+    "impact": "Pruebas OTDR completadas con éxito",
+    "status": "Cerrado / Conforme",
+    "slaRemaining": "Cumplido"
+  }
+]

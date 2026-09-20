@@ -1,0 +1,88 @@
+{
+  "preventivo": {
+    "title": "Mantenimiento Preventivo (Ciclo Q3)",
+    "totalProgramado": 450,
+    "ejecutado": 398,
+    "enProgreso": 32,
+    "pendientes": 20,
+    "cumplimientoPorcentaje": "88.4%",
+    "proximaAuditoria": "2026-09-30",
+    "detalles": [
+      { "nodo": "POP Centro 01", "inspeccion": "100%", "estado": "OK" },
+      { "nodo": "POP Norte Anillo 2", "inspeccion": "92%", "estado": "OK" },
+      { "nodo": "Subestación Este", "inspeccion": "74%", "estado": "EN ATENCIÓN" }
+    ]
+  },
+  "contratistas": [
+    {
+      "id": "CTR-01",
+      "nombre": "Telecom Services del Pacífico S.A.",
+      "cuadrillas": 8,
+      "otsCompletadas": 142,
+      "slaCumplido": "98.2%",
+      "calificacion": "4.9 / 5.0",
+      "estado": "EXCELENTE"
+    },
+    {
+      "id": "CTR-02",
+      "nombre": "Redes & Fibra Óptica Integral",
+      "cuadrillas": 6,
+      "otsCompletadas": 98,
+      "slaCumplido": "91.5%",
+      "calificacion": "4.2 / 5.0",
+      "estado": "BUENO"
+    },
+    {
+      "id": "CTR-03",
+      "nombre": "Instalaciones y Mantenimiento OSP",
+      "cuadrillas": 4,
+      "otsCompletadas": 64,
+      "slaCumplido": "79.0%",
+      "calificacion": "3.1 / 5.0",
+      "estado": "BAJO OBSERVACIÓN"
+    }
+  ],
+  "preliquidaciones": {
+    "periodo": "1 al 15 de Septiembre 2026",
+    "montoTotal": "$ 148,920.00 USD",
+    "ordenesFacturables": 304,
+    "ordenesAuditadas": "100%",
+    "estadoCierre": "PRE-APROBADO PARA PAGO",
+    "desglose": [
+      { "rubro": "Mano de Obra Cuadrillas FO", "monto": "$ 84,300.00" },
+      { "rubro": "Materiales Asignados en Campo", "monto": "$ 42,120.00" },
+      { "rubro": "Guardias y Horas Extras NOC", "monto": "$ 22,500.00" }
+    ]
+  },
+  "penalidades": {
+    "totalPenalidades": "$ 4,850.00 USD",
+    "casosRegistrados": 4,
+    "estado": "APLICADO A LIQUIDACIÓN",
+    "casos": [
+      {
+        "id": "PEN-2026-101",
+        "contratista": "Instalaciones y Mantenimiento OSP",
+        "otId": "OT-2026-8910",
+        "motivo": "Retraso de arribo en SLA Crítico (Exceso de 95 min)",
+        "monto": "$ 1,850.00",
+        "fecha": "2026-09-08"
+      },
+      {
+        "id": "PEN-2026-102",
+        "contratista": "Instalaciones y Mantenimiento OSP",
+        "otId": "OT-2026-8944",
+        "motivo": "Falta de registro de evidencia fotográfica en cierre",
+        "monto": "$ 600.00",
+        "fecha": "2026-09-11"
+      },
+      {
+        "id": "PEN-2026-103",
+        "contratista": "Redes & Fibra Óptica Integral",
+        "otId": "OT-2026-8982",
+        "motivo": "Reapertura de avería en menos de 24 horas (Mala fusión)",
+        "monto": "$ 2,400.00",
+        "fecha": "2026-09-14"
+      }
+    ]
+  }
+}

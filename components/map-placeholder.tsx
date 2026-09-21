@@ -39,18 +39,18 @@ const mockNodes: MapNode[] = [
 
 export function MapPlaceholder() {
   const [selectedNode, setSelectedNode] = useState<MapNode | null>(mockNodes[1]);
-  const [layer, setLayer] = useState<"fiber" | "all" | "alerts">("all");
+  const [layer, setLayer] = useState<"all" | "alerts">("all");
 
   return (
-    <div className="relative w-full rounded-xl border border-[#1E232B] bg-[#061D3A]/20 overflow-hidden shadow-card-dark">
+    <div className="relative w-full rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-card-clean">
       {/* Map Control Top Bar */}
-      <div className="flex items-center justify-between px-4 py-2.5 bg-[#0B0C0E]/90 border-b border-[#1E232B] text-xs">
+      <div className="flex items-center justify-between px-4 py-3 bg-slate-50 border-b border-slate-200 text-xs">
         <div className="flex items-center gap-2">
-          <Radio className="w-4 h-4 text-[#00AEEF] animate-pulse" />
-          <span className="font-grotesk font-semibold text-white">
-            Topología Geo-Referenciada NOC
+          <Radio className="w-4 h-4 text-[#5BC500] animate-pulse" />
+          <span className="font-grotesk font-bold text-slate-900">
+            Topología Geo-Referenciada NOC Movistar
           </span>
-          <span className="font-mono text-[11px] text-slate-400 bg-[#121418] px-2 py-0.5 rounded border border-[#1E232B]">
+          <span className="font-mono text-[11px] text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200 hidden sm:inline-block">
             GPS WGS-84 / 12.0464° S, 77.0428° W
           </span>
         </div>
@@ -59,20 +59,20 @@ export function MapPlaceholder() {
         <div className="flex items-center gap-1">
           <button
             onClick={() => setLayer("all")}
-            className={`px-2 py-1 rounded text-[11px] font-mono transition-colors ${
+            className={`px-2.5 py-1 rounded-lg text-[11px] font-mono transition-colors ${
               layer === "all"
-                ? "bg-[#0A2E5C] text-[#00AEEF] border border-[#00AEEF]/40"
-                : "text-slate-400 hover:text-white"
+                ? "bg-[#5BC500] text-white font-bold"
+                : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
             }`}
           >
             Todos los Nodos
           </button>
           <button
             onClick={() => setLayer("alerts")}
-            className={`px-2 py-1 rounded text-[11px] font-mono transition-colors ${
+            className={`px-2.5 py-1 rounded-lg text-[11px] font-mono transition-colors ${
               layer === "alerts"
-                ? "bg-[#FF6A13]/20 text-[#FF6A13] border border-[#FF6A13]/40"
-                : "text-slate-400 hover:text-white"
+                ? "bg-rose-600 text-white font-bold"
+                : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
             }`}
           >
             Solo Alertas
@@ -81,26 +81,26 @@ export function MapPlaceholder() {
       </div>
 
       {/* SVG Canvas Map Container */}
-      <div className="relative h-[340px] sm:h-[380px] w-full bg-[#08090C] overflow-hidden flex items-center justify-center">
-        {/* Dark Grid Background */}
+      <div className="relative h-[340px] sm:h-[380px] w-full bg-[#071828] overflow-hidden flex items-center justify-center">
+        {/* Grid Background */}
         <div
           className="absolute inset-0 opacity-20 pointer-events-none"
           style={{
-            backgroundImage: `radial-gradient(#00AEEF 1px, transparent 1px), linear-gradient(to right, #1E232B 1px, transparent 1px), linear-gradient(to bottom, #1E232B 1px, transparent 1px)`,
+            backgroundImage: `radial-gradient(#019DF4 1px, transparent 1px), linear-gradient(to right, #1E293B 1px, transparent 1px), linear-gradient(to bottom, #1E293B 1px, transparent 1px)`,
             backgroundSize: "24px 24px, 48px 48px, 48px 48px",
           }}
         />
 
         {/* Simulated Radar Scanner Effect */}
-        <div className="absolute w-[600px] h-[600px] rounded-full border border-[#00AEEF]/10 pointer-events-none flex items-center justify-center">
-          <div className="w-[400px] h-[400px] rounded-full border border-[#00AEEF]/15 flex items-center justify-center">
-            <div className="w-[200px] h-[200px] rounded-full border border-[#00AEEF]/20" />
+        <div className="absolute w-[600px] h-[600px] rounded-full border border-sky-500/10 pointer-events-none flex items-center justify-center">
+          <div className="w-[400px] h-[400px] rounded-full border border-sky-500/15 flex items-center justify-center">
+            <div className="w-[200px] h-[200px] rounded-full border border-sky-500/20" />
           </div>
           <div
             className="absolute inset-0 origin-center animate-radar pointer-events-none"
             style={{
               background:
-                "conic-gradient(from 0deg at 50% 50%, rgba(0, 174, 239, 0.15) 0deg, transparent 60deg, transparent 360deg)",
+                "conic-gradient(from 0deg at 50% 50%, rgba(91, 197, 0, 0.15) 0deg, transparent 60deg, transparent 360deg)",
             }}
           />
         </div>
@@ -116,7 +116,7 @@ export function MapPlaceholder() {
             y1="190"
             x2="190"
             y2="80"
-            stroke="#FF6A13"
+            stroke="#EF4444"
             strokeWidth="3"
             strokeDasharray="6 4"
             className="animate-pulse"
@@ -126,7 +126,7 @@ export function MapPlaceholder() {
             y1="190"
             x2="420"
             y2="260"
-            stroke="#00AEEF"
+            stroke="#5BC500"
             strokeWidth="2.5"
             opacity="0.8"
           />
@@ -135,7 +135,7 @@ export function MapPlaceholder() {
             y1="190"
             x2="330"
             y2="130"
-            stroke="#00AEEF"
+            stroke="#019DF4"
             strokeWidth="2"
             opacity="0.7"
           />
@@ -144,7 +144,7 @@ export function MapPlaceholder() {
             y1="80"
             x2="140"
             y2="130"
-            stroke="#FF6A13"
+            stroke="#F59E0B"
             strokeWidth="2"
             opacity="0.6"
           />
@@ -153,7 +153,7 @@ export function MapPlaceholder() {
             y1="190"
             x2="480"
             y2="90"
-            stroke="#00AEEF"
+            stroke="#5BC500"
             strokeWidth="2"
             opacity="0.7"
           />
@@ -162,19 +162,19 @@ export function MapPlaceholder() {
             y1="260"
             x2="360"
             y2="310"
-            stroke="#00AEEF"
+            stroke="#019DF4"
             strokeWidth="2"
             opacity="0.8"
           />
 
-          {/* Critical Fiber Cut Cross Indicator */}
+          {/* Critical Fiber Cut Indicator */}
           <g transform="translate(235, 135)">
-            <circle r="14" fill="#FF6A13" fillOpacity="0.2" className="animate-ping" />
-            <circle r="8" fill="#FF6A13" fillOpacity="0.9" />
+            <circle r="14" fill="#EF4444" fillOpacity="0.25" className="animate-ping" />
+            <circle r="8" fill="#EF4444" fillOpacity="0.9" />
             <text
               x="12"
               y="4"
-              fill="#FF6A13"
+              fill="#F87171"
               fontSize="9"
               fontFamily="monospace"
               fontWeight="bold"
@@ -185,6 +185,8 @@ export function MapPlaceholder() {
 
           {/* Interactive Node Anchors */}
           {mockNodes.map((node) => {
+            if (layer === "alerts" && node.status === "OK") return null;
+
             const isSelected = selectedNode?.id === node.id;
             const isCrit = node.status === "CRITICAL";
             const isWarn = node.status === "WARNING";
@@ -199,23 +201,15 @@ export function MapPlaceholder() {
                 {/* Glow ring */}
                 <circle
                   r={isSelected ? "14" : "10"}
-                  fill={
-                    isCrit ? "#FF6A13" : isWarn ? "#FF6A13" : "#00AEEF"
-                  }
-                  fillOpacity={isSelected ? "0.35" : "0.15"}
-                  className="transition-all duration-300"
+                  fill={isCrit ? "#EF4444" : isWarn ? "#F59E0B" : "#5BC500"}
+                  fillOpacity={isSelected ? "0.4" : "0.2"}
+                  className="transition-all duration-200"
                 />
                 {/* Core node dot */}
                 <circle
                   r={isSelected ? "6" : "5"}
-                  fill={
-                    isCrit
-                      ? "#FF6A13"
-                      : isWarn
-                      ? "#FF6A13"
-                      : "#00AEEF"
-                  }
-                  stroke="#0B0C0E"
+                  fill={isCrit ? "#EF4444" : isWarn ? "#F59E0B" : "#5BC500"}
+                  stroke="#071828"
                   strokeWidth="2"
                 />
                 {/* Node Label */}
@@ -235,23 +229,23 @@ export function MapPlaceholder() {
           })}
         </svg>
 
-        {/* Overlay Node Detail Card (Interactive visual click) */}
+        {/* Overlay Node Detail Card */}
         {selectedNode && (
-          <div className="absolute bottom-3 left-3 right-3 sm:right-auto sm:w-80 bg-[#121418]/95 border border-[#1E232B] backdrop-blur-md rounded-lg p-3 shadow-2xl z-20 text-xs">
-            <div className="flex items-start justify-between gap-2 border-b border-[#1E232B] pb-2 mb-2">
+          <div className="absolute bottom-3 left-3 right-3 sm:right-auto sm:w-80 bg-white/95 backdrop-blur-md border border-slate-200 rounded-xl p-3.5 shadow-xl z-20 text-xs text-slate-800">
+            <div className="flex items-start justify-between gap-2 border-b border-slate-150 pb-2 mb-2">
               <div>
                 <div className="flex items-center gap-1.5">
-                  <span className="font-bold text-white font-grotesk">
+                  <span className="font-bold text-slate-900 font-grotesk">
                     {selectedNode.name}
                   </span>
                   <Badge
-                    variant={selectedNode.status === "CRITICAL" ? "orange" : "cyan"}
+                    variant={selectedNode.status === "CRITICAL" ? "red" : selectedNode.status === "WARNING" ? "yellow" : "green"}
                     size="sm"
                   >
                     {selectedNode.status}
                   </Badge>
                 </div>
-                <span className="text-[11px] font-mono text-slate-400">
+                <span className="text-[11px] font-mono text-slate-500">
                   ID: {selectedNode.id} · Zona {selectedNode.region}
                 </span>
               </div>
@@ -263,8 +257,8 @@ export function MapPlaceholder() {
                 <span
                   className={`font-mono font-bold ${
                     selectedNode.status === "CRITICAL"
-                      ? "text-[#FF6A13]"
-                      : "text-[#00AEEF]"
+                      ? "text-rose-600"
+                      : "text-[#0070B8]"
                   }`}
                 >
                   {selectedNode.dbm}
@@ -272,7 +266,7 @@ export function MapPlaceholder() {
               </div>
               <div>
                 <span className="text-slate-400 block">Clientes en Segmento:</span>
-                <span className="font-mono text-white font-semibold">
+                <span className="font-mono text-slate-900 font-semibold">
                   {selectedNode.clients.toLocaleString()} activos
                 </span>
               </div>
@@ -280,36 +274,36 @@ export function MapPlaceholder() {
           </div>
         )}
 
-        {/* Static Map Compass / Scale Legend */}
-        <div className="absolute top-3 right-3 flex flex-col items-end gap-2 pointer-events-none">
-          <div className="bg-[#0B0C0E]/80 border border-[#1E232B] px-2 py-1 rounded text-[10px] font-mono text-slate-400 flex items-center gap-1">
-            <Compass className="w-3.5 h-3.5 text-[#00AEEF]" />
+        {/* Map Compass */}
+        <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5 pointer-events-none">
+          <div className="bg-slate-900/80 border border-slate-700 px-2 py-1 rounded text-[10px] font-mono text-slate-300 flex items-center gap-1">
+            <Compass className="w-3.5 h-3.5 text-[#5BC500]" />
             <span>N 0°00&apos;</span>
           </div>
-          <div className="bg-[#0B0C0E]/80 border border-[#1E232B] px-2 py-1 rounded text-[10px] font-mono text-slate-400">
+          <div className="bg-slate-900/80 border border-slate-700 px-2 py-0.5 rounded text-[10px] font-mono text-slate-400">
             Escala: 1:50,000 OSP
           </div>
         </div>
       </div>
 
       {/* Legend Footer */}
-      <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2 bg-[#0B0C0E] border-t border-[#1E232B] text-[11px] text-slate-400">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 bg-slate-50 border-t border-slate-200 text-[11px] text-slate-600">
         <div className="flex items-center gap-4">
           <span className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-[#00AEEF]" />
+            <span className="h-2.5 w-2.5 rounded-full bg-[#5BC500]" />
             Troncal Operativa
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-[#FF6A13]" />
+            <span className="h-2.5 w-2.5 rounded-full bg-rose-500" />
             Corte FO / Alerta Crítica
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-[#0A2E5C] border border-[#00AEEF]" />
+            <span className="h-2.5 w-2.5 rounded-full bg-[#019DF4]" />
             Nodo POP Principal
           </span>
         </div>
-        <span className="text-[10px] font-mono text-slate-500">
-          Simulación visual de telemetría OTDR sin backend
+        <span className="text-[10px] font-mono text-slate-400">
+          Telemetría OTDR en vivo · Red Movistar
         </span>
       </div>
     </div>

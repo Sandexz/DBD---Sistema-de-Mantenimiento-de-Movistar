@@ -1,29 +1,3 @@
-"use client";
-
-import React, { useState } from "react";
-import Link from "next/link";
-import {
-  ClipboardList,
-  PlusCircle,
-  FileText,
-  Filter,
-  Layers,
-  ArrowRight,
-  ShieldCheck,
-  CheckCircle2,
-  Activity,
-  AlertTriangle,
-  HardHat,
-  TrendingUp,
-  Clock,
-  Sparkles,
-  Smartphone,
-} from "lucide-react";
-import { Topbar } from "@/components/layout/topbar";
-import { OtForm, NewOtPayload } from "@/components/ot-form";
-import { OtTable, OtRecord } from "@/components/ot-table";
-import initialOtsData from "@/mock-data/ots.json";
-
 export default function OtsPage() {
   // Local in-memory React state for OTs
   const [ots, setOts] = useState<OtRecord[]>(initialOtsData as OtRecord[]);
@@ -96,6 +70,14 @@ export default function OtsPage() {
           </div>
 
           <div className="flex items-center gap-2.5">
+            <Link
+              href="/operativo/ots"
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 shadow-sm transition-all hover:border-[#019DF4]/50 group"
+            >
+              <ClipboardList className="w-4 h-4 text-[#5BC500]" />
+              <span>Vista Operativa Completa</span>
+            </Link>
+
             <Link
               href="/batch"
               className="inline-flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 shadow-sm transition-all hover:border-[#019DF4]/50 group"

@@ -21,6 +21,7 @@ import {
 import { Topbar } from "@/components/layout/topbar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardHeader } from "@/components/ui/card";
 import { Modal } from "@/components/ui/modal";
 import liquidacionesData from "@/mock-data/liquidaciones.json";
 
@@ -52,7 +53,7 @@ export default function BatchPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 flex flex-col font-sans">
       <Topbar />
 
       <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full">
@@ -89,7 +90,7 @@ export default function BatchPage() {
 
             {/* Botón Prominente: Exportar Reporte General */}
             <Button
-              variant="cyan"
+              variant="primary"
               size="sm"
               onClick={() => setIsExportModalOpen(true)}
               className="bg-[#019DF4] hover:bg-[#0081CB] text-white shadow-md shadow-[#019DF4]/20 font-bold"
@@ -100,11 +101,11 @@ export default function BatchPage() {
           </div>
         </div>
 
-        {/* Quick Shortcut Buttons Banner for Diego's modules */}
+        {/* Quick Shortcut Buttons Banner for modules */}
         <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 bg-white border border-slate-200 rounded-2xl text-xs shadow-sm">
           <div className="flex items-center gap-2 text-slate-600">
             <Sparkles className="w-4 h-4 text-[#019DF4]" />
-            <span>Módulos Asignados a Diego:</span>
+            <span>Módulos de Auditoría:</span>
             <span className="font-mono text-[#019DF4] font-bold">
               /batch (Liquidaciones) & /mobile (App Técnica)
             </span>
@@ -127,7 +128,7 @@ export default function BatchPage() {
             </button>
             <Link
               href="/mobile"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold transition-all shadow-sm"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#5BC500] hover:bg-[#489E00] text-white font-bold transition-all shadow-sm"
             >
               <Smartphone className="w-3.5 h-3.5" />
               <span>Ir a App de Campo</span>
@@ -135,267 +136,223 @@ export default function BatchPage() {
           </div>
         </div>
 
-        {/* =========================================================================
-            4 TARJETAS DE AUDITORÍA (KPI CARDS)
-        ========================================================================= */}
+        {/* 4 Cards Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* ═══ TARJETA 1: MANTENIMIENTO PREVENTIVO ═══ */}
-          <div className="bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col hover:border-[#019DF4]/40 transition-colors">
-            <div>
-              <CardHeader
-                title="Mantenimiento Preventivo (Batch)"
-                subtitle="Avance del ciclo trimestral de inspección en planta externa"
-                icon={<Wrench className="w-5 h-5 text-[#019DF4]" />}
-                action={
-                  <Badge variant="cyan" size="sm" className="bg-[#019DF4]/20 text-[#019DF4] border-[#019DF4]/40">
-                    {preventivo.cumplimientoPorcentaje} AVANCE
-                  </Badge>
-                }
-              />
+          <div className="bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col hover:border-[#019DF4]/40 transition-colors p-5">
+            <CardHeader
+              title="Mantenimiento Preventivo (Batch)"
+              subtitle="Avance del ciclo trimestral de inspección en planta externa"
+              icon={<Wrench className="w-5 h-5 text-[#019DF4]" />}
+              action={
+                <Badge variant="cyan" size="sm" className="bg-[#019DF4]/20 text-[#019DF4] border-[#019DF4]/40">
+                  {preventivo.cumplimientoPorcentaje} AVANCE
+                </Badge>
+              }
+            />
 
-              <div className="space-y-4 pt-1">
-                {/* Requerimiento exacto: 1,240 OTs Preventivas Generadas Automáticamente por Vida Útil de Activos */}
-                <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-slate-400 font-mono">Lote Automático Nocturno:</span>
-                    <span className="text-xs font-mono font-bold text-emerald-600">SLA ÓPTIMO</span>
-                  </div>
-                  <p className="text-sm font-bold text-slate-900 font-grotesk leading-snug">
-                    1,240 OTs Preventivas Generadas Automáticamente por Vida Útil de Activos
-                  </p>
-                  <p className="text-[11px] text-slate-500">
-                    Algoritmo preventivo basado en horas de operación, atenuación dBm y telemetría de fallas.
-                  </p>
+            <div className="space-y-4 pt-1 flex-1">
+              <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-slate-500 font-mono">Lote Automático Nocturno:</span>
+                  <span className="text-xs font-mono font-bold text-emerald-600">SLA ÓPTIMO</span>
                 </div>
+                <p className="text-sm font-bold text-slate-900 font-grotesk leading-snug">
+                  1,240 OTs Preventivas Generadas Automáticamente por Vida Útil de Activos
+                </p>
+                <p className="text-[11px] text-slate-500">
+                  Algoritmo preventivo basado en horas de operación, atenuación dBm y telemetría de fallas.
+                </p>
+              </div>
 
-                {/* Barra de progreso en 84% */}
-                <div className="space-y-1.5">
-                  <div className="flex justify-between text-xs font-mono text-slate-400">
-                    <span>Cumplimiento del Lote Batch</span>
-                    <span className="text-[#019DF4] font-bold">84% Completado</span>
-                  </div>
-                  <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
-                    <div
-                      className="bg-gradient-to-r from-[#019DF4] to-[#00A86B] h-full rounded-full transition-all duration-700 shadow-sm"
-                      style={{ width: "84%" }}
-                    />
-                  </div>
-                  <div className="flex justify-between text-[11px] font-mono text-slate-500">
-                    <span>1,042 Ejecutadas</span>
-                    <span>118 En Progreso</span>
-                    <span>80 Pendientes</span>
-                  </div>
+              {/* Barra de progreso */}
+              <div className="space-y-1.5">
+                <div className="flex justify-between text-xs font-mono text-slate-500">
+                  <span>Cumplimiento del Lote Batch</span>
+                  <span className="text-[#019DF4] font-bold">{preventivo.cumplimientoPorcentaje} Completado</span>
                 </div>
+                <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                  <div
+                    className="bg-gradient-to-r from-[#019DF4] to-[#00A86B] h-full rounded-full transition-all duration-700 shadow-sm"
+                    style={{ width: preventivo.cumplimientoPorcentaje }}
+                  />
+                </div>
+                <div className="flex justify-between text-[11px] font-mono text-slate-500">
+                  <span>{preventivo.ejecutado} Ejecutadas</span>
+                  <span>{preventivo.totalProgramado - preventivo.ejecutado - preventivo.pendientes} En Progreso</span>
+                  <span>{preventivo.pendientes} Pendientes</span>
+                </div>
+              </div>
 
-                {/* Muestreo de Nodos */}
-                <div className="space-y-1.5 pt-1">
-                  <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider block">
-                    Muestreo de Nodos Auditados en Lote:
-                  </span>
-                  {preventivo.detalles.map((d, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-center justify-between p-2 bg-slate-50 rounded-lg border border-slate-200 text-xs font-mono"
-                    >
-                      <div>
-                        <span className="text-slate-900 font-semibold">{d.nodo}</span>
-                        <span className="text-[10px] text-slate-500 block">{d.tipo}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[#019DF4]">{d.inspeccion}</span>
-                        <span
-                          className={`text-[10px] font-bold px-2 py-0.5 rounded ${
-                            d.estado === "CONFORME"
-                              ? "bg-emerald-100 text-emerald-700"
-                              : "bg-amber-100 text-amber-700"
-                          }`}
-                        >
-                          {d.estado}
-                        </span>
-                      </div>
+              {/* Muestreo de Nodos */}
+              <div className="space-y-1.5 pt-1">
+                <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider block font-bold">
+                  Muestreo de Nodos Auditados en Lote:
+                </span>
+                {preventivo.detalles.map((d, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between p-2 bg-slate-50 rounded-lg border border-slate-200 text-xs font-mono"
+                  >
+                    <div>
+                      <span className="text-slate-900 font-semibold">{d.nodo}</span>
+                      <span className="text-[10px] text-slate-500 block">{d.tipo}</span>
                     </div>
-                  ))}
-                </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[#019DF4]">{d.inspeccion}</span>
+                      <span
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                          d.estado === "CONFORME" || d.estado === "OK"
+                            ? "bg-emerald-100 text-emerald-700"
+                            : "bg-amber-100 text-amber-700"
+                        }`}
+                      >
+                        {d.estado}
+                      </span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
-            <div className="px-5 py-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400 font-mono">
-              <span>Próxima Auditoría: 2026-09-30 03:00 AM</span>
+            <div className="pt-3 mt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-mono">
+              <span>Próxima Auditoría: {preventivo.proximaAuditoria}</span>
               <span className="text-emerald-600 font-bold">✓ Sincronizado</span>
             </div>
           </div>
 
           {/* ================= TARJETA 2: RENDIMIENTO DE CONTRATISTAS ================= */}
-          <div className="bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col hover:border-[#019DF4]/40 transition-colors">
-            <div>
-              <CardHeader
-                title="Rendimiento de Contratistas"
-                subtitle="Evaluación de cuadrillas y cumplimiento de SLA (Cobra / Lari)"
-                icon={<Users className="w-5 h-5 text-[#019DF4]" />}
-                action={
-                  <span className="text-xs font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
-                    3 Contratistas
-                  </span>
-                }
-              />
+          <div className="bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col hover:border-[#019DF4]/40 transition-colors p-5">
+            <CardHeader
+              title="Rendimiento de Contratistas"
+              subtitle="Evaluación de cuadrillas y cumplimiento de SLA (Cobra / Lari / CAM)"
+              icon={<Users className="w-5 h-5 text-[#019DF4]" />}
+              action={
+                <span className="text-xs font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                  {contratistas.length} Contratistas
+                </span>
+              }
+            />
 
-              <div className="space-y-3 pt-1">
-                {/* Contractor 1: Cobra: 94% */}
-                <div className="p-3.5 bg-slate-50 rounded-xl border border-emerald-200/60 text-xs space-y-2">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-slate-900 font-grotesk text-sm">
-                          Cobra Instalaciones & Redes
+            <div className="space-y-3 pt-1 flex-1">
+              {contratistas.map((c, index) => {
+                const isObservado = c.estado === "BAJO OBSERVACIÓN";
+                return (
+                  <div
+                    key={c.id}
+                    className={`p-3.5 rounded-xl border text-xs space-y-2 ${
+                      isObservado
+                        ? "bg-amber-50/50 border-amber-200"
+                        : "bg-slate-50 border-slate-200"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-slate-900 font-grotesk text-sm">
+                            {c.nombre}
+                          </span>
+                          <span
+                            className={`text-[10px] font-bold font-mono px-2 py-0.5 rounded-full ${
+                              isObservado
+                                ? "bg-amber-100 text-amber-800"
+                                : "bg-emerald-100 text-emerald-700"
+                            }`}
+                          >
+                            {c.estado}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-500 font-mono mt-0.5">
+                          {c.cuadrillas} Cuadrillas activas · {c.otsCompletadas} OTs Conformes
+                        </p>
+                      </div>
+
+                      <div className="text-right">
+                        <span className={`text-lg font-bold font-mono ${isObservado ? "text-amber-700" : "text-emerald-600"}`}>
+                          {c.calificacion ? `${Math.round(parseFloat(c.calificacion) * 20)}%` : "90%"}
                         </span>
-                        <span className="text-[10px] font-bold font-mono px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
-                          ÓPTIMO
+                        <span className="text-[10px] text-slate-400 block font-mono">
+                          Eficiencia
                         </span>
                       </div>
-                      <p className="text-[11px] text-slate-500 font-mono mt-0.5">
-                        Zona: Lima Norte / Callao · 14 Cuadrillas activas
-                      </p>
                     </div>
 
-                    <div className="text-right">
-                      <span className="text-lg font-bold font-mono text-emerald-600">
-                        94%
-                      </span>
-                      <span className="text-[10px] text-slate-400 block font-mono">
-                        Eficiencia
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-                    <div className="bg-emerald-500 h-full rounded-full" style={{ width: "94%" }} />
-                  </div>
-
-                  <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 pt-1 border-t border-slate-200">
-                    <span>SLA Cumplido: <strong className="text-slate-800">98.2%</strong></span>
-                    <span>480 OTs Conformes</span>
-                    <span className="text-amber-500 font-bold flex items-center gap-1">
-                      <Award className="w-3.5 h-3.5" /> 4.9 / 5.0
-                    </span>
-                  </div>
-                </div>
-
-                {/* Contractor 2: Lari: 88% */}
-                <div className="p-3.5 bg-slate-50 rounded-xl border border-[#019DF4]/20 text-xs space-y-2">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-slate-900 font-grotesk text-sm">
-                          Lari Telecomunicaciones S.A.C.
-                        </span>
-                        <span className="text-[10px] font-bold font-mono px-2 py-0.5 rounded-full bg-[#019DF4]/20 text-[#019DF4]">
-                          CONFORME
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-slate-500 font-mono mt-0.5">
-                        Zona: Lima Este / Centro · 11 Cuadrillas activas
-                      </p>
+                    <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full rounded-full ${isObservado ? "bg-amber-500" : "bg-emerald-500"}`}
+                        style={{ width: `${Math.round(parseFloat(c.calificacion) * 20)}%` }}
+                      />
                     </div>
 
-                    <div className="text-right">
-                      <span className="text-lg font-bold font-mono text-[#019DF4]">
-                        88%
-                      </span>
-                      <span className="text-[10px] text-slate-400 block font-mono">
-                        Eficiencia
+                    <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 pt-1 border-t border-slate-200">
+                      <span>SLA Cumplido: <strong className="text-slate-800">{c.slaCumplido}</strong></span>
+                      <span className="text-amber-500 font-bold flex items-center gap-1">
+                        <Award className="w-3.5 h-3.5" /> {c.calificacion} / 5.0
                       </span>
                     </div>
                   </div>
-
-                  <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-                    <div className="bg-[#019DF4] h-full rounded-full" style={{ width: "88%" }} />
-                  </div>
-
-                  <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 pt-1 border-t border-slate-200">
-                    <span>SLA Cumplido: <strong className="text-slate-800">91.5%</strong></span>
-                    <span>360 OTs Conformes</span>
-                    <span className="text-amber-500 font-bold flex items-center gap-1">
-                      <Award className="w-3.5 h-3.5" /> 4.3 / 5.0
-                    </span>
-                  </div>
-                </div>
-
-                {/* Contractor 3: CAM Perú */}
-                <div className="p-2.5 bg-orange-50 rounded-xl border border-orange-200/60 text-xs flex items-center justify-between font-mono">
-                  <div>
-                    <span className="text-slate-700 font-bold">CAM Perú Servicios</span>
-                    <span className="text-[10px] text-[#FF6A13] block">Bajo Observación (SLA 84.0%)</span>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-[#FF6A13] font-bold">82%</span>
-                    <span className="text-[10px] text-slate-500 block">Eficiencia</span>
-                  </div>
-                </div>
-              </div>
+                );
+              })}
             </div>
 
-            <div className="px-5 py-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400 font-mono">
+            <div className="pt-3 mt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-mono">
               <span>Auditoría de Cuadrillas en Línea</span>
               <span className="text-[#019DF4]">Ranking Semanal Cerrado</span>
             </div>
           </div>
 
           {/* ================= TARJETA 3: PRE-LIQUIDACIONES MENSUALES ================= */}
-          <div className="bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col hover:border-emerald-400/40 transition-colors">
-            <div>
-              <CardHeader
-                title="Pre-Liquidaciones Mensuales"
-                subtitle="Cálculo consolidado para facturación de contratistas"
-                icon={<DollarSign className="w-5 h-5 text-[#00A86B]" />}
-                action={
-                  <Badge variant="cyan" size="sm" className="bg-[#00A86B]/20 text-[#00A86B] border-[#00A86B]/40">
-                    PRE-APROBADO
-                  </Badge>
-                }
-              />
+          <div className="bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col hover:border-emerald-400/40 transition-colors p-5">
+            <CardHeader
+              title="Pre-Liquidaciones de Servicios"
+              subtitle="Cálculo consolidado para facturación de contratistas"
+              icon={<DollarSign className="w-5 h-5 text-[#00A86B]" />}
+              action={
+                <Badge variant="cyan" size="sm" className="bg-[#00A86B]/20 text-[#00A86B] border-[#00A86B]/40">
+                  {preliquidaciones.estadoCierre}
+                </Badge>
+              }
+            />
 
-              <div className="space-y-4 pt-1">
-                {/* Monto Requerido: S/ 452,180.00 */}
-                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 flex items-baseline justify-between">
-                  <div>
-                    <span className="text-xs text-slate-400 block font-sans">
-                      Monto Total Calculado para Pago de Servicios:
-                    </span>
-                    <span className="text-3xl sm:text-4xl font-extrabold text-slate-900 font-grotesk tracking-tight" suppressHydrationWarning>
-                      S/ 452,180.00
-                    </span>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-xs font-mono text-[#019DF4] block font-bold">
-                      1,032 OTs
-                    </span>
-                    <span className="text-[10px] text-slate-500 font-mono">
-                      Auditadas 100%
-                    </span>
-                  </div>
-                </div>
-
-                {/* Desglose de Costos Operativos */}
-                <div className="space-y-1.5">
-                  <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider block">
-                    Desglose de Facturación Auditada:
+            <div className="space-y-4 pt-1 flex-1">
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 flex items-baseline justify-between">
+                <div>
+                  <span className="text-xs text-slate-500 block font-sans">
+                    Monto Total Calculado para Pago de Servicios:
                   </span>
-                  {preliquidaciones.desglose.map((item, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs font-mono"
-                    >
-                      <span className="text-slate-600">{item.rubro}</span>
-                      <span className="text-slate-900 font-bold">{item.monto}</span>
-                    </div>
-                  ))}
+                  <span className="text-3xl sm:text-4xl font-extrabold text-slate-900 font-grotesk tracking-tight">
+                    {preliquidaciones.montoTotal}
+                  </span>
                 </div>
+                <div className="text-right">
+                  <span className="text-xs font-mono text-[#019DF4] block font-bold">
+                    {preliquidaciones.ordenesFacturables} OTs
+                  </span>
+                  <span className="text-[10px] text-slate-500 font-mono">
+                    Auditadas 100%
+                  </span>
+                </div>
+              </div>
+
+              {/* Desglose de Costos Operativos */}
+              <div className="space-y-1.5">
+                <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider block font-bold">
+                  Desglose de Facturación Auditada:
+                </span>
+                {preliquidaciones.desglose.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs font-mono"
+                  >
+                    <span className="text-slate-600">{item.rubro}</span>
+                    <span className="text-slate-900 font-bold">{item.monto}</span>
+                  </div>
+                ))}
               </div>
             </div>
 
-            {/* Botón Prominente: Ver Detalle de Pre-Liquidaciones */}
-            <div className="px-5 py-3 border-t border-slate-100 flex items-center justify-between">
-              <span className="text-xs text-slate-400 font-mono">
+            <div className="pt-3 mt-4 border-t border-slate-100 flex items-center justify-between">
+              <span className="text-xs text-slate-500 font-mono">
                 Período: {preliquidaciones.periodo}
               </span>
 
@@ -405,92 +362,76 @@ export default function BatchPage() {
                 className="flex items-center gap-1.5 text-xs font-bold text-[#019DF4] hover:underline"
               >
                 <Eye className="w-3.5 h-3.5" />
-                Ver Detalle de Pre-Liquidaciones
+                <span>Ver Detalle de Pre-Liquidaciones</span>
               </button>
             </div>
           </div>
 
           {/* ================= TARJETA 4: PENALIDADES SLA ================= */}
-          <div className="bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col hover:border-orange-400/40 transition-colors">
-            <div>
-              <CardHeader
-                title="Penalidades SLA"
-                subtitle="Deducciones acumuladas por demoras o reincidencias de fallas"
-                icon={<AlertTriangle className="w-5 h-5 text-[#FF6A13]" />}
-                action={
-                  <Badge variant="orange" size="sm">
-                    {penalidades.estado}
-                  </Badge>
-                }
-              />
+          <div className="bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col hover:border-orange-400/40 transition-colors p-5">
+            <CardHeader
+              title="Penalidades & Deducciones SLA"
+              subtitle="Deducciones acumuladas por demoras o reincidencias de fallas"
+              icon={<AlertTriangle className="w-5 h-5 text-[#FF6A13]" />}
+              action={
+                <Badge variant="red" size="sm">
+                  {penalidades.estado}
+                </Badge>
+              }
+            />
 
-              <div className="space-y-4 pt-1">
-                {/* Monto Requerido: -S/ 28,400.00 */}
-                <div className="bg-orange-50 p-4 rounded-xl border border-orange-200/60 flex items-baseline justify-between">
-                  <div>
-                    <span className="text-xs text-slate-400 block font-sans">
-                      Monto Acumulado por Penalidades SLA:
-                    </span>
-                    <span className="text-3xl sm:text-4xl font-extrabold text-[#FF6A13] font-grotesk tracking-tight" suppressHydrationWarning>
-                      -S/ 28,400.00
-                    </span>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-xs font-mono text-[#FF6A13] block font-bold">
-                      {penalidades.casosRegistrados} Actas Emitidas
-                    </span>
-                    <span className="text-[10px] text-slate-500 font-mono">
-                      Cobra & Lari
-                    </span>
-                  </div>
+            <div className="space-y-4 pt-1 flex-1">
+              <div className="bg-orange-50 p-4 rounded-xl border border-orange-200/60 flex items-baseline justify-between">
+                <div>
+                  <span className="text-xs text-slate-500 block font-sans">
+                    Monto Acumulado por Penalidades SLA:
+                  </span>
+                  <span className="text-3xl sm:text-4xl font-extrabold text-[#FF6A13] font-grotesk tracking-tight">
+                    -{penalidades.totalPenalidades}
+                  </span>
                 </div>
+                <div className="text-right">
+                  <span className="text-xs font-mono text-[#FF6A13] block font-bold">
+                    {penalidades.casosRegistrados} Actas Emitidas
+                  </span>
+                  <span className="text-[10px] text-slate-500 font-mono">
+                    Cobra & Lari
+                  </span>
+                </div>
+              </div>
 
-                {/* Motivos Clave de Penalización */}
-                <div className="space-y-2">
-                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-1">
+              {/* Motivos Clave de Penalización */}
+              <div className="space-y-2">
+                {penalidades.casos.slice(0, 2).map((caso) => (
+                  <div key={caso.id} className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-1">
                     <div className="flex items-center justify-between text-slate-500 font-mono text-[11px]">
-                      <span>Incumplimiento Crítico MTTR:</span>
-                      <span className="text-[#FF6A13] font-bold">S/ 4,500.00 + S/ 8,200.00</span>
+                      <span>{caso.contratista} · {caso.otId}:</span>
+                      <span className="text-[#FF6A13] font-bold">-{caso.monto}</span>
                     </div>
                     <p className="font-bold text-slate-900 font-grotesk">
-                      Cobra: Incumplimiento MTTR &gt; 4hrs
+                      {caso.motivo}
                     </p>
                     <p className="text-slate-500 text-[11px]">
-                      Enlace troncal en Nodo NOD-CARABAYLLO-04 y San Martín de Porres.
+                      {caso.detalle || caso.nodo}
                     </p>
                   </div>
-
-                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-1">
-                    <div className="flex items-center justify-between text-slate-500 font-mono text-[11px]">
-                      <span>Reincidencia de Averías:</span>
-                      <span className="text-[#FF6A13] font-bold">S/ 8,200.00 + S/ 7,500.00</span>
-                    </div>
-                    <p className="font-bold text-slate-900 font-grotesk">
-                      Lari: Reincidencia en Nodo NOD-LIM-02
-                    </p>
-                    <p className="text-slate-400 text-[11px]">
-                      Segunda falla en mufa óptica HFC en menos de 48 horas.
-                    </p>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
 
-            {/* Botón Prominente: Ver Actas de Penalidades */}
-            <div className="px-5 py-3 border-t border-slate-100 flex items-center justify-between">
-              <span className="text-xs text-slate-400 font-mono">
+            <div className="pt-3 mt-4 border-t border-slate-100 flex items-center justify-between">
+              <span className="text-xs text-slate-500 font-mono">
                 {penalidades.casos.length} Actas formalizadas
               </span>
 
-              <Button
-                variant="outline"
-                size="sm"
+              <button
+                type="button"
                 onClick={() => setIsPenaltiesModalOpen(true)}
-                className="flex items-center gap-1.5 text-xs font-bold text-[#FF6A13] hover:underline text-left"
+                className="flex items-center gap-1.5 text-xs font-bold text-[#FF6A13] hover:underline"
               >
-                <AlertOctagon className="w-3.5 h-3.5 mr-1.5 text-[#FF6A13]" />
+                <AlertOctagon className="w-3.5 h-3.5 text-[#FF6A13]" />
                 <span>Ver Actas de Penalidades</span>
-              </Button>
+              </button>
             </div>
           </div>
         </div>
@@ -507,14 +448,14 @@ export default function BatchPage() {
         footer={
           <>
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
               onClick={() => setIsExportModalOpen(false)}
             >
               Cancelar
             </Button>
             <Button
-              variant="cyan"
+              variant="primary"
               size="sm"
               onClick={handleSimulateExport}
               isLoading={isExporting}
@@ -541,13 +482,13 @@ export default function BatchPage() {
             </div>
           ) : (
             <>
-              <p className="text-xs text-slate-300 leading-relaxed">
+              <p className="text-xs text-slate-600 leading-relaxed">
                 Seleccione el formato oficial y el rango de fechas para el cierre financiero de contratistas:
               </p>
 
               {/* Selector de Formato: Excel (.xlsx) o PDF Ejecutivo */}
               <div className="space-y-1.5">
-                <label className="text-[11px] font-mono text-slate-400 uppercase tracking-wider block font-bold">
+                <label className="text-[11px] font-mono text-slate-500 uppercase tracking-wider block font-bold">
                   Formato de Salida:
                 </label>
                 <div className="grid grid-cols-2 gap-3">
@@ -556,13 +497,13 @@ export default function BatchPage() {
                     className={`p-3.5 rounded-xl border cursor-pointer transition-all flex items-center gap-3 ${
                       exportFormat === "excel"
                         ? "bg-[#0B2742] border-[#019DF4] text-white shadow-sm ring-1 ring-[#019DF4]"
-                        : "bg-[#0B0C0E] border-[#1E232B] text-slate-400 hover:text-white"
+                        : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
                     }`}
                   >
                     <FileSpreadsheet className="w-6 h-6 text-[#00A86B]" />
                     <div>
-                      <span className="font-bold text-xs block text-white">Excel (.xlsx)</span>
-                      <span className="text-[10px] text-slate-400">Planilla con fórmulas & OTs</span>
+                      <span className="font-bold text-xs block text-slate-900">Excel (.xlsx)</span>
+                      <span className="text-[10px] text-slate-500">Planilla con fórmulas & OTs</span>
                     </div>
                   </div>
 
@@ -571,13 +512,13 @@ export default function BatchPage() {
                     className={`p-3.5 rounded-xl border cursor-pointer transition-all flex items-center gap-3 ${
                       exportFormat === "pdf"
                         ? "bg-[#0B2742] border-[#019DF4] text-white shadow-sm ring-1 ring-[#019DF4]"
-                        : "bg-[#0B0C0E] border-[#1E232B] text-slate-400 hover:text-white"
+                        : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
                     }`}
                   >
                     <FileText className="w-6 h-6 text-[#FF6A13]" />
                     <div>
-                      <span className="font-bold text-xs block text-white">PDF Ejecutivo</span>
-                      <span className="text-[10px] text-slate-400">Acta formal con firmas</span>
+                      <span className="font-bold text-xs block text-slate-900">PDF Ejecutivo</span>
+                      <span className="text-[10px] text-slate-500">Acta formal con firmas</span>
                     </div>
                   </div>
                 </div>
@@ -585,13 +526,13 @@ export default function BatchPage() {
 
               {/* Opciones de Rango de Fechas */}
               <div className="space-y-1.5">
-                <label className="text-[11px] font-mono text-slate-400 uppercase tracking-wider block font-bold">
+                <label className="text-[11px] font-mono text-slate-500 uppercase tracking-wider block font-bold">
                   Rango de Fechas / Período:
                 </label>
                 <select
                   value={dateRange}
                   onChange={(e) => setDateRange(e.target.value)}
-                  className="w-full bg-[#0B0C0E] border border-[#1E232B] rounded-xl px-3.5 py-2.5 text-slate-100 text-xs font-mono focus:outline-none focus:border-[#019DF4] cursor-pointer"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-800 text-xs font-mono focus:outline-none focus:border-[#019DF4] cursor-pointer"
                 >
                   <option value="ultimo-lote">Último Lote Procesado (03:00 AM - Hoy)</option>
                   <option value="quincena-1">1 al 15 de Septiembre 2026 (Quincena Actual)</option>
@@ -601,16 +542,16 @@ export default function BatchPage() {
               </div>
 
               {/* Resumen Financiero del Reporte */}
-              <div className="p-3.5 bg-[#0B0C0E] rounded-xl border border-[#1E232B] space-y-1.5 text-xs font-mono">
+              <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1.5 text-xs font-mono">
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Total Pre-Liquidación:</span>
-                  <span className="text-white font-bold">S/ 452,180.00</span>
+                  <span className="text-slate-500">Total Pre-Liquidación:</span>
+                  <span className="text-slate-900 font-bold">{preliquidaciones.montoTotal}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Deducción de Penalidades:</span>
-                  <span className="text-[#FF6A13] font-bold">-S/ 28,400.00</span>
+                  <span className="text-slate-500">Deducción de Penalidades:</span>
+                  <span className="text-[#FF6A13] font-bold">-{penalidades.totalPenalidades}</span>
                 </div>
-                <div className="flex justify-between pt-1.5 border-t border-[#1E232B] text-sm">
+                <div className="flex justify-between pt-1.5 border-t border-slate-200 text-sm">
                   <span className="text-[#00A86B] font-bold">Neto a Liquidar:</span>
                   <span className="text-[#00A86B] font-bold">S/ 423,780.00</span>
                 </div>
@@ -640,16 +581,16 @@ export default function BatchPage() {
         }
       >
         <div className="space-y-4">
-          <div className="p-3 bg-[#0B0C0E] rounded-xl border border-[#FF6A13]/40 flex items-center justify-between text-xs font-mono">
+          <div className="p-3 bg-orange-50 rounded-xl border border-[#FF6A13]/40 flex items-center justify-between text-xs font-mono">
             <span>Total Deducciones Auditadas:</span>
-            <span className="text-[#FF6A13] font-bold text-base">-S/ 28,400.00</span>
+            <span className="text-[#FF6A13] font-bold text-base">-{penalidades.totalPenalidades}</span>
           </div>
 
           {/* Tabla de Actas */}
-          <div className="overflow-x-auto border border-[#1E232B] rounded-xl bg-[#0B0C0E]">
+          <div className="overflow-x-auto border border-slate-200 rounded-xl bg-white">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="border-b border-[#1E232B] text-[11px] font-mono text-slate-400 bg-[#121418]">
+                <tr className="border-b border-slate-200 text-[11px] font-mono text-slate-500 bg-slate-50">
                   <th className="py-2.5 px-3">ID Acta</th>
                   <th className="py-2.5 px-3">Contrata</th>
                   <th className="py-2.5 px-4">Motivo de Penalidad</th>
@@ -657,28 +598,28 @@ export default function BatchPage() {
                   <th className="py-2.5 px-3 text-right">Deducción</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#1E232B] font-mono">
+              <tbody className="divide-y divide-slate-100 font-mono">
                 {penalidades.casos.map((caso) => (
-                  <tr key={caso.id} className="hover:bg-[#121418]/60 transition-colors">
-                    <td className="py-3 px-3 font-bold text-white whitespace-nowrap">
+                  <tr key={caso.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="py-3 px-3 font-bold text-slate-900 whitespace-nowrap">
                       {caso.id}
                     </td>
                     <td className="py-3 px-3 whitespace-nowrap">
                       <span
                         className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                           caso.contratista === "Cobra"
-                            ? "bg-[#019DF4]/20 text-[#019DF4]"
-                            : "bg-[#00A86B]/20 text-[#00A86B]"
+                            ? "bg-[#019DF4]/15 text-[#019DF4]"
+                            : "bg-[#00A86B]/15 text-[#00A86B]"
                         }`}
                       >
                         {caso.contratista}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-slate-200">
-                      <p className="font-semibold text-white">{caso.motivo}</p>
-                      <p className="text-[10px] text-slate-400 font-sans mt-0.5">{caso.detalle}</p>
+                    <td className="py-3 px-4 text-slate-700">
+                      <p className="font-semibold text-slate-900">{caso.motivo}</p>
+                      <p className="text-[10px] text-slate-500 font-sans mt-0.5">{caso.detalle}</p>
                     </td>
-                    <td className="py-3 px-3 text-slate-400 whitespace-nowrap text-[11px]">
+                    <td className="py-3 px-3 text-slate-500 whitespace-nowrap text-[11px]">
                       <div>{caso.otId}</div>
                       <div className="text-[10px] text-[#019DF4]">{caso.nodo}</div>
                     </td>
@@ -691,9 +632,9 @@ export default function BatchPage() {
             </table>
           </div>
 
-          <div className="p-3 bg-[#121418] rounded-xl border border-[#1E232B] text-[11px] text-slate-400 flex items-center justify-between font-mono">
+          <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-[11px] text-slate-500 flex items-center justify-between font-mono">
             <span>Validado por NOC Central Movistar Perú</span>
-            <span className="text-[#00A86B]">Todas las actas cuentan con sustento OTDR</span>
+            <span className="text-[#00A86B] font-semibold">Todas las actas cuentan con sustento OTDR</span>
           </div>
         </div>
       </Modal>
@@ -718,16 +659,16 @@ export default function BatchPage() {
         }
       >
         <div className="space-y-4">
-          <div className="p-3 bg-[#0B0C0E] rounded-xl border border-[#00A86B]/40 flex items-center justify-between text-xs font-mono">
+          <div className="p-3 bg-[#E6F6F0] rounded-xl border border-[#00A86B]/40 flex items-center justify-between text-xs font-mono">
             <span>Monto Total Pre-Liquidado:</span>
-            <span className="text-[#00A86B] font-bold text-base">S/ 452,180.00</span>
+            <span className="text-[#00A86B] font-bold text-base">{preliquidaciones.montoTotal}</span>
           </div>
 
           {/* Tabla Desglose por Contratista */}
-          <div className="overflow-x-auto border border-[#1E232B] rounded-xl bg-[#0B0C0E]">
+          <div className="overflow-x-auto border border-slate-200 rounded-xl bg-white">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="border-b border-[#1E232B] text-[11px] font-mono text-slate-400 bg-[#121418]">
+                <tr className="border-b border-slate-200 text-[11px] font-mono text-slate-500 bg-slate-50">
                   <th className="py-2.5 px-3">Contratista</th>
                   <th className="py-2.5 px-3">OTs Conformes</th>
                   <th className="py-2.5 px-3 text-right">Subtotal Facturable</th>
@@ -735,16 +676,16 @@ export default function BatchPage() {
                   <th className="py-2.5 px-3 text-right">Neto Aprobado</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#1E232B] font-mono">
+              <tbody className="divide-y divide-slate-100 font-mono">
                 {preliquidaciones.porContratista.map((c, idx) => (
-                  <tr key={idx} className="hover:bg-[#121418]/60 transition-colors">
-                    <td className="py-3 px-3 font-semibold text-white">
+                  <tr key={idx} className="hover:bg-slate-50 transition-colors">
+                    <td className="py-3 px-3 font-semibold text-slate-900">
                       {c.contratista}
                     </td>
-                    <td className="py-3 px-3 text-slate-300">
+                    <td className="py-3 px-3 text-slate-600">
                       {c.ots} OTs
                     </td>
-                    <td className="py-3 px-3 text-right text-white">
+                    <td className="py-3 px-3 text-right text-slate-900">
                       {c.subtotal}
                     </td>
                     <td className="py-3 px-3 text-right text-[#FF6A13]">
@@ -759,14 +700,14 @@ export default function BatchPage() {
             </table>
           </div>
 
-          <div className="p-3.5 bg-[#121418] rounded-xl border border-[#1E232B] text-xs font-mono space-y-1">
+          <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-xs font-mono space-y-1">
             <div className="flex justify-between">
-              <span className="text-slate-400">Estado de Aprobación:</span>
+              <span className="text-slate-500">Estado de Aprobación:</span>
               <span className="text-[#00A86B] font-bold">PRE-APROBADO PARA TRANSFERENCIA</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-400">Auditor Responsable:</span>
-              <span className="text-white">Gerencia de Planta Externa & Finanzas</span>
+              <span className="text-slate-500">Auditor Responsable:</span>
+              <span className="text-slate-800">Gerencia de Planta Externa & Finanzas</span>
             </div>
           </div>
         </div>

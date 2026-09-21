@@ -13,15 +13,15 @@ export function Card({
   ...props
 }: CardProps) {
   const variantStyles = {
-    default: "bg-[#121418] border border-[#1E232B] rounded-lg",
-    bordered: "bg-[#0B0C0E] border border-[#2A313C] rounded-lg",
+    default: "bg-white border border-slate-200 rounded-xl shadow-card-clean",
+    bordered: "bg-white border-2 border-slate-200 rounded-xl shadow-sm",
     interactive:
-      "bg-[#121418] border border-[#1E232B] hover:border-[#00AEEF]/50 transition-colors duration-200 rounded-lg",
+      "bg-white border border-slate-200 hover:border-[#5BC500] hover:shadow-card-hover transition-all duration-200 rounded-xl cursor-pointer",
   };
 
   return (
     <div
-      className={`${variantStyles[variant]} p-5 shadow-card-dark ${className}`}
+      className={`${variantStyles[variant]} p-5 ${className}`}
       {...props}
     >
       {children}
@@ -41,15 +41,19 @@ export function CardHeader({
   icon?: React.ReactNode;
 }) {
   return (
-    <div className="flex items-start justify-between gap-4 pb-4 border-b border-[#1E232B] mb-4">
+    <div className="flex items-start justify-between gap-4 pb-3.5 border-b border-slate-150 mb-4">
       <div className="flex items-center gap-3">
-        {icon && <div className="text-[#00AEEF] p-2 bg-[#0A2E5C]/30 rounded-md border border-[#0A2E5C]">{icon}</div>}
+        {icon && (
+          <div className="text-[#019DF4] p-2 bg-[#E5F4FD] rounded-lg border border-[#B8E2FB] shrink-0">
+            {icon}
+          </div>
+        )}
         <div>
-          <h3 className="text-base font-semibold text-white tracking-wide font-grotesk">{title}</h3>
-          {subtitle && <p className="text-xs text-slate-400 font-sans mt-0.5">{subtitle}</p>}
+          <h3 className="text-base font-bold text-slate-900 tracking-tight font-grotesk">{title}</h3>
+          {subtitle && <p className="text-xs text-slate-500 font-sans mt-0.5">{subtitle}</p>}
         </div>
       </div>
-      {action && <div>{action}</div>}
+      {action && <div className="shrink-0">{action}</div>}
     </div>
   );
 }

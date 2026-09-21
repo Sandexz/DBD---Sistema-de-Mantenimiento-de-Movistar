@@ -1,25 +1,3 @@
-"use client";
-
-import React from "react";
-import Link from "next/link";
-import {
-  Smartphone,
-  ArrowLeft,
-  Sun,
-  ShieldCheck,
-  CheckCircle2,
-  HelpCircle,
-  RotateCcw,
-  Navigation,
-  QrCode,
-  PenTool,
-  Award,
-  Layers,
-  ClipboardList,
-} from "lucide-react";
-import { MobileFlow } from "@/components/mobile-flow";
-import { Badge } from "@/components/ui/badge";
-
 export default function MobilePage() {
   return (
     <div className="min-h-screen bg-[#0B0C0E] text-slate-100 flex flex-col font-sans">
@@ -47,7 +25,7 @@ export default function MobilePage() {
               <h1 className="text-sm font-bold text-white font-grotesk flex items-center gap-2">
                 <span>App Móvil Técnica de Campo</span>
                 <span className="text-[10px] bg-[#019DF4]/20 text-[#019DF4] px-2 py-0.5 rounded-full font-mono font-normal">
-                  Asignada a Diego
+                  Asignada a Diego Quispe
                 </span>
               </h1>
               <p className="text-[11px] text-slate-300">
@@ -57,6 +35,12 @@ export default function MobilePage() {
           </div>
 
           <div className="flex items-center gap-2">
+            <Link
+              href="/operativo/mobile"
+              className="hidden sm:inline-flex items-center gap-1.5 text-xs font-mono text-slate-300 hover:text-white bg-white/10 px-2.5 py-1 rounded-lg border border-white/10 transition-colors"
+            >
+              <span>Vista en Módulo Operativo</span>
+            </Link>
             <div className="flex items-center gap-1.5 bg-[#061625] border border-[#00A86B]/40 px-2.5 py-1 rounded-lg text-xs font-mono text-[#00A86B]">
               <Sun className="w-3.5 h-3.5 text-amber-400" />
               <span className="hidden sm:inline">Alto Contraste (#FFFFFF)</span>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, Public_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
+import { UserProvider } from "@/components/layout/user-context";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -22,8 +23,8 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Movistar Perú — Sistema de Mantenimiento e Infraestructura de Redes",
-  description: "Plataforma Integral NOC, Gestión de OTs, Auditoría Batch de Contratistas y App Móvil de Campo para Movistar Perú",
+  title: "SGMR — Sistema de Mantenimiento e Infraestructura de Redes | Movistar Perú",
+  description: "Plataforma Integral NOC, Supervisión Gerencial, Gestión Operativa de OTs, Auditoría Batch y App Móvil de Campo para Movistar Perú",
 };
 
 export default function RootLayout({
@@ -36,8 +37,10 @@ export default function RootLayout({
       lang="es"
       className={`${spaceGrotesk.variable} ${publicSans.variable} ${ibmPlexMono.variable}`}
     >
-      <body className="min-h-screen bg-[#F4F6F9] text-slate-800 antialiased selection:bg-[#019DF4]/20 selection:text-[#0B2742]">
-        {children}
+      <body className="min-h-screen bg-[#F8FAFC] text-slate-800 antialiased selection:bg-[#019DF4]/20 selection:text-[#0B2742]">
+        <UserProvider>
+          {children}
+        </UserProvider>
       </body>
     </html>
   );

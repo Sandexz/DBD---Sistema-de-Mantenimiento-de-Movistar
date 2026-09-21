@@ -49,39 +49,39 @@ export function Modal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-150">
       <div
         className="fixed inset-0"
         onClick={onClose}
         aria-hidden="true"
       />
       <div
-        className={`relative w-full ${maxWidthStyles[maxWidth]} bg-[#121418] border border-[#1E232B] rounded-xl shadow-2xl overflow-hidden z-10`}
+        className={`relative w-full ${maxWidthStyles[maxWidth]} bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden z-10`}
       >
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#1E232B] bg-[#0A2E5C]/30">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-150 bg-slate-50/70">
           <div>
-            <h3 className="text-lg font-bold text-white font-grotesk">{title}</h3>
+            <h3 className="text-lg font-bold text-slate-900 font-grotesk">{title}</h3>
             {subtitle && (
-              <p className="text-xs text-slate-400 font-sans mt-0.5">{subtitle}</p>
+              <p className="text-xs text-slate-500 font-sans mt-0.5">{subtitle}</p>
             )}
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-[#181B21] transition-colors"
+            className="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg hover:bg-slate-200/60 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Modal Content */}
-        <div className="p-6 max-h-[75vh] overflow-y-auto text-sm text-slate-300">
+        <div className="p-6 max-h-[75vh] overflow-y-auto text-sm text-slate-700">
           {children}
         </div>
 
         {/* Modal Footer */}
         {footer && (
-          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#1E232B] bg-[#0B0C0E]/60">
+          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-150 bg-slate-50">
             {footer}
           </div>
         )}

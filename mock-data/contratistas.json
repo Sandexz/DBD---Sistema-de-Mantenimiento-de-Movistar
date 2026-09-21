@@ -1,0 +1,43 @@
+[
+  {
+    "id": "CONT-LARI",
+    "empresa": "Lari Contratistas S.A.C.",
+    "codigo": "CTR-MOV-091",
+    "contacto": "Ing. Carlos Mendoza (cmendoza@lari.pe / +51 987 654 321)",
+    "especialidad": "Planta Externa FO / Fusión Pesada / Postería OSP",
+    "tarifaHora": "S/. 145.00 / hora-cuadrilla",
+    "estado": "Homologada / Activa",
+    "zonaAsignada": "Zona Norte & Callao",
+    "cuadrillas": [
+      { "id": "CUAD-ALFA-01", "nombre": "Cuadrilla Alfa 01", "lider": "Luis Ramos", "tecnicos": 3, "vehiculo": "Camioneta 4x4 Toyota (Placa BBX-401)", "estado": "En ruta" },
+      { "id": "CUAD-ALFA-02", "nombre": "Cuadrilla Alfa 02", "lider": "Pedro Castillo", "tecnicos": 2, "vehiculo": "Furgón Taller (Placa AF-912)", "estado": "Disponible" }
+    ]
+  },
+  {
+    "id": "CONT-COBRA",
+    "empresa": "Cobra Telecomunicaciones Perú",
+    "codigo": "CTR-MOV-104",
+    "contacto": "Lic. Patricia Vega (pvega@cobra-peru.com / +51 991 234 567)",
+    "especialidad": "Core Switching / Data Centers / Energía & Climatización",
+    "tarifaHora": "S/. 185.00 / hora-cuadrilla",
+    "estado": "Homologada / Activa",
+    "zonaAsignada": "Zona Centro & Sur",
+    "cuadrillas": [
+      { "id": "CUAD-BETA-03", "nombre": "Cuadrilla Beta 03", "lider": "Manuel Silva", "tecnicos": 4, "vehiculo": "Móvil Especializado Energía (Placa C1-550)", "estado": "En ejecución" },
+      { "id": "CUAD-BETA-04", "nombre": "Cuadrilla Beta 04", "lider": "Jorge Morales", "tecnicos": 2, "vehiculo": "Camioneta Hilux (Placa H2-108)", "estado": "Disponible" }
+    ]
+  },
+  {
+    "id": "CONT-TELCONET",
+    "empresa": "Telconet Ingenieros Asociados",
+    "codigo": "CTR-MOV-202",
+    "contacto": "Ing. Roberto Quintana (rquintana@telconet.com.pe / +51 974 881 202)",
+    "especialidad": "Última Milla FTTH / Altura en Antenas BTS / Microondas",
+    "tarifaHora": "S/. 130.00 / hora-cuadrilla",
+    "estado": "Bajo Observación",
+    "zonaAsignada": "Zona Este",
+    "cuadrillas": [
+      { "id": "CUAD-GAMMA-05", "nombre": "Cuadrilla Gamma 05", "lider": "Julio Gómez", "tecnicos": 3, "vehiculo": "Camioneta con canastilla elevadora (Placa D9-771)", "estado": "En sitio" }
+    ]
+  }
+]

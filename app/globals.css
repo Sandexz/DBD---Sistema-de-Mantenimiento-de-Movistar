@@ -5,19 +5,24 @@
 @layer base {
   :root {
     --bg-dark: #0B0C0E;
+    --bg-main: #F8FAFC;
     --movistar-navy: #0B2742;
     --movistar-blue: #019DF4;
-    --movistar-green: #00A86B;
+    --movistar-green: #5BC500;
     --movistar-light: #F4F6F9;
     --movistar-white: #FFFFFF;
+    --brand-green: #5BC500;
     --brand-blue: #0B2742;
     --brand-cyan: #019DF4;
     --brand-orange: #FF6A13;
+    --brand-navy: #0B2742;
     --brand-white: #FFFFFF;
+    --text-primary: #1E293B;
+    --border-color: #E2E8F0;
   }
 
   body {
-    background-color: #F4F6F9;
+    background-color: #F8FAFC;
     color: #1E293B;
     font-family: var(--font-public-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -27,6 +32,7 @@
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-space-grotesk), sans-serif;
     letter-spacing: -0.02em;
+    color: #0F172A;
   }
 
   code, pre, .font-mono {
@@ -34,7 +40,7 @@
   }
 }
 
-/* Custom scrollbar — light corporate theme */
+/* Custom scrollbar for clean corporate dashboards */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;

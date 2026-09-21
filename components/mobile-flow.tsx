@@ -25,13 +25,22 @@ import {
   Trash2,
   Maximize2,
   ScanLine,
+  ShieldCheck,
+  ShieldAlert,
 } from "lucide-react";
 
 export function MobileFlow() {
+  // Pasos del flujo de campo:
+  // 1: Llegada & Check-in GPS (< 50m)
+  // 2: Verificación de Materiales & Escáner QR
+  // 3: Cierre, Evidencia OTDR y Firma Digital en Lienzo
+  // 4: Resumen / Éxito
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
   const [isLoading, setIsLoading] = useState(false);
 
   // Paso 1: GPS Arribo
+  const [distanciaMetros, setDistanciaMetros] = useState<number>(12);
+  const isGpsValido = distanciaMetros <= 50;
   const [gpsConfirmed, setGpsConfirmed] = useState(false);
   const [checkInTime, setCheckInTime] = useState("09:42:15");
 
@@ -130,7 +139,6 @@ export function MobileFlow() {
     ctx.strokeStyle = "#0B2742";
     ctx.lineWidth = 2.5;
 
-    // Draw realistic curve signature
     ctx.beginPath();
     ctx.moveTo(25, 45);
     ctx.bezierCurveTo(45, 15, 65, 60, 95, 25);
@@ -145,6 +153,7 @@ export function MobileFlow() {
 
   // Step 1: Confirmar Arribo al Sitio
   const handleConfirmArrival = () => {
+    if (!isGpsValido) return;
     setIsLoading(true);
     const now = new Date();
     setCheckInTime(
@@ -220,6 +229,7 @@ export function MobileFlow() {
   // Step 4: Reiniciar Simulación
   const handleReset = () => {
     setCurrentStep(1);
+    setDistanciaMetros(12);
     setGpsConfirmed(false);
     setCheckInTime("09:42:15");
     setScannedItems([]);
@@ -464,22 +474,36 @@ export function MobileFlow() {
                     <span className="text-[#019DF4] font-bold">WGS-84:</span> -11.8542, -77.0345
                   </div>
                   <div className="absolute bottom-2.5 right-2.5 bg-[#0B2742]/90 backdrop-blur-md px-2 py-0.5 rounded text-[10px] font-mono text-white">
-                    Distancia: <span className="text-[#00A86B] font-bold">12 m</span>
+                    Distancia: <span className="text-[#00A86B] font-bold">{distanciaMetros} m</span>
                   </div>
                 </div>
 
                 {/* Alerta Verde de Validación */}
-                <div className="p-3 bg-[#E6F6F0] border-2 border-[#00A86B] rounded-2xl flex items-start gap-2.5 text-[#00A86B] shadow-sm animate-in fade-in">
-                  <CheckCircle2 className="w-5 h-5 text-[#00A86B] shrink-0 mt-0.5" />
-                  <div className="text-xs">
-                    <p className="font-bold font-grotesk text-[#00A86B]">
-                      ✓ GPS Validado: Estás a 12 metros del Nodo NOD-CARABAYLLO-04
-                    </p>
-                    <p className="text-[11px] text-slate-600 mt-0.5">
-                      Coordenadas satelitales en rango de tolerancia (&lt; 50m). Autorizado para iniciar trabajos.
-                    </p>
+                {isGpsValido ? (
+                  <div className="p-3 bg-[#E6F6F0] border-2 border-[#00A86B] rounded-2xl flex items-start gap-2.5 text-[#00A86B] shadow-sm animate-in fade-in">
+                    <CheckCircle2 className="w-5 h-5 text-[#00A86B] shrink-0 mt-0.5" />
+                    <div className="text-xs">
+                      <p className="font-bold font-grotesk text-[#00A86B]">
+                        ✓ GPS Validado: Estás a {distanciaMetros} metros del Nodo NOD-CARABAYLLO-04
+                      </p>
+                      <p className="text-[11px] text-slate-600 mt-0.5">
+                        Coordenadas satelitales en rango de tolerancia (&lt; 50m). Autorizado para iniciar trabajos.
+                      </p>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="p-3 bg-rose-50 border-2 border-rose-300 rounded-2xl flex items-start gap-2.5 text-rose-800 shadow-sm animate-in fade-in">
+                    <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+                    <div className="text-xs">
+                      <p className="font-bold font-grotesk text-rose-700">
+                        ✗ Fuera de rango GPS ({distanciaMetros}m)
+                      </p>
+                      <p className="text-[11px] text-slate-600 mt-0.5">
+                        Debes acercarte a menos de 50 metros del nodo para realizar el check-in.
+                      </p>
+                    </div>
+                  </div>
+                )}
 
                 {/* Info Card */}
                 <div className="p-3 bg-[#F4F6F9] rounded-xl border border-slate-200 text-xs font-mono space-y-1">
@@ -492,13 +516,42 @@ export function MobileFlow() {
                     <span className="text-slate-800 font-bold" suppressHydrationWarning>{checkInTime}</span>
                   </div>
                 </div>
+
+                {/* Simulador de Distancia */}
+                <div className="p-2 bg-slate-100 rounded-xl text-[10px] font-mono flex items-center justify-between">
+                  <span className="text-slate-500">Prueba GPS:</span>
+                  <div className="flex gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setDistanciaMetros(12)}
+                      className={`px-2 py-0.5 rounded font-bold ${
+                        distanciaMetros === 12
+                          ? "bg-[#00A86B] text-white"
+                          : "bg-white text-slate-700 border"
+                      }`}
+                    >
+                      12m (En Rango)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDistanciaMetros(80)}
+                      className={`px-2 py-0.5 rounded font-bold ${
+                        distanciaMetros === 80
+                          ? "bg-rose-600 text-white"
+                          : "bg-white text-slate-700 border"
+                      }`}
+                    >
+                      80m (Fuera)
+                    </button>
+                  </div>
+                </div>
               </div>
 
               {/* Botón Interactivo: Confirmar Arribo al Sitio */}
               <button
                 type="button"
                 onClick={handleConfirmArrival}
-                disabled={isLoading || gpsConfirmed}
+                disabled={isLoading || !isGpsValido || gpsConfirmed}
                 className="w-full py-3.5 px-4 bg-[#0B2742] hover:bg-[#061625] text-white font-bold rounded-2xl shadow-lg shadow-[#0B2742]/20 flex items-center justify-center gap-2 text-sm transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer"
               >
                 {isLoading ? (
@@ -743,7 +796,7 @@ export function MobileFlow() {
                 <div className="p-2.5 bg-[#F4F6F9] rounded-xl text-[11px] font-mono text-slate-600 space-y-1">
                   <div className="flex justify-between">
                     <span>GPS Arribo Validado:</span>
-                    <span className="text-[#00A86B] font-bold">12m (OK)</span>
+                    <span className="text-[#00A86B] font-bold">{distanciaMetros}m (OK)</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Repuestos Consumidos:</span>

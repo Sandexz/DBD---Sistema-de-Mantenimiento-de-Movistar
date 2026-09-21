@@ -1,35 +1,3 @@
-"use client";
-
-import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import {
-  Bell,
-  AlertTriangle,
-  Clock,
-  MapPin,
-  RefreshCw,
-  TrendingUp,
-  Radio,
-  Server,
-  Sliders,
-  Search,
-  History,
-  CheckCircle2,
-  HardHat,
-  ArrowRight,
-  Filter,
-} from "lucide-react";
-import { Topbar } from "@/components/layout/topbar";
-import { Sidebar } from "@/components/layout/sidebar";
-import { KpiCard, KpiData } from "@/components/kpi-card";
-import { MapPlaceholder } from "@/components/map-placeholder";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-
-// Import mock data directly
-import kpisData from "@/mock-data/kpis.json";
-import alertasData from "@/mock-data/alertas.json";
-
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<string>("general");
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -57,7 +25,7 @@ export default function DashboardPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#F4F6F9] text-slate-800 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 flex flex-col font-sans">
       <Topbar />
 
       <div className="flex flex-1">
@@ -98,6 +66,12 @@ export default function DashboardPage() {
                 Actualizar Telemetría
               </Button>
 
+              <Link href="/gerencial/consulta/disponibilidad">
+                <Button variant="outline" size="sm" className="font-sans text-xs">
+                  <span>Módulo Gerencial</span>
+                </Button>
+              </Link>
+
               <Link href="/ots">
                 <Button variant="orange" size="sm" className="font-sans">
                   <span>+ Despachar OT</span>
@@ -120,9 +94,9 @@ export default function DashboardPage() {
                   <span className="text-slate-500 block mb-1">Umbral Óptimo NAP:</span>
                   <span className="text-emerald-600 font-bold text-lg">-15 a -22 dBm</span>
                 </div>
-                <div className="bg-orange-50 p-4 rounded-xl border border-orange-200/60">
-                  <span className="text-[#FF6A13] block mb-1">Alerta de Atenuación:</span>
-                  <span className="text-[#FF6A13] font-bold text-lg">&lt; -27.0 dBm</span>
+                <div className="bg-rose-50 p-4 rounded-xl border border-rose-200">
+                  <span className="text-rose-600 block mb-1">Alerta de Atenuación:</span>
+                  <span className="text-rose-600 font-bold text-lg">&lt; -27.0 dBm</span>
                 </div>
                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
                   <span className="text-slate-500 block mb-1">SLA Corte FO Troncal:</span>
@@ -146,8 +120,8 @@ export default function DashboardPage() {
                   <p className="font-bold text-slate-800">POP-01 Centro</p>
                   <p className="text-slate-500 font-mono text-[11px]">12,400 Clientes · OK</p>
                 </div>
-                <div className="p-3 bg-orange-50 rounded-xl border border-orange-200/60">
-                  <p className="font-bold text-[#FF6A13]">POP-02 Norte</p>
+                <div className="p-3 bg-rose-50 rounded-xl border border-rose-200">
+                  <p className="font-bold text-rose-600">POP-02 Norte</p>
                   <p className="text-slate-500 font-mono text-[11px]">4,200 Clientes · ALERTA</p>
                 </div>
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
@@ -239,7 +213,7 @@ export default function DashboardPage() {
                     onClick={() => setFilterSeverity("CRITICAL")}
                     className={`px-1.5 py-0.5 text-[10px] font-mono rounded transition-colors ${
                       filterSeverity === "CRITICAL"
-                        ? "bg-orange-50 text-[#FF6A13] font-semibold"
+                        ? "bg-rose-50 text-rose-600 font-semibold"
                         : "text-slate-400 hover:text-slate-700"
                     }`}
                   >
@@ -258,7 +232,7 @@ export default function DashboardPage() {
                       key={alerta.id}
                       className={`p-3 rounded-xl border transition-all text-xs space-y-1.5 ${
                         isCritical
-                          ? "bg-orange-50 border-orange-200/70 hover:border-orange-300"
+                          ? "bg-rose-50 border-rose-200 hover:border-rose-300"
                           : "bg-slate-50 border-slate-200 hover:border-[#019DF4]/40"
                       }`}
                     >
@@ -294,11 +268,11 @@ export default function DashboardPage() {
 
                       {/* SLA and Status */}
                       <div className={`pt-2 border-t flex items-center justify-between text-[10px] font-mono ${
-                        isCritical ? "border-orange-200" : "border-slate-200"
+                        isCritical ? "border-rose-200" : "border-slate-200"
                       }`}>
                         <span
                           className={
-                            isCritical ? "text-[#FF6A13] font-bold" : "text-slate-500"
+                            isCritical ? "text-rose-600 font-bold" : "text-slate-500"
                           }
                         >
                           SLA Restante: {alerta.slaRemaining}

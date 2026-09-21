@@ -46,7 +46,7 @@ export function KpiCard({ kpi }: KpiCardProps) {
     <div
       className={`relative overflow-hidden rounded-2xl border bg-white p-5 transition-all duration-200 shadow-sm hover:shadow-md ${
         isCritical
-          ? "border-orange-200 hover:border-orange-300"
+          ? "border-rose-200 hover:border-rose-300"
           : "border-slate-200 hover:border-[#019DF4]/40"
       }`}
     >
@@ -54,10 +54,10 @@ export function KpiCard({ kpi }: KpiCardProps) {
       <div
         className={`absolute top-0 left-0 right-0 h-1 rounded-t-2xl ${
           isCritical
-            ? "bg-[#FF6A13]"
+            ? "bg-rose-500"
             : isOk
-            ? "bg-[#019DF4]"
-            : "bg-[#019DF4]/60"
+            ? "bg-[#5BC500]"
+            : "bg-[#019DF4]"
         }`}
       />
 
@@ -67,8 +67,8 @@ export function KpiCard({ kpi }: KpiCardProps) {
           <div
             className={`p-2 rounded-xl border ${
               isCritical
-                ? "bg-orange-50 border-orange-100 text-[#FF6A13]"
-                : "bg-[#EBF5FF] border-[#019DF4]/20 text-[#019DF4]"
+                ? "bg-rose-50 border-rose-200 text-rose-600"
+                : "bg-[#E5F4FD] border-[#B8E2FB] text-[#019DF4]"
             }`}
           >
             <Icon className="w-5 h-5" />
@@ -79,31 +79,33 @@ export function KpiCard({ kpi }: KpiCardProps) {
                 {kpi.segment}
               </span>
               <Badge
-                variant={isCritical ? "orange" : "cyan"}
+                variant={isCritical ? "red" : isOk ? "movistar" : "blue"}
                 size="sm"
                 pulse={isCritical}
               >
                 {kpi.statusLabel}
               </Badge>
             </div>
-            <h3 className="text-sm font-bold text-slate-800 font-grotesk mt-1">{kpi.title}</h3>
+            <h3 className="text-sm font-bold text-slate-900 font-grotesk mt-1">{kpi.title}</h3>
           </div>
         </div>
 
         {/* Status dot */}
-        <div className={`flex items-center gap-1.5 px-2 py-1 rounded-full border ${
-          isCritical ? "bg-orange-50 border-orange-200" : "bg-[#EBF5FF] border-[#019DF4]/20"
+        <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border ${
+          isCritical ? "bg-rose-50 border-rose-200" : "bg-slate-50 border-slate-200"
         }`}>
           <span
             className={`h-2.5 w-2.5 rounded-full ${
               isCritical
-                ? "bg-[#FF6A13] animate-ping"
+                ? "bg-rose-500 animate-ping"
+                : isOk
+                ? "bg-[#5BC500]"
                 : "bg-[#019DF4]"
             }`}
           />
           <span
             className={`text-[10px] font-mono font-bold ${
-              isCritical ? "text-[#FF6A13]" : "text-[#019DF4]"
+              isCritical ? "text-rose-600" : isOk ? "text-[#3F8500]" : "text-[#0070B8]"
             }`}
           >
             {isCritical ? "ALERTA" : "OK"}
@@ -111,7 +113,7 @@ export function KpiCard({ kpi }: KpiCardProps) {
         </div>
       </div>
 
-      {/* Primary Value */}
+      {/* Primary Value Display */}
       <div className="flex items-baseline justify-between pb-3 border-b border-slate-100">
         <div>
           <span className="text-3xl font-extrabold text-slate-900 font-grotesk tracking-tight">
@@ -124,7 +126,7 @@ export function KpiCard({ kpi }: KpiCardProps) {
         {kpi.trend && (
           <span
             className={`text-xs font-mono font-medium flex items-center gap-1 ${
-              isCritical ? "text-[#FF6A13]" : "text-[#019DF4]"
+              isCritical ? "text-rose-600" : "text-[#3F8500]"
             }`}
           >
             {isCritical ? (
@@ -154,9 +156,9 @@ export function KpiCard({ kpi }: KpiCardProps) {
 
         {kpi.id === "planta-externa" && (
           <>
-            <div className="bg-orange-50 p-2 rounded-lg border border-orange-200/60">
-              <span className="text-[#FF6A13] block text-[11px] font-semibold">Cortes de Fibra</span>
-              <span className="font-mono font-bold text-[#FF6A13]">{kpi.fiberCuts} críticos</span>
+            <div className="bg-rose-50/70 p-2 rounded-lg border border-rose-200">
+              <span className="text-rose-700 block text-[11px] font-semibold">Cortes de Fibra</span>
+              <span className="font-mono font-bold text-rose-600">{kpi.fiberCuts} críticos</span>
             </div>
             <div className="bg-slate-50 p-2 rounded-lg border border-slate-200">
               <span className="text-slate-500 block text-[11px]">Cuadrillas Campo</span>
@@ -173,7 +175,7 @@ export function KpiCard({ kpi }: KpiCardProps) {
             </div>
             <div className="bg-slate-50 p-2 rounded-lg border border-slate-200">
               <span className="text-slate-500 block text-[11px]">MTTR Promedio</span>
-              <span className="font-mono font-bold text-slate-800">{kpi.mttr}</span>
+              <span className="font-mono font-bold text-[#3F8500]">{kpi.mttr}</span>
             </div>
           </>
         )}

@@ -13,64 +13,85 @@ import {
   Eye,
   EyeOff,
   ArrowRight,
-  Wifi,
   Radio,
   Lock,
+  User,
+  CheckCircle2,
+  Loader2,
+  BarChart3,
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { useUserProfile, UserRole } from "@/components/layout/user-context";
 
-const quickProfiles = [
+const quickProfiles: {
+  id: UserRole;
+  name: string;
+  roleTitle: string;
+  password: string;
+  icon: any;
+  color: string;
+  bg: string;
+  border: string;
+  defaultRoute: string;
+}[] = [
   {
-    id: "supervisor",
+    id: "NOC",
     name: "Ing. Carlos Mendoza",
-    role: "Supervisor NOC · Turno A",
+    roleTitle: "Ingeniero NOC Central",
     password: "noc2026",
     icon: ShieldCheck,
     color: "text-[#019DF4]",
-    bg: "bg-[#EBF5FF]",
-    border: "border-[#019DF4]/30",
+    bg: "bg-[#E5F4FD]",
+    border: "border-[#B8E2FB]",
+    defaultRoute: "/gerencial/consulta/disponibilidad",
   },
   {
-    id: "tecnico",
+    id: "SUPERVISOR",
+    name: "Ing. Luis Valdivia",
+    roleTitle: "Supervisor de Red / Parámetros",
+    password: "sup2026",
+    icon: ShieldCheck,
+    color: "text-[#019DF4]",
+    bg: "bg-[#E5F4FD]",
+    border: "border-[#B8E2FB]",
+    defaultRoute: "/gerencial/parametros/activos",
+  },
+  {
+    id: "FIELD",
     name: "Téc. Diego Quispe",
-    role: "Técnico Campo · Cuadrilla Alfa 01",
+    roleTitle: "Técnico de Campo · Cuadrilla Alfa 01",
     password: "campo2026",
     icon: HardHat,
-    color: "text-[#00A86B]",
-    bg: "bg-[#E6F6F0]",
-    border: "border-[#00A86B]/30",
-  },
-  {
-    id: "auditor",
-    name: "Lic. Ana Torres",
-    role: "Auditora Batch · Control Calidad",
-    password: "audit2026",
-    icon: Layers,
-    color: "text-[#FF6A13]",
-    bg: "bg-orange-50",
-    border: "border-orange-200",
+    color: "text-[#5BC500]",
+    bg: "bg-[#F0F9E8]",
+    border: "border-[#C6EE94]",
+    defaultRoute: "/mobile",
   },
 ];
 
 const quickLinks = [
   { href: "/dashboard", label: "Dashboard NOC", icon: LayoutDashboard, color: "text-[#019DF4]" },
-  { href: "/ots", label: "Gestión OTs", icon: ClipboardList, color: "text-slate-600" },
-  { href: "/mobile", label: "App de Campo", icon: Smartphone, color: "text-[#00A86B]" },
-  { href: "/batch", label: "Módulo Batch", icon: Layers, color: "text-[#FF6A13]" },
+  { href: "/gerencial/consulta/disponibilidad", label: "Módulo Gerencial", icon: BarChart3, color: "text-[#5BC500]" },
+  { href: "/operativo/ots", label: "Gestión OTs Operativas", icon: ClipboardList, color: "text-slate-600" },
+  { href: "/batch", label: "Módulo Batch", icon: Layers, color: "text-amber-500" },
+  { href: "/mobile", label: "App de Campo", icon: Smartphone, color: "text-[#5BC500]" },
 ];
 
 export default function LoginPage() {
   const router = useRouter();
-  const [selectedProfile, setSelectedProfile] = useState<string | null>(null);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const { setRole } = useUserProfile();
+  const [selectedRole, setSelectedRole] = useState<UserRole>("NOC");
+  const [username, setUsername] = useState("Ing. Carlos Mendoza");
+  const [password, setPassword] = useState("noc2026");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [error, setError] = useState("");
 
-  const handleSelectProfile = (profile: typeof quickProfiles[0]) => {
-    setSelectedProfile(profile.id);
-    setUsername(profile.name);
-    setPassword(profile.password);
+  const handleSelectProfile = (p: typeof quickProfiles[0]) => {
+    setSelectedRole(p.id);
+    setUsername(p.name);
+    setPassword(p.password);
     setError("");
   };
 
@@ -81,210 +102,209 @@ export default function LoginPage() {
       return;
     }
     setIsLoading(true);
+    setStatusMessage("Autenticando credenciales en directorio activo Movistar...");
     setError("");
+
+    // Persistir rol en UserContext global
+    setRole(selectedRole);
+
     setTimeout(() => {
-      setIsLoading(false);
-      router.push("/dashboard");
-    }, 900);
+      setStatusMessage("Perfil verificado. Redirigiendo...");
+      setTimeout(() => {
+        const found = quickProfiles.find((p) => p.id === selectedRole);
+        router.push(found ? found.defaultRoute : "/dashboard");
+      }, 500);
+    }, 800);
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4 font-sans">
-      {/* Subtle background pattern */}
-      <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:24px_24px] opacity-60 pointer-events-none" />
+    <div className="min-h-screen bg-slate-100 flex flex-col justify-between p-4 sm:p-6 lg:p-8 relative overflow-hidden font-sans">
+      {/* Background radial dots */}
+      <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] opacity-60 pointer-events-none" />
 
-      <div className="relative w-full max-w-md">
-        {/* Main Card */}
-        <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+      {/* Top Header */}
+      <header className="flex items-center justify-between z-10 max-w-5xl mx-auto w-full">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-[#0B2742] text-[#019DF4] border border-[#019DF4]/30 shadow-sm flex items-center justify-center font-grotesk font-extrabold text-lg">
+            M
+          </div>
+          <div>
+            <div className="flex items-center gap-1.5">
+              <span className="font-grotesk font-extrabold text-xl tracking-tight text-slate-900">
+                Movistar Perú <span className="text-[#019DF4] text-base font-bold">SGMR</span>
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 font-sans leading-none">
+              Sistema de Gestión y Mantenimiento de Redes
+            </p>
+          </div>
+        </div>
 
-          {/* Header — Navy brand bar */}
-          <div className="bg-[#0B2742] px-8 py-7">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-[#019DF4] flex items-center justify-center font-bold text-white text-lg shadow-sm">
-                M
-              </div>
+        <Badge variant="movistar" size="sm" pulse>
+          PLATAFORMA MOVISTAR ONLINE
+        </Badge>
+      </header>
+
+      {/* Main Login Card */}
+      <main className="flex-1 flex items-center justify-center z-10 py-8">
+        <div className="w-full max-w-md bg-white border border-slate-200 rounded-3xl shadow-xl overflow-hidden relative">
+          {/* Brand header */}
+          <div className="bg-[#0B2742] px-7 py-6 text-white">
+            <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-xl font-bold text-white tracking-tight">
-                  Movistar Perú
-                </h1>
-                <p className="text-[11px] text-[#019DF4] font-mono">
-                  Sistema de Gestión y Mantenimiento de Redes
+                <h1 className="text-xl font-bold font-grotesk">Control de Acceso</h1>
+                <p className="text-xs text-slate-300 font-sans mt-0.5">
+                  Ingreso a Supervisión Gerencial y Despacho Operativo
                 </p>
               </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 text-[11px] font-mono font-semibold text-[#00A86B] bg-[#00A86B]/15 px-2.5 py-0.5 rounded-full border border-[#00A86B]/30">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#00A86B] animate-ping" />
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-mono font-semibold text-[#5BC500] bg-[#5BC500]/15 px-2.5 py-0.5 rounded-full border border-[#5BC500]/30">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#5BC500] animate-ping" />
                 NOC ONLINE
-              </span>
-              <span className="text-[11px] font-mono text-slate-400 bg-[#061625] px-2 py-0.5 rounded border border-white/10">
-                SGMR v2.4
               </span>
             </div>
           </div>
 
-          {/* Form body */}
-          <div className="px-8 py-7 space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-slate-800 tracking-tight">
-                Control de Acceso
-              </h2>
-              <p className="text-sm text-slate-500 mt-1">
-                Selecciona tu perfil o ingresa tus credenciales
-              </p>
-            </div>
-
+          <div className="p-6 sm:p-7 space-y-5">
             {/* Quick Profile Selector */}
             <div className="space-y-2">
               <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Acceso Rápido por Perfil
+                Acceso Rápido por Perfil:
               </p>
-              <div className="space-y-2">
-                {quickProfiles.map((profile) => {
-                  const Icon = profile.icon;
-                  const isSelected = selectedProfile === profile.id;
+              <div className="grid grid-cols-3 gap-2">
+                {quickProfiles.map((p) => {
+                  const Icon = p.icon;
+                  const isSelected = selectedRole === p.id;
                   return (
                     <button
-                      key={profile.id}
+                      key={p.id}
                       type="button"
-                      onClick={() => handleSelectProfile(profile)}
-                      className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left ${
+                      onClick={() => handleSelectProfile(p)}
+                      className={`p-2.5 rounded-xl border transition-all text-center flex flex-col items-center justify-center gap-1 ${
                         isSelected
-                          ? `${profile.bg} ${profile.border} shadow-sm`
-                          : "bg-slate-50 border-slate-200 hover:bg-sky-50 hover:border-sky-200"
+                          ? `${p.bg} ${p.border} ring-1 ring-[#019DF4] shadow-sm`
+                          : "bg-slate-50 border-slate-200 hover:bg-slate-100"
                       }`}
                     >
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                        isSelected ? profile.bg : "bg-white border border-slate-200"
-                      }`}>
-                        <Icon className={`w-4 h-4 ${isSelected ? profile.color : "text-slate-400"}`} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className={`text-xs font-semibold truncate ${isSelected ? "text-slate-800" : "text-slate-700"}`}>
-                          {profile.name}
-                        </p>
-                        <p className="text-[11px] text-slate-400 truncate">{profile.role}</p>
-                      </div>
-                      {isSelected && (
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${profile.bg} ${profile.color} border ${profile.border}`}>
-                          Activo
-                        </span>
-                      )}
+                      <Icon className={`w-4 h-4 ${isSelected ? p.color : "text-slate-400"}`} />
+                      <span className={`text-[11px] font-bold ${isSelected ? "text-slate-900" : "text-slate-600"}`}>
+                        {p.id === "NOC" ? "Ing. NOC" : p.id === "SUPERVISOR" ? "Supervisor" : "Téc. Campo"}
+                      </span>
                     </button>
                   );
                 })}
               </div>
             </div>
 
-            {/* Divider */}
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-200" />
-              </div>
-              <div className="relative flex justify-center text-xs">
-                <span className="bg-white px-3 text-slate-400 font-medium">o ingresa manualmente</span>
-              </div>
-            </div>
-
             {/* Login Form */}
-            <form onSubmit={handleLogin} className="space-y-4">
-              {/* Username */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-700">
-                  Usuario / Nombre
+            <form onSubmit={handleLogin} className="space-y-3.5">
+              <div className="space-y-1 text-xs">
+                <label className="text-slate-700 font-semibold flex items-center gap-1.5">
+                  <User className="w-3.5 h-3.5 text-[#019DF4]" />
+                  <span>Usuario (ID / Matrícula)</span>
                 </label>
                 <input
                   type="text"
                   value={username}
-                  onChange={(e) => { setUsername(e.target.value); setSelectedProfile(null); }}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
                   placeholder="Ej: Ing. Carlos Mendoza"
-                  className="w-full p-3 border border-slate-300 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-400 bg-white transition-all"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-mono text-xs focus:outline-none focus:border-[#019DF4] focus:ring-1 focus:ring-[#019DF4]"
                 />
               </div>
 
-              {/* Password */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-700 flex items-center justify-between">
-                  <span>Contraseña</span>
-                  <span className="text-[11px] text-slate-400 font-normal font-mono">
-                    Demo: noc2026 / campo2026
+              <div className="space-y-1 text-xs">
+                <label className="text-slate-700 font-semibold flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    <Lock className="w-3.5 h-3.5 text-[#019DF4]" />
+                    <span>Contraseña</span>
                   </span>
+                  <span className="text-[10px] text-slate-400 font-mono">Demo: {password}</span>
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                   <input
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    required
                     placeholder="••••••••"
-                    className="w-full pl-9 pr-10 py-3 border border-slate-300 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-400 bg-white transition-all"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-3 pr-9 py-2 text-slate-900 font-mono text-xs focus:outline-none focus:border-[#019DF4] focus:ring-1 focus:ring-[#019DF4]"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                   >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                   </button>
                 </div>
               </div>
 
-              {/* Error message */}
               {error && (
-                <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                <p className="text-xs text-rose-600 bg-rose-50 border border-rose-200 rounded-lg px-3 py-1.5">
                   {error}
                 </p>
               )}
 
-              {/* Submit Button */}
+              {statusMessage && (
+                <div className="p-2.5 bg-[#F0F9E8] border border-[#C6EE94] rounded-xl flex items-center gap-2 text-[#3F8500] text-xs font-mono">
+                  {isLoading ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />
+                  ) : (
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#5BC500] shrink-0" />
+                  )}
+                  <span>{statusMessage}</span>
+                </div>
+              )}
+
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-[#019DF4] hover:bg-sky-600 active:scale-[0.98] text-white font-semibold py-3 rounded-xl shadow-md shadow-[#019DF4]/20 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                className="w-full bg-[#019DF4] hover:bg-[#0081CB] active:scale-[0.98] text-white font-bold text-xs py-2.5 rounded-xl shadow-md shadow-[#019DF4]/20 transition-all flex items-center justify-center gap-2 disabled:opacity-70 cursor-pointer"
               >
                 {isLoading ? (
                   <>
-                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <Loader2 className="w-4 h-4 animate-spin" />
                     <span>Verificando acceso...</span>
                   </>
                 ) : (
                   <>
-                    <span>Ingresar al Sistema</span>
+                    <span>Ingresar al Sistema SGMR</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
               </button>
             </form>
-          </div>
 
-          {/* Footer — Quick module links */}
-          <div className="px-8 py-5 bg-slate-50 border-t border-slate-200">
-            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-3">
-              Acceso directo a módulos
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              {quickLinks.map((link) => {
-                const Icon = link.icon;
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white border border-slate-200 hover:border-[#019DF4]/40 hover:shadow-sm text-xs font-medium text-slate-600 hover:text-slate-900 transition-all"
-                  >
-                    <Icon className={`w-3.5 h-3.5 ${link.color} shrink-0`} />
-                    <span className="truncate">{link.label}</span>
-                  </Link>
-                );
-              })}
+            {/* Direct module navigation links */}
+            <div className="pt-3 border-t border-slate-100">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+                Accesos directos:
+              </p>
+              <div className="grid grid-cols-2 gap-1.5">
+                {quickLinks.map((link) => {
+                  const Icon = link.icon;
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200 hover:border-[#019DF4]/40 hover:bg-white text-[11px] font-medium text-slate-700 transition-all truncate"
+                    >
+                      <Icon className={`w-3.5 h-3.5 ${link.color} shrink-0`} />
+                      <span className="truncate">{link.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
+      </main>
 
-        {/* Bottom caption */}
-        <p className="text-center text-[11px] text-slate-400 mt-5 font-mono">
-          © 2026 Movistar Perú · SGMR v2.4 · Acceso restringido a personal autorizado
-        </p>
-      </div>
+      {/* Footer System Info */}
+      <footer className="text-center text-xs text-slate-400 font-mono z-10 max-w-5xl mx-auto w-full flex flex-col sm:flex-row items-center justify-between gap-2">
+        <span>© 2026 Telefónica del Perú S.A.A. · SGMR v3.0</span>
+        <span>Supervisión Gerencial & Despacho Operativo NOC</span>
+      </footer>
     </div>
   );
 }

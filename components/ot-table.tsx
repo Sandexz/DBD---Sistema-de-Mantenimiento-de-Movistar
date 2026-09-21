@@ -9,14 +9,8 @@ import {
   HardHat,
   ChevronRight,
   Sparkles,
-  X,
-  FileText,
-  Copy,
-  Check,
-  Eye,
-  SlidersHorizontal,
 } from "lucide-react";
-import { OtDetailModal } from "./ot-detail-modal";
+import { Badge } from "./ui/badge";
 
 export interface OtRecord {
   id: string;
@@ -40,147 +34,76 @@ interface OtTableProps {
 export function OtTable({ ots }: OtTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCrit, setFilterCrit] = useState("ALL");
-  const [filterStatus, setFilterStatus] = useState("ALL");
-  const [selectedOt, setSelectedOt] = useState<OtRecord | null>(null);
-  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const filteredOts = ots.filter((ot) => {
     const matchesSearch =
       ot.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
       ot.infra.toLowerCase().includes(searchTerm.toLowerCase()) ||
       ot.crew.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      ot.origin.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      ot.materials?.toLowerCase().includes(searchTerm.toLowerCase());
+      ot.origin.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesCrit =
       filterCrit === "ALL" || ot.criticality === filterCrit;
 
-    const matchesStatus =
-      filterStatus === "ALL" || ot.status === filterStatus;
-
-    return matchesSearch && matchesCrit && matchesStatus;
+    return matchesSearch && matchesCrit;
   });
 
-  const handleCopyId = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    navigator.clipboard?.writeText(id);
-    setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2000);
-  };
-
   return (
-    <div className="bg-white border border-slate-200/90 rounded-3xl shadow-sm overflow-hidden text-slate-800">
-      {/* Search & Filter Top Bar */}
-      <div className="p-5 sm:p-6 border-b border-slate-100 flex flex-col gap-4 bg-slate-50/50">
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-          {/* Apple-style minimalist search input */}
-          <div className="relative flex-1 max-w-md">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Buscar por ID de ticket, nodo, cuadrilla u origen..."
-              className="w-full pl-10 pr-9 py-2 bg-white border border-slate-200/80 rounded-2xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#0066CC] focus:ring-2 focus:ring-blue-100 shadow-sm transition-all font-sans"
-            />
-            {searchTerm && (
-              <button
-                onClick={() => setSearchTerm("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </div>
-
-          {/* Quick Count Badge */}
-          <div className="flex items-center gap-2 self-end sm:self-center text-xs font-mono text-slate-500">
-            <span>Mostrando {filteredOts.length} de {ots.length} OTs</span>
-          </div>
+    <div className="bg-[#121418] border border-[#1E232B] rounded-xl overflow-hidden shadow-card-dark">
+      {/* Search and Filters Header */}
+      <div className="p-4 border-b border-[#1E232B] bg-[#0B0C0E]/70 flex flex-col sm:flex-row items-center justify-between gap-3">
+        {/* Quick Search */}
+        <div className="relative w-full sm:w-80">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Buscar por ID, Nodo, Cuadrilla u Origen..."
+            className="w-full pl-9 pr-3 py-1.5 bg-[#121418] border border-[#1E232B] rounded-md text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-[#00AEEF]"
+          />
         </div>
 
-        {/* Filter Pills */}
-        <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
-          {/* Criticality Filter Chips */}
-          <div className="flex flex-wrap items-center gap-1.5 text-xs">
-            <span className="text-[11px] font-semibold text-slate-400 mr-1 uppercase tracking-wider">
-              Criticidad:
-            </span>
-            {[
-              { id: "ALL", label: "Todas" },
-              { id: "CRÍTICA", label: "Crítica", color: "text-[#FF6A13]" },
-              { id: "ALTA", label: "Alta", color: "text-[#FF6A13]" },
-              { id: "MEDIA", label: "Media", color: "text-[#0066CC]" },
-              { id: "BAJA", label: "Baja", color: "text-slate-600" },
-            ].map((f) => (
-              <button
-                key={f.id}
-                onClick={() => setFilterCrit(f.id)}
-                className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
-                  filterCrit === f.id
-                    ? f.id === "CRÍTICA" || f.id === "ALTA"
-                      ? "bg-[#FF6A13] text-white shadow-sm"
-                      : "bg-[#0A2E5C] text-white shadow-sm"
-                    : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/80"
-                }`}
-              >
-                {f.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Status Filter Chips */}
-          <div className="flex flex-wrap items-center gap-1.5 text-xs">
-            <span className="text-[11px] font-semibold text-slate-400 mr-1 uppercase tracking-wider">
-              Estado:
-            </span>
-            {[
-              { id: "ALL", label: "Todos" },
-              { id: "EN RUTA", label: "En Ruta" },
-              { id: "EN ATENCIÓN", label: "En Atención" },
-              { id: "PENDIENTE", label: "Pendiente" },
-              { id: "CERRADA", label: "Cerrada" },
-            ].map((st) => (
-              <button
-                key={st.id}
-                onClick={() => setFilterStatus(st.id)}
-                className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
-                  filterStatus === st.id
-                    ? "bg-slate-800 text-white shadow-sm"
-                    : "bg-white text-slate-500 hover:bg-slate-100 border border-slate-200/80"
-                }`}
-              >
-                {st.label}
-              </button>
-            ))}
-          </div>
+        {/* Filter Badges */}
+        <div className="flex items-center gap-1.5 w-full sm:w-auto overflow-x-auto text-xs">
+          <span className="text-slate-400 text-[11px] font-mono mr-1">
+            Filtrar:
+          </span>
+          {["ALL", "CRÍTICA", "ALTA", "MEDIA", "BAJA"].map((f) => (
+            <button
+              key={f}
+              onClick={() => setFilterCrit(f)}
+              className={`px-2.5 py-1 rounded text-[11px] font-mono transition-colors ${
+                filterCrit === f
+                  ? "bg-[#0A2E5C] text-[#00AEEF] border border-[#00AEEF]/40 font-semibold"
+                  : "bg-[#0B0C0E] text-slate-400 hover:text-white border border-[#1E232B]"
+              }`}
+            >
+              {f === "ALL" ? "Todas" : f}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Table Content */}
+      {/* Table Container */}
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse text-xs">
           <thead>
-            <tr className="border-b border-slate-100 text-[11px] font-semibold uppercase tracking-wider text-slate-400 bg-slate-50/70">
-              <th className="py-3.5 px-5">ID de Orden</th>
-              <th className="py-3.5 px-4">Criticidad / SLA</th>
-              <th className="py-3.5 px-4">Nodo / Ubicación</th>
-              <th className="py-3.5 px-4">Origen</th>
-              <th className="py-3.5 px-4">Cuadrilla Asignada</th>
-              <th className="py-3.5 px-4">Estado</th>
-              <th className="py-3.5 px-5 text-right">Acción</th>
+            <tr className="bg-[#0A2E5C]/40 border-b border-[#1E232B] text-[11px] font-mono text-slate-400 uppercase tracking-wider">
+              <th className="py-3 px-4">ID de Orden</th>
+              <th className="py-3 px-4">Criticidad / SLA</th>
+              <th className="py-3 px-4">Nodo / Infraestructura</th>
+              <th className="py-3 px-4">Origen</th>
+              <th className="py-3 px-4">Cuadrilla Asignada</th>
+              <th className="py-3 px-4">Estado Operativo</th>
+              <th className="py-3 px-4 text-right">Acción</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-[#1E232B]">
             {filteredOts.length === 0 ? (
               <tr>
-                <td colSpan={7} className="py-12 text-center text-slate-400">
-                  <div className="max-w-xs mx-auto space-y-2">
-                    <p className="font-semibold text-slate-700">No se encontraron órdenes</p>
-                    <p className="text-xs text-slate-400">
-                      Prueba con otro término de búsqueda o restablece los filtros.
-                    </p>
-                  </div>
+                <td colSpan={7} className="py-8 text-center text-slate-500 font-mono">
+                  No se encontraron órdenes con el criterio especificado.
                 </td>
               </tr>
             ) : (
@@ -190,117 +113,91 @@ export function OtTable({ ots }: OtTableProps) {
                 return (
                   <tr
                     key={ot.id}
-                    onClick={() => setSelectedOt(ot)}
-                    className={`hover:bg-slate-50/80 transition-colors cursor-pointer group ${
-                      ot.isNew ? "bg-blue-50/40" : ""
+                    className={`hover:bg-[#181B21] transition-colors group ${
+                      ot.isNew ? "bg-[#00AEEF]/5 border-l-2 border-l-[#00AEEF]" : ""
                     }`}
                   >
-                    {/* ID & Date */}
-                    <td className="py-4 px-5 whitespace-nowrap">
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono font-bold text-slate-900 group-hover:text-[#0066CC] transition-colors">
-                          {ot.id}
-                        </span>
+                    {/* ID */}
+                    <td className="py-3.5 px-4 font-mono font-bold text-white whitespace-nowrap">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[#00AEEF]">{ot.id}</span>
                         {ot.isNew && (
-                          <span className="inline-flex items-center gap-1 text-[9px] font-bold bg-[#0066CC] text-white px-2 py-0.5 rounded-full shadow-sm">
+                          <span className="inline-flex items-center gap-0.5 text-[9px] font-sans font-bold bg-[#00AEEF] text-[#061D3A] px-1 rounded">
                             <Sparkles className="w-2.5 h-2.5" /> NUEVA
                           </span>
                         )}
-                        <button
-                          type="button"
-                          onClick={(e) => handleCopyId(ot.id, e)}
-                          title="Copiar ID"
-                          className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-slate-600 transition-opacity p-0.5"
-                        >
-                          {copiedId === ot.id ? (
-                            <Check className="w-3 h-3 text-emerald-600" />
-                          ) : (
-                            <Copy className="w-3 h-3" />
-                          )}
-                        </button>
                       </div>
-                      <span className="block text-[11px] text-slate-400 font-mono mt-0.5">
+                      <span className="block text-[10px] text-slate-500 font-normal">
                         {ot.createdAt}
                       </span>
                     </td>
 
                     {/* Criticality & SLA */}
-                    <td className="py-4 px-4 whitespace-nowrap">
-                      <div className="flex flex-col gap-1 items-start">
-                        <span
-                          className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full inline-block ${
-                            isCrit
-                              ? "bg-orange-50 text-[#FF6A13] border border-orange-200/80"
-                              : ot.criticality === "MEDIA"
-                              ? "bg-blue-50 text-[#0066CC] border border-blue-200/80"
-                              : "bg-slate-100 text-slate-600 border border-slate-200/80"
-                          }`}
+                    <td className="py-3.5 px-4 whitespace-nowrap">
+                      <div className="flex flex-col gap-1">
+                        <Badge
+                          variant={isCrit ? "orange" : "cyan"}
+                          size="sm"
+                          pulse={ot.criticality === "CRÍTICA"}
                         >
                           {ot.criticality}
-                        </span>
-                        <span className="text-[11px] font-mono text-slate-500 flex items-center gap-1">
-                          <Clock className="w-3 h-3 text-slate-400" />
-                          {ot.slaHours}
+                        </Badge>
+                        <span className="text-[10px] font-mono text-slate-400 flex items-center gap-1">
+                          <Clock className="w-3 h-3 text-slate-500" />
+                          SLA: {ot.slaHours}
                         </span>
                       </div>
                     </td>
 
                     {/* Infraestructura */}
-                    <td className="py-4 px-4">
-                      <div className="font-semibold text-slate-900 font-sans">
-                        {ot.infra}
-                      </div>
-                      <div className="text-[11px] font-mono text-slate-500 flex items-center gap-1 mt-0.5">
-                        <MapPin className="w-3 h-3 text-[#0066CC]" />
-                        <span>{ot.coordinates}</span>
+                    <td className="py-3.5 px-4">
+                      <div className="font-semibold text-slate-200">{ot.infra}</div>
+                      <div className="text-[10px] font-mono text-slate-400 flex items-center gap-1 mt-0.5">
+                        <MapPin className="w-3 h-3 text-[#00AEEF]" />
+                        {ot.coordinates}
                       </div>
                     </td>
 
                     {/* Origen */}
-                    <td className="py-4 px-4 text-slate-600">
-                      <span className="line-clamp-1">{ot.origin}</span>
+                    <td className="py-3.5 px-4 text-slate-300">
+                      <span>{ot.origin}</span>
                     </td>
 
                     {/* Cuadrilla */}
-                    <td className="py-4 px-4">
-                      <div className="flex items-center gap-1.5 text-slate-800 font-medium">
-                        <HardHat className="w-3.5 h-3.5 text-[#0066CC] shrink-0" />
-                        <span className="truncate max-w-[170px]">{ot.crew}</span>
+                    <td className="py-3.5 px-4">
+                      <div className="flex items-center gap-1.5 text-slate-200">
+                        <HardHat className="w-3.5 h-3.5 text-[#00AEEF] shrink-0" />
+                        <span className="truncate">{ot.crew}</span>
                       </div>
                       {ot.materials && (
-                        <span className="block text-[11px] font-mono text-slate-400 truncate max-w-[170px] mt-0.5">
-                          {ot.materials}
+                        <span className="block text-[10px] font-mono text-slate-400 truncate max-w-[180px]">
+                          Mat: {ot.materials}
                         </span>
                       )}
                     </td>
 
                     {/* Estado */}
-                    <td className="py-4 px-4 whitespace-nowrap">
-                      <span
-                        className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full inline-block ${
+                    <td className="py-3.5 px-4 whitespace-nowrap">
+                      <Badge
+                        variant={
                           ot.status === "EN ATENCIÓN" || ot.status === "EN RUTA"
-                            ? "bg-orange-50 text-[#FF6A13] border border-orange-200/70"
-                            : ot.status === "CERRADA"
-                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200/70"
-                            : "bg-blue-50 text-[#0066CC] border border-blue-200/70"
-                        }`}
+                            ? "orange"
+                            : "cyan"
+                        }
+                        size="sm"
                       >
                         {ot.status}
-                      </span>
+                      </Badge>
                     </td>
 
                     {/* Acciones */}
-                    <td className="py-4 px-5 text-right whitespace-nowrap">
+                    <td className="py-3.5 px-4 text-right whitespace-nowrap">
                       <button
                         type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedOt(ot);
-                        }}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-[#0A2E5C] text-slate-700 hover:text-white text-xs font-semibold transition-all shadow-sm"
+                        className="inline-flex items-center gap-1 text-[11px] font-mono text-[#00AEEF] hover:text-white px-2 py-1 rounded hover:bg-[#0A2E5C] transition-colors"
                       >
-                        <Eye className="w-3.5 h-3.5" />
                         <span>Detalle</span>
+                        <ChevronRight className="w-3.5 h-3.5" />
                       </button>
                     </td>
                   </tr>
@@ -312,17 +209,10 @@ export function OtTable({ ots }: OtTableProps) {
       </div>
 
       {/* Table Footer */}
-      <div className="p-4 px-6 bg-slate-50/70 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500 font-mono">
-        <span>Sincronización en memoria con Centro de Despacho NOC</span>
-        <span className="text-[11px] text-slate-400">Total tickets cargados: {ots.length}</span>
+      <div className="px-4 py-3 bg-[#0B0C0E] border-t border-[#1E232B] flex items-center justify-between text-xs text-slate-400 font-mono">
+        <span>Mostrando {filteredOts.length} de {ots.length} registros en memoria</span>
+        <span className="text-[11px] text-slate-500">Datos mock actualizados</span>
       </div>
-
-      {/* Detail Modal */}
-      <OtDetailModal
-        ot={selectedOt}
-        isOpen={Boolean(selectedOt)}
-        onClose={() => setSelectedOt(null)}
-      />
     </div>
   );
 }

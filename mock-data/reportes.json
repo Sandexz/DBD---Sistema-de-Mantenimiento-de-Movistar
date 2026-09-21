@@ -1,0 +1,80 @@
+{
+  "papeletaAsignacion": {
+    "otId": "OT-2026-9041",
+    "tipoMantenimiento": "CORRECTIVO",
+    "fechaEmision": "2026-09-19 21:35",
+    "prioridad": "P2 - Alta (SLA 2 horas)",
+    "activo": "MUF-TRONCAL-48 (Mufa Troncal 48FO Km 18.5)",
+    "ubicacion": "Panamericana Norte Km 18.5 Poste 104, Los Olivos",
+    "coordenadas": "-12.0124, -77.0642",
+    "contratista": "Lari Contratistas S.A.C.",
+    "cuadrilla": "Cuadrilla Alfa 01",
+    "tecnicoLider": "Luis Ramos (DNI 45892104)",
+    "vehiculo": "Camioneta 4x4 Toyota (BBX-401)",
+    "actividad": "Atención urgente por corte de fibra óptica en cable troncal OSP 48FO. Fusión en mufa aérea y medición OTDR.",
+    "rutaSugerida": "Vía Evitamiento -> Panamericana Norte hasta altura Puente Pro -> Km 18.5 margen derecha.",
+    "insumosAutorizados": [
+      "Mufa Fusión FO 48 Hilos 3M (1 unidad)",
+      "Pigtails SC-APC monomodo 1.5m (4 unidades)",
+      "Tubos termocontraíbles de protección (48 unidades)"
+    ]
+  },
+  "constanciaConformidad": {
+    "numeroConstancia": "CC-2026-08492",
+    "otId": "OT-2026-9038",
+    "tipoMantenimiento": "PREVENTIVO",
+    "fechaCierre": "2026-09-18 17:30",
+    "duracionIntervencion": "1h 45m (Dentro de SLA)",
+    "activo": "DC-LIMA-01 (Data Center Monterrico)",
+    "clienteSolicitante": "Movistar Perú - Jefatura de Infraestructura Crítica NOC",
+    "supervisorAprobador": "Ing. Luis Valdivia (Supervisor NOC Nivel 3)",
+    "cuadrilla": "Cuadrilla Beta 03 (Líder Manuel Silva - Cobra Telecom)",
+    "trabajoRealizado": "Mantenimiento preventivo trimestral a bancos de baterías de respaldo de 48V. Prueba de descarga controlada con carga simulada, limpieza de bornes y reapriete a torque especificado de 12 Nm. Verificación de temperatura térmica infrarroja OK.",
+    "mediciones": [
+      { "parametro": "Voltaje Flotación Banco A", "valor": "53.8 V DC (Normal)" },
+      { "parametro": "Resistencia Interna Promedio", "valor": "0.85 mΩ (Óptimo)" },
+      { "parametro": "Temperatura Máxima Celdas", "valor": "24.2 °C (En rango)" }
+    ],
+    "conformidadCliente": "CONFORME AL 100% - SIN OBSERVACIONES",
+    "firmaDigitalSupervisor": "VALIDADA DIGITALMENTE (CERT: MOV-NOC-9912)",
+    "firmaDigitalTecnico": "VALIDADA DIGITALMENTE (CERT: COBRA-TEC-034)"
+  },
+  "valeConsumo": {
+    "numeroVale": "VM-2026-1142",
+    "otId": "OT-2026-9041",
+    "fechaDescargo": "2026-09-19 22:10",
+    "tecnico": "Luis Ramos (Cuadrilla Alfa 01)",
+    "almacenMovil": "Camioneta BBX-401 (Stock Móvil Lari 01)",
+    "descuentoAlmacen": "DESCONTADO AUTOMÁTICAMENTE DE INVENTARIO",
+    "materiales": [
+      { "codigo": "MAT-FO-019", "descripcion": "Mufa de Fusión 48FO 3M Domo", "cantidad": 1, "unidad": "UND", "lote": "L-2026-09", "stockRestante": 2 },
+      { "codigo": "MAT-FO-088", "descripcion": "Pigtail SC/APC Monomodo 9/125", "cantidad": 4, "unidad": "UND", "lote": "L-2026-08", "stockRestante": 16 },
+      { "codigo": "MAT-FO-102", "descripcion": "Tubo protector empalme termo 60mm", "cantidad": 48, "unidad": "UND", "lote": "L-2026-07", "stockRestante": 152 }
+    ]
+  },
+  "papeletaAts": {
+    "numeroAts": "ATS-2026-559",
+    "otId": "OT-2026-9041",
+    "fecha": "2026-09-19 21:50",
+    "cuadrilla": "Cuadrilla Alfa 01 (L. Ramos)",
+    "lugarTrabajo": "Panamericana Norte Km 18.5 Poste 104",
+    "alturaTrabajo": "7.5 metros (Poste OSP)",
+    "riesgosEvaluados": [
+      { "riesgo": "Caída a distinto nivel (Altura > 1.80m)", "aplica": true, "medidaControl": "Uso de arnés certificado con doble línea de vida y línea de posicionamiento anclada al poste." },
+      { "riesgo": "Contacto eléctrico con media/baja tensión", "aplica": true, "medidaControl": "Detector de tensión personal y distancia de seguridad mínima de 1.5 metros respecto a red eléctrica." },
+      { "riesgo": "Atropello / Tránsito vehicular de alta velocidad", "aplica": true, "medidaControl": "Colocación de 6 conos reflectivos a 30m, 20m y 10m. Luces de emergencia de camioneta encendidas." },
+      { "riesgo": "Condiciones climáticas adversas (Garúa / Lluvia)", "aplica": false, "medidaControl": "N/A (Cielo nublado seco, viento 12 km/h favorable)." }
+    ],
+    "verificacionEpp": {
+      "cascoDieléctrico": true,
+      "barbiquejo": true,
+      "lentesSeguridad": true,
+      "arnésSeguridad": true,
+      "guantesDieléctricos": true,
+      "botasDieléctricas": true,
+      "chalecoReflectivo": true
+    },
+    "estadoAutorizacion": "APROBADO PARA EJECUCIÓN",
+    "firmadoPor": "Luis Ramos (Líder de Cuadrilla Habilitado SST)"
+  }
+}

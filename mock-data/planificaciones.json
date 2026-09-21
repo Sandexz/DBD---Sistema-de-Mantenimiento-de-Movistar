@@ -1,0 +1,80 @@
+[
+  {
+    "id": "PLAN-2026-001",
+    "activoCodigo": "N-025",
+    "activoNombre": "Nodo Óptico San Isidro",
+    "tipo": "PREVENTIVO",
+    "actividad": "Inspección semestral de potencia óptica y limpieza de conectores SFP+",
+    "periodicidad": "Semestral",
+    "fechaProgramada": "2026-10-15",
+    "responsable": "Ing. Marco Valdivia",
+    "cuadrilla": "Cuadrilla Beta 03 (M. Silva)",
+    "zona": "Centro",
+    "estado": "Programado"
+  },
+  {
+    "id": "PLAN-2026-002",
+    "activoCodigo": "BTS-014",
+    "activoNombre": "BTS Cerro San Cristóbal",
+    "tipo": "PREVENTIVO",
+    "actividad": "Reemplazo programado de banco de baterías de litio por fin de vida útil (24 meses)",
+    "periodicidad": "Cada 24 meses",
+    "fechaProgramada": "2026-09-30",
+    "responsable": "Ing. Luis Ramos",
+    "cuadrilla": "Cuadrilla Alfa 01 (L. Ramos)",
+    "zona": "Norte",
+    "estado": "Próximo"
+  },
+  {
+    "id": "PLAN-2026-003",
+    "activoCodigo": "DC-LIMA-01",
+    "activoNombre": "Data Center Monterrico",
+    "tipo": "PREVENTIVO",
+    "actividad": "Prueba de transferencia de carga con grupo electrógeno de respaldo 800kVA",
+    "periodicidad": "Trimestral",
+    "fechaProgramada": "2026-09-18",
+    "responsable": "Ing. Carlos Mendoza",
+    "cuadrilla": "Cuadrilla Beta 03 (M. Silva)",
+    "zona": "Centro",
+    "estado": "Ejecutado"
+  },
+  {
+    "id": "PLAN-2026-004",
+    "activoCodigo": "OLT-SUR-02",
+    "activoNombre": "OLT Cabecera Chorrillos",
+    "tipo": "PREVENTIVO",
+    "actividad": "Auditoría térmica de módulos PON y calibración de niveles dBm en ODF",
+    "periodicidad": "Trimestral",
+    "fechaProgramada": "2026-09-28",
+    "responsable": "Ing. Patricia Vega",
+    "cuadrilla": "Cuadrilla Gamma 05 (J. Gómez)",
+    "zona": "Sur",
+    "estado": "Pendiente"
+  },
+  {
+    "id": "PLAN-2026-005",
+    "activoCodigo": "FO-TRONCAL-ESTE",
+    "activoNombre": "Enlace Troncal Ate - Chosica",
+    "tipo": "CORRECTIVO_PROGRAMADO",
+    "actividad": "Reubicación de poste OSP por ensanchamiento de vía en Carretera Central Km 16",
+    "periodicidad": "Evento Único",
+    "fechaProgramada": "2026-09-10",
+    "responsable": "Ing. Roberto Quintana",
+    "cuadrilla": "Cuadrilla Gamma 05 (J. Gómez)",
+    "zona": "Este",
+    "estado": "Incumplido"
+  },
+  {
+    "id": "PLAN-2026-006",
+    "activoCodigo": "MUF-TRONCAL-48",
+    "activoNombre": "Mufa Troncal Km 18.5",
+    "tipo": "PREVENTIVO",
+    "actividad": "Sellado hermético y cambio de gel impermeabilizante previo a temporada de garúa",
+    "periodicidad": "Anual",
+    "fechaProgramada": "2026-10-05",
+    "responsable": "Ing. Luis Ramos",
+    "cuadrilla": "Cuadrilla Alfa 01 (L. Ramos)",
+    "zona": "Norte",
+    "estado": "Programado"
+  }
+]

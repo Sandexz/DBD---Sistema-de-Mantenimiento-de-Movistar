@@ -22,29 +22,5 @@
     "penalidadOsiptel": "8 UIT / hora de retardo",
     "estado": "Vigente",
     "color": "orange"
-  },
-  {
-    "id": "SLA-MEDIA",
-    "severidad": "MEDIA",
-    "prioridad": "P3 - Afectación Parcial",
-    "descripcion": "Caja NAP con puertos aislados, repetidor secundario sin redundancia",
-    "tiempoMaximoAtencion": "8 horas",
-    "tiempoObjetivoSolucion": "24 horas",
-    "horarioCobertura": "Lunes a Domingo 07:00 - 22:00",
-    "penalidadOsiptel": "3 UIT / día de retardo",
-    "estado": "Vigente",
-    "color": "yellow"
-  },
-  {
-    "id": "SLA-BAJA",
-    "severidad": "BAJA",
-    "prioridad": "P4 - Mantenimiento Programado",
-    "descripcion": "Inspección preventiva programada, reemplazo de etiquetado o pruebas de rutina",
-    "tiempoMaximoAtencion": "24 horas",
-    "tiempoObjetivoSolucion": "48 horas",
-    "horarioCobertura": "Días laborables 08:00 - 18:00",
-    "penalidadOsiptel": "1 UIT / semana de retardo",
-    "estado": "Vigente",
-    "color": "blue"
   }
 ]

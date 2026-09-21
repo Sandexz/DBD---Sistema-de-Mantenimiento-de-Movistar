@@ -10,9 +10,7 @@
     "proximaAuditoria": "2026-09-30 03:00 AM",
     "detalles": [
       { "nodo": "NOD-CARABAYLLO-04 (FTTH)", "inspeccion": "100%", "estado": "CONFORME", "tipo": "Vida Útil SFP/Mufa" },
-      { "nodo": "NOD-LIM-02 (HFC Troncal)", "inspeccion": "84%", "estado": "EN ATENCIÓN", "tipo": "Fuente Respaldo" },
-      { "nodo": "NOD-SAN-BORJA-01 (FTTH GPON)", "inspeccion": "96%", "estado": "CONFORME", "tipo": "Atenuación Óptica" },
-      { "nodo": "NOD-COMAS-08 (HFC Distribución)", "inspeccion": "78%", "estado": "PROGRAMADO", "tipo": "Calibración Amplificador" }
+      { "nodo": "NOD-LIM-02 (HFC Troncal)", "inspeccion": "84%", "estado": "EN ATENCIÓN", "tipo": "Fuente Respaldo" }
     ]
   },
   "contratistas": [
@@ -37,41 +35,28 @@
       "calificacion": "4.3 / 5.0",
       "estado": "CONFORME",
       "zona": "Lima Este / Centro"
-    },
-    {
-      "id": "CTR-CAM",
-      "nombre": "CAM Perú Servicios de Telecomunicaciones",
-      "cuadrillas": 6,
-      "otsCompletadas": 192,
-      "eficiencia": "82%",
-      "slaCumplido": "84.0%",
-      "calificacion": "3.8 / 5.0",
-      "estado": "BAJO OBSERVACIÓN",
-      "zona": "Lima Sur"
     }
   ],
   "preliquidaciones": {
     "periodo": "1 al 15 de Septiembre 2026",
-    "montoTotal": "S/ 452,180.00",
-    "montoTotalNumerico": 452180,
-    "ordenesFacturables": 1032,
+    "montoTotal": "S/ 414,000.00",
+    "montoTotalNumerico": 414000,
+    "ordenesFacturables": 840,
     "ordenesAuditadas": "100%",
     "estadoCierre": "PRE-APROBADO PARA PAGO",
     "desglose": [
       { "rubro": "Mano de Obra Cuadrillas FO y Planta Externa", "monto": "S/ 260,000.00" },
-      { "rubro": "Materiales Asignados y Consumidos en Campo", "monto": "S/ 142,180.00" },
-      { "rubro": "Guardias y Turnos Nocturnos Críticos", "monto": "S/ 50,000.00" }
+      { "rubro": "Materiales Asignados y Consumidos en Campo", "monto": "S/ 154,000.00" }
     ],
     "porContratista": [
       { "contratista": "Cobra Instalaciones & Redes Perú", "ots": 480, "subtotal": "S/ 248,600.00", "penalidades": "S/ 12,700.00", "neto": "S/ 235,900.00" },
-      { "contratista": "Lari Telecomunicaciones S.A.C.", "ots": 360, "subtotal": "S/ 165,400.00", "penalidades": "S/ 15,700.00", "neto": "S/ 149,700.00" },
-      { "contratista": "CAM Perú Servicios", "ots": 192, "subtotal": "S/ 38,180.00", "penalidades": "S/ 0.00", "neto": "S/ 38,180.00" }
+      { "contratista": "Lari Telecomunicaciones S.A.C.", "ots": 360, "subtotal": "S/ 165,400.00", "penalidades": "S/ 15,700.00", "neto": "S/ 149,700.00" }
     ]
   },
   "penalidades": {
-    "totalPenalidades": "-S/ 28,400.00",
-    "totalPenalidadesNumerico": 28400,
-    "casosRegistrados": 4,
+    "totalPenalidades": "-S/ 12,700.00",
+    "totalPenalidadesNumerico": 12700,
+    "casosRegistrados": 2,
     "estado": "DEDUCIDO DE FACTURA",
     "casos": [
       {
@@ -80,7 +65,7 @@
         "empresa": "Cobra Instalaciones & Redes Perú",
         "otId": "OT-89104",
         "motivo": "Incumplimiento MTTR > 4hrs",
-        "detalle": "Exceso de tiempo de resolución en enlace troncal POP Norte (5h 22m reportadas frente a 4h de SLA máximo tolerado).",
+        "detalle": "Exceso de tiempo de resolución en enlace troncal POP Norte.",
         "monto": "S/ 4,500.00",
         "fecha": "2026-09-08",
         "nodo": "NOD-CARABAYLLO-04"
@@ -91,31 +76,9 @@
         "empresa": "Lari Telecomunicaciones S.A.C.",
         "otId": "OT-89218",
         "motivo": "Reincidencia en Nodo NOD-LIM-02",
-        "detalle": "Reapertura de falla de atenuación en menos de 48 horas debido a empalme mecánico defectuoso en splitter primario.",
+        "detalle": "Reapertura de falla de atenuación en menos de 48 horas.",
         "monto": "S/ 8,200.00",
         "fecha": "2026-09-10",
-        "nodo": "NOD-LIM-02"
-      },
-      {
-        "id": "ACT-2026-083",
-        "contratista": "Cobra",
-        "empresa": "Cobra Instalaciones & Redes Perú",
-        "otId": "OT-89301",
-        "motivo": "Incumplimiento MTTR > 4hrs",
-        "detalle": "Demora de despacho y falta de reflectómetro OTDR calibrado en sitio crítico.",
-        "monto": "S/ 8,200.00",
-        "fecha": "2026-09-12",
-        "nodo": "NOD-SMP-09"
-      },
-      {
-        "id": "ACT-2026-084",
-        "contratista": "Lari",
-        "empresa": "Lari Telecomunicaciones S.A.C.",
-        "otId": "OT-89389",
-        "motivo": "Reincidencia en Nodo NOD-LIM-02",
-        "detalle": "Segunda avería no programada en mufa troncal HFC por falta de sellado hermético.",
-        "monto": "S/ 7,500.00",
-        "fecha": "2026-09-14",
         "nodo": "NOD-LIM-02"
       }
     ]

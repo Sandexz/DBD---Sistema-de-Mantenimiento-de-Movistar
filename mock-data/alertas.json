@@ -20,27 +20,5 @@
     "impact": "Degradación de señal en 16 accesos FTTH",
     "status": "Monitoreo NOC activo",
     "slaRemaining": "02:15:00"
-  },
-  {
-    "id": "ALT-2026-8803",
-    "timestamp": "21:40:12",
-    "severity": "CRITICAL",
-    "severityColor": "naranja",
-    "title": "Fallo de Alimentación Rectificador AC/DC",
-    "location": "Subestación Repetidor Cerro Verde",
-    "impact": "Banco de baterías en descarga (78% restante)",
-    "status": "Generador de respaldo iniciado",
-    "slaRemaining": "01:10:00"
-  },
-  {
-    "id": "ALT-2026-8804",
-    "timestamp": "21:15:45",
-    "severity": "INFO",
-    "severityColor": "celeste",
-    "title": "Cierre de Mantenimiento Preventivo OSP-89",
-    "location": "Troncal Este Empalme #12",
-    "impact": "Pruebas OTDR completadas con éxito",
-    "status": "Cerrado / Conforme",
-    "slaRemaining": "Cumplido"
   }
 ]

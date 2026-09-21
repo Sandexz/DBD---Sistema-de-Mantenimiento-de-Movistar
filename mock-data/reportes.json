@@ -15,13 +15,12 @@
     "rutaSugerida": "Vía Evitamiento -> Panamericana Norte hasta altura Puente Pro -> Km 18.5 margen derecha.",
     "insumosAutorizados": [
       "Mufa Fusión FO 48 Hilos 3M (1 unidad)",
-      "Pigtails SC-APC monomodo 1.5m (4 unidades)",
-      "Tubos termocontraíbles de protección (48 unidades)"
+      "Pigtails SC-APC monomodo 1.5m (4 unidades)"
     ]
   },
   "constanciaConformidad": {
     "numeroConstancia": "CC-2026-08492",
-    "otId": "OT-2026-9038",
+    "otId": "OT-2026-9042",
     "tipoMantenimiento": "PREVENTIVO",
     "fechaCierre": "2026-09-18 17:30",
     "duracionIntervencion": "1h 45m (Dentro de SLA)",
@@ -29,11 +28,10 @@
     "clienteSolicitante": "Movistar Perú - Jefatura de Infraestructura Crítica NOC",
     "supervisorAprobador": "Ing. Luis Valdivia (Supervisor NOC Nivel 3)",
     "cuadrilla": "Cuadrilla Beta 03 (Líder Manuel Silva - Cobra Telecom)",
-    "trabajoRealizado": "Mantenimiento preventivo trimestral a bancos de baterías de respaldo de 48V. Prueba de descarga controlada con carga simulada, limpieza de bornes y reapriete a torque especificado de 12 Nm. Verificación de temperatura térmica infrarroja OK.",
+    "trabajoRealizado": "Mantenimiento preventivo trimestral a bancos de baterías de respaldo de 48V. Prueba de descarga controlada con carga simulada, limpieza de bornes y reapriete a torque especificado de 12 Nm.",
     "mediciones": [
       { "parametro": "Voltaje Flotación Banco A", "valor": "53.8 V DC (Normal)" },
-      { "parametro": "Resistencia Interna Promedio", "valor": "0.85 mΩ (Óptimo)" },
-      { "parametro": "Temperatura Máxima Celdas", "valor": "24.2 °C (En rango)" }
+      { "parametro": "Resistencia Interna Promedio", "valor": "0.85 mΩ (Óptimo)" }
     ],
     "conformidadCliente": "CONFORME AL 100% - SIN OBSERVACIONES",
     "firmaDigitalSupervisor": "VALIDADA DIGITALMENTE (CERT: MOV-NOC-9912)",
@@ -48,8 +46,7 @@
     "descuentoAlmacen": "DESCONTADO AUTOMÁTICAMENTE DE INVENTARIO",
     "materiales": [
       { "codigo": "MAT-FO-019", "descripcion": "Mufa de Fusión 48FO 3M Domo", "cantidad": 1, "unidad": "UND", "lote": "L-2026-09", "stockRestante": 2 },
-      { "codigo": "MAT-FO-088", "descripcion": "Pigtail SC/APC Monomodo 9/125", "cantidad": 4, "unidad": "UND", "lote": "L-2026-08", "stockRestante": 16 },
-      { "codigo": "MAT-FO-102", "descripcion": "Tubo protector empalme termo 60mm", "cantidad": 48, "unidad": "UND", "lote": "L-2026-07", "stockRestante": 152 }
+      { "codigo": "MAT-FO-088", "descripcion": "Pigtail SC/APC Monomodo 9/125", "cantidad": 4, "unidad": "UND", "lote": "L-2026-08", "stockRestante": 16 }
     ]
   },
   "papeletaAts": {
@@ -60,10 +57,8 @@
     "lugarTrabajo": "Panamericana Norte Km 18.5 Poste 104",
     "alturaTrabajo": "7.5 metros (Poste OSP)",
     "riesgosEvaluados": [
-      { "riesgo": "Caída a distinto nivel (Altura > 1.80m)", "aplica": true, "medidaControl": "Uso de arnés certificado con doble línea de vida y línea de posicionamiento anclada al poste." },
-      { "riesgo": "Contacto eléctrico con media/baja tensión", "aplica": true, "medidaControl": "Detector de tensión personal y distancia de seguridad mínima de 1.5 metros respecto a red eléctrica." },
-      { "riesgo": "Atropello / Tránsito vehicular de alta velocidad", "aplica": true, "medidaControl": "Colocación de 6 conos reflectivos a 30m, 20m y 10m. Luces de emergencia de camioneta encendidas." },
-      { "riesgo": "Condiciones climáticas adversas (Garúa / Lluvia)", "aplica": false, "medidaControl": "N/A (Cielo nublado seco, viento 12 km/h favorable)." }
+      { "riesgo": "Caída a distinto nivel (Altura > 1.80m)", "aplica": true, "medidaControl": "Uso de arnés certificado con doble línea de vida." },
+      { "riesgo": "Contacto eléctrico con media/baja tensión", "aplica": true, "medidaControl": "Detector de tensión personal y distancia de seguridad mínima." }
     ],
     "verificacionEpp": {
       "cascoDieléctrico": true,

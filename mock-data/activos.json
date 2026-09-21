@@ -14,62 +14,7 @@
     "vidaUtilConsumidaPorc": 65,
     "componentes": [
       { "nombre": "Baterías UPS Banco A", "vidaUtil": "24 meses", "estado": "Próxima renovación (22m)", "reemplazoPreventivo": "2026-10-15" },
-      { "nombre": "Chillers Climatización N+1", "vidaUtil": "48 meses", "estado": "Óptimo", "reemplazoPreventivo": "2027-03-15" },
-      { "nombre": "Grupo Electrógeno 800kVA", "vidaUtil": "120 meses", "estado": "Inspección regular", "reemplazoPreventivo": "2033-03-15" }
-    ]
-  },
-  {
-    "codigo": "BTS-014",
-    "tipo": "BTS (Estación Base)",
-    "descripcion": "Estación Base 4G/5G Cerro San Cristóbal",
-    "ubicacion": "Mirador San Cristóbal S/N, Rímac",
-    "zona": "Norte",
-    "central": "Central Rímac",
-    "estado": "Operativo",
-    "fechaInstalacion": "2024-09-15",
-    "vidaUtilMeses": 24,
-    "fechaRenovacion": "2026-09-15",
-    "criticidad": "Alta",
-    "vidaUtilConsumidaPorc": 98,
-    "componentes": [
-      { "nombre": "Baterías de Respaldo Litio", "vidaUtil": "24 meses", "estado": "Vencimiento inminente", "reemplazoPreventivo": "2026-09-30" },
-      { "nombre": "Transceptor Microondas 18GHz", "vidaUtil": "36 meses", "estado": "Óptimo", "reemplazoPreventivo": "2027-09-15" }
-    ]
-  },
-  {
-    "codigo": "N-025",
-    "tipo": "Nodo",
-    "descripcion": "Nodo Óptico Distribución Primaria San Isidro",
-    "ubicacion": "Av. Rivera Navarrete 520, San Isidro",
-    "zona": "Centro",
-    "central": "Central San Isidro",
-    "estado": "Operativo",
-    "fechaInstalacion": "2024-02-10",
-    "vidaUtilMeses": 36,
-    "fechaRenovacion": "2027-02-10",
-    "criticidad": "Media",
-    "vidaUtilConsumidaPorc": 45,
-    "componentes": [
-      { "nombre": "Módulo Óptico SFP+ 10G", "vidaUtil": "36 meses", "estado": "Óptimo", "reemplazoPreventivo": "2027-02-10" },
-      { "nombre": "Fuente Conmutada 48V DC", "vidaUtil": "24 meses", "estado": "Programado mantenimiento", "reemplazoPreventivo": "2026-11-20" }
-    ]
-  },
-  {
-    "codigo": "OLT-SUR-02",
-    "tipo": "OLT",
-    "descripcion": "Cabecera OLT GPON Chorrillos - 64 Puertos PON",
-    "ubicacion": "Calle Huaylas 840, Chorrillos",
-    "zona": "Sur",
-    "central": "Central Chorrillos",
-    "estado": "Operativo",
-    "fechaInstalacion": "2023-11-01",
-    "vidaUtilMeses": 48,
-    "fechaRenovacion": "2027-11-01",
-    "criticidad": "Alta",
-    "vidaUtilConsumidaPorc": 52,
-    "componentes": [
-      { "nombre": "Tarjetas PON GPON C+", "vidaUtil": "48 meses", "estado": "Óptimo", "reemplazoPreventivo": "2027-11-01" },
-      { "nombre": "Ventiladores Chasis OLT", "vidaUtil": "18 meses", "estado": "En rango", "reemplazoPreventivo": "2026-12-05" }
+      { "nombre": "Chillers Climatización N+1", "vidaUtil": "48 meses", "estado": "Óptimo", "reemplazoPreventivo": "2027-03-15" }
     ]
   },
   {
@@ -88,41 +33,6 @@
     "componentes": [
       { "nombre": "Cúpula de Sellado IP68", "vidaUtil": "60 meses", "estado": "Atenuación detectada", "reemplazoPreventivo": "2026-10-01" },
       { "nombre": "Bandeja de Fusión FO", "vidaUtil": "60 meses", "estado": "Revisión requerida", "reemplazoPreventivo": "2026-10-01" }
-    ]
-  },
-  {
-    "codigo": "FO-TRONCAL-ESTE",
-    "tipo": "Tramo de fibra óptica",
-    "descripcion": "Enlace Troncal Subterráneo 96FO Ate - Chosica",
-    "ubicacion": "Carretera Central Km 12 a Km 24",
-    "zona": "Este",
-    "central": "Central Vitarte",
-    "estado": "Operativo",
-    "fechaInstalacion": "2021-05-18",
-    "vidaUtilMeses": 120,
-    "fechaRenovacion": "2031-05-18",
-    "criticidad": "Alta",
-    "vidaUtilConsumidaPorc": 42,
-    "componentes": [
-      { "nombre": "Ductería Pead 40mm", "vidaUtil": "120 meses", "estado": "Óptimo", "reemplazoPreventivo": "2031-05-18" },
-      { "nombre": "Cámaras de Paso Subterráneas", "vidaUtil": "120 meses", "estado": "Inspección semestral", "reemplazoPreventivo": "2026-11-15" }
-    ]
-  },
-  {
-    "codigo": "SPL-FTTH-108",
-    "tipo": "Splitter",
-    "descripcion": "Caja NAP Splitter Óptico 1:16 Residencial",
-    "ubicacion": "Calle Los Tulipanes 312, Surco",
-    "zona": "Sur",
-    "central": "Central Monterrico",
-    "estado": "Operativo",
-    "fechaInstalacion": "2024-06-20",
-    "vidaUtilMeses": 36,
-    "fechaRenovacion": "2027-06-20",
-    "criticidad": "Baja",
-    "vidaUtilConsumidaPorc": 20,
-    "componentes": [
-      { "nombre": "Módulo Splitter PLC 1x16", "vidaUtil": "36 meses", "estado": "Óptimo", "reemplazoPreventivo": "2027-06-20" }
     ]
   }
 ]

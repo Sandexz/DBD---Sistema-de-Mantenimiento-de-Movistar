@@ -130,7 +130,7 @@ export default function DashboardPage() {
                   Consulta Rápida de Infraestructura
                 </h2>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
                   <p className="font-bold text-slate-800">POP-01 Centro</p>
                   <p className="text-slate-500 font-mono text-[11px]">12,400 Clientes · OK</p>
@@ -139,16 +139,9 @@ export default function DashboardPage() {
                   <p className="font-bold text-rose-600">POP-02 Norte</p>
                   <p className="text-slate-500 font-mono text-[11px]">4,200 Clientes · ALERTA</p>
                 </div>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                  <p className="font-bold text-slate-800">POP-03 Sur</p>
-                  <p className="text-slate-500 font-mono text-[11px]">6,800 Clientes · OK</p>
-                </div>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                  <p className="font-bold text-slate-800">REP-09 Repetidor</p>
-                  <p className="text-slate-500 font-mono text-[11px]">1,800 Clientes · OK</p>
-                </div>
               </div>
             </div>
+
           )}
 
           {/* ================= SECTION: HISTORICO (WHEN TAB IS SELECTED) ================= */}

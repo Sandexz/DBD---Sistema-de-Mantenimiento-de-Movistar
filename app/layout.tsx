@@ -36,7 +36,7 @@ export default function RootLayout({
       lang="es"
       className={`${spaceGrotesk.variable} ${publicSans.variable} ${ibmPlexMono.variable}`}
     >
-      <body className="min-h-screen bg-[#0B0C0E] text-slate-100 antialiased selection:bg-[#019DF4]/25 selection:text-[#019DF4]">
+      <body className="min-h-screen bg-[#F4F6F9] text-slate-800 antialiased selection:bg-[#019DF4]/20 selection:text-[#0B2742]">
         {children}
       </body>
     </html>

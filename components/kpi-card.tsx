@@ -44,38 +44,38 @@ export function KpiCard({ kpi }: KpiCardProps) {
 
   return (
     <div
-      className={`relative overflow-hidden rounded-xl border p-5 transition-all duration-200 bg-[#121418] ${
+      className={`relative overflow-hidden rounded-2xl border bg-white p-5 transition-all duration-200 shadow-sm hover:shadow-md ${
         isCritical
-          ? "border-[#FF6A13]/50 shadow-glow-orange/20"
-          : "border-[#1E232B] hover:border-[#00AEEF]/50"
+          ? "border-orange-200 hover:border-orange-300"
+          : "border-slate-200 hover:border-[#019DF4]/40"
       }`}
     >
-      {/* Top indicator bar with traffic light accent */}
+      {/* Top accent bar */}
       <div
-        className={`absolute top-0 left-0 right-0 h-1 ${
+        className={`absolute top-0 left-0 right-0 h-1 rounded-t-2xl ${
           isCritical
             ? "bg-[#FF6A13]"
             : isOk
-            ? "bg-[#00AEEF]"
-            : "bg-[#00AEEF]/60"
+            ? "bg-[#019DF4]"
+            : "bg-[#019DF4]/60"
         }`}
       />
 
-      {/* Header of KPI */}
-      <div className="flex items-start justify-between gap-3 mb-3">
+      {/* Header */}
+      <div className="flex items-start justify-between gap-3 mb-4 mt-1">
         <div className="flex items-center gap-2.5">
           <div
-            className={`p-2 rounded-lg border ${
+            className={`p-2 rounded-xl border ${
               isCritical
-                ? "bg-[#FF6A13]/10 border-[#FF6A13]/30 text-[#FF6A13]"
-                : "bg-[#0A2E5C]/30 border-[#0A2E5C] text-[#00AEEF]"
+                ? "bg-orange-50 border-orange-100 text-[#FF6A13]"
+                : "bg-[#EBF5FF] border-[#019DF4]/20 text-[#019DF4]"
             }`}
           >
             <Icon className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono uppercase text-slate-400 font-semibold bg-[#0B0C0E] px-1.5 py-0.5 rounded border border-[#1E232B]">
+              <span className="text-[10px] font-mono uppercase text-slate-500 font-semibold bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
                 {kpi.segment}
               </span>
               <Badge
@@ -86,24 +86,24 @@ export function KpiCard({ kpi }: KpiCardProps) {
                 {kpi.statusLabel}
               </Badge>
             </div>
-            <h3 className="text-sm font-bold text-white font-grotesk mt-1">{kpi.title}</h3>
+            <h3 className="text-sm font-bold text-slate-800 font-grotesk mt-1">{kpi.title}</h3>
           </div>
         </div>
 
-        {/* Semáforo visual dot */}
-        <div className="flex items-center gap-1.5 bg-[#0B0C0E] px-2 py-1 rounded-full border border-[#1E232B]">
+        {/* Status dot */}
+        <div className={`flex items-center gap-1.5 px-2 py-1 rounded-full border ${
+          isCritical ? "bg-orange-50 border-orange-200" : "bg-[#EBF5FF] border-[#019DF4]/20"
+        }`}>
           <span
             className={`h-2.5 w-2.5 rounded-full ${
               isCritical
                 ? "bg-[#FF6A13] animate-ping"
-                : isOk
-                ? "bg-[#00AEEF]"
-                : "bg-[#00AEEF]"
+                : "bg-[#019DF4]"
             }`}
           />
           <span
             className={`text-[10px] font-mono font-bold ${
-              isCritical ? "text-[#FF6A13]" : "text-[#00AEEF]"
+              isCritical ? "text-[#FF6A13]" : "text-[#019DF4]"
             }`}
           >
             {isCritical ? "ALERTA" : "OK"}
@@ -111,20 +111,20 @@ export function KpiCard({ kpi }: KpiCardProps) {
         </div>
       </div>
 
-      {/* Primary Value Display */}
-      <div className="flex items-baseline justify-between mt-4 pb-3 border-b border-[#1E232B]">
+      {/* Primary Value */}
+      <div className="flex items-baseline justify-between pb-3 border-b border-slate-100">
         <div>
-          <span className="text-3xl font-extrabold text-white font-grotesk tracking-tight">
+          <span className="text-3xl font-extrabold text-slate-900 font-grotesk tracking-tight">
             {kpi.value}
           </span>
-          <span className="text-xs text-slate-400 font-sans ml-2">
-            (Obj: <span className="font-mono text-slate-300">{kpi.target}</span>)
+          <span className="text-xs text-slate-500 font-sans ml-2">
+            (Obj: <span className="font-mono text-slate-700">{kpi.target}</span>)
           </span>
         </div>
         {kpi.trend && (
           <span
             className={`text-xs font-mono font-medium flex items-center gap-1 ${
-              isCritical ? "text-[#FF6A13]" : "text-[#00AEEF]"
+              isCritical ? "text-[#FF6A13]" : "text-[#019DF4]"
             }`}
           >
             {isCritical ? (
@@ -141,39 +141,39 @@ export function KpiCard({ kpi }: KpiCardProps) {
       <div className="grid grid-cols-2 gap-2.5 mt-3 text-xs">
         {kpi.id === "core-network" && (
           <>
-            <div className="bg-[#0B0C0E] p-2 rounded border border-[#1E232B]">
-              <span className="text-slate-400 block text-[11px]">Tráfico Pico</span>
-              <span className="font-mono font-bold text-[#00AEEF]">{kpi.trafficPeak}</span>
+            <div className="bg-slate-50 p-2 rounded-lg border border-slate-200">
+              <span className="text-slate-500 block text-[11px]">Tráfico Pico</span>
+              <span className="font-mono font-bold text-[#019DF4]">{kpi.trafficPeak}</span>
             </div>
-            <div className="bg-[#0B0C0E] p-2 rounded border border-[#1E232B]">
-              <span className="text-slate-400 block text-[11px]">Latencia Media</span>
-              <span className="font-mono font-bold text-white">{kpi.latencyAvg}</span>
+            <div className="bg-slate-50 p-2 rounded-lg border border-slate-200">
+              <span className="text-slate-500 block text-[11px]">Latencia Media</span>
+              <span className="font-mono font-bold text-slate-800">{kpi.latencyAvg}</span>
             </div>
           </>
         )}
 
         {kpi.id === "planta-externa" && (
           <>
-            <div className="bg-[#0B0C0E] p-2 rounded border border-[#FF6A13]/20">
+            <div className="bg-orange-50 p-2 rounded-lg border border-orange-200/60">
               <span className="text-[#FF6A13] block text-[11px] font-semibold">Cortes de Fibra</span>
               <span className="font-mono font-bold text-[#FF6A13]">{kpi.fiberCuts} críticos</span>
             </div>
-            <div className="bg-[#0B0C0E] p-2 rounded border border-[#1E232B]">
-              <span className="text-slate-400 block text-[11px]">Cuadrillas Campo</span>
-              <span className="font-mono font-bold text-white">{kpi.cuadrillasDispatched} asignadas</span>
+            <div className="bg-slate-50 p-2 rounded-lg border border-slate-200">
+              <span className="text-slate-500 block text-[11px]">Cuadrillas Campo</span>
+              <span className="font-mono font-bold text-slate-800">{kpi.cuadrillasDispatched} asignadas</span>
             </div>
           </>
         )}
 
         {kpi.id === "ultima-milla" && (
           <>
-            <div className="bg-[#0B0C0E] p-2 rounded border border-[#1E232B]">
-              <span className="text-slate-400 block text-[11px]">ONUs En Línea</span>
-              <span className="font-mono font-bold text-[#00AEEF]">{kpi.onusOnline}</span>
+            <div className="bg-slate-50 p-2 rounded-lg border border-slate-200">
+              <span className="text-slate-500 block text-[11px]">ONUs En Línea</span>
+              <span className="font-mono font-bold text-[#019DF4]">{kpi.onusOnline}</span>
             </div>
-            <div className="bg-[#0B0C0E] p-2 rounded border border-[#1E232B]">
-              <span className="text-slate-400 block text-[11px]">MTTR Promedio</span>
-              <span className="font-mono font-bold text-white">{kpi.mttr}</span>
+            <div className="bg-slate-50 p-2 rounded-lg border border-slate-200">
+              <span className="text-slate-500 block text-[11px]">MTTR Promedio</span>
+              <span className="font-mono font-bold text-slate-800">{kpi.mttr}</span>
             </div>
           </>
         )}

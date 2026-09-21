@@ -1,286 +1,290 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  Lock,
-  User,
+  HardHat,
   ShieldCheck,
   Smartphone,
-  Cpu,
-  ArrowRight,
-  Loader2,
-  CheckCircle2,
-  Radio,
   Layers,
-  Sparkles,
+  ClipboardList,
+  LayoutDashboard,
+  Eye,
+  EyeOff,
+  ArrowRight,
+  Wifi,
+  Radio,
+  Lock,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+
+const quickProfiles = [
+  {
+    id: "supervisor",
+    name: "Ing. Carlos Mendoza",
+    role: "Supervisor NOC · Turno A",
+    password: "noc2026",
+    icon: ShieldCheck,
+    color: "text-[#019DF4]",
+    bg: "bg-[#EBF5FF]",
+    border: "border-[#019DF4]/30",
+  },
+  {
+    id: "tecnico",
+    name: "Téc. Diego Quispe",
+    role: "Técnico Campo · Cuadrilla Alfa 01",
+    password: "campo2026",
+    icon: HardHat,
+    color: "text-[#00A86B]",
+    bg: "bg-[#E6F6F0]",
+    border: "border-[#00A86B]/30",
+  },
+  {
+    id: "auditor",
+    name: "Lic. Ana Torres",
+    role: "Auditora Batch · Control Calidad",
+    password: "audit2026",
+    icon: Layers,
+    color: "text-[#FF6A13]",
+    bg: "bg-orange-50",
+    border: "border-orange-200",
+  },
+];
+
+const quickLinks = [
+  { href: "/dashboard", label: "Dashboard NOC", icon: LayoutDashboard, color: "text-[#019DF4]" },
+  { href: "/ots", label: "Gestión OTs", icon: ClipboardList, color: "text-slate-600" },
+  { href: "/mobile", label: "App de Campo", icon: Smartphone, color: "text-[#00A86B]" },
+  { href: "/batch", label: "Módulo Batch", icon: Layers, color: "text-[#FF6A13]" },
+];
 
 export default function LoginPage() {
   const router = useRouter();
-  const [username, setUsername] = useState("noc.central@movistar.pe");
-  const [password, setPassword] = useState("••••••••••••");
-  const [rememberMe, setRememberMe] = useState(true);
-  const [selectedRole, setSelectedRole] = useState<"NOC" | "SUPERVISOR" | "TECNICO">("NOC");
-  const [isAuthenticating, setIsAuthenticating] = useState(false);
-  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [selectedProfile, setSelectedProfile] = useState<string | null>(null);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSelectProfile = (profile: typeof quickProfiles[0]) => {
+    setSelectedProfile(profile.id);
+    setUsername(profile.name);
+    setPassword(profile.password);
+    setError("");
+  };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsAuthenticating(true);
-    setStatusMessage("Validando credenciales en Directorio Movistar Perú...");
-
+    if (!username.trim()) {
+      setError("Por favor ingresa tu usuario.");
+      return;
+    }
+    setIsLoading(true);
+    setError("");
     setTimeout(() => {
-      setStatusMessage("Perfil verificado con éxito. Redirigiendo a entorno...");
-      setTimeout(() => {
-        if (selectedRole === "TECNICO") {
-          router.push("/mobile");
-        } else if (selectedRole === "SUPERVISOR") {
-          router.push("/batch");
-        } else {
-          router.push("/ots");
-        }
-      }, 500);
+      setIsLoading(false);
+      router.push("/dashboard");
     }, 900);
   };
 
-  const handleQuickRole = (
-    role: "NOC" | "SUPERVISOR" | "TECNICO",
-    user: string
-  ) => {
-    setSelectedRole(role);
-    setUsername(user);
-    setPassword("movistar@2026");
-  };
-
   return (
-    <div className="min-h-screen bg-[#0B0C0E] flex flex-col justify-between p-4 sm:p-6 lg:p-8 relative overflow-hidden font-sans">
-      {/* Background network glow effects with Movistar Navy and Blue */}
-      <div className="absolute -top-40 -left-40 w-96 h-96 bg-[#0B2742]/70 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-[#019DF4]/20 rounded-full blur-3xl pointer-events-none" />
+    <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4 font-sans">
+      {/* Subtle background pattern */}
+      <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:24px_24px] opacity-60 pointer-events-none" />
 
-      {/* Top Header */}
-      <header className="flex items-center justify-between z-10 max-w-5xl mx-auto w-full">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#0B2742] border border-[#019DF4]/40 flex items-center justify-center text-[#019DF4] shadow-lg">
-            <span className="font-extrabold text-lg text-white font-grotesk">M</span>
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-grotesk font-extrabold text-xl tracking-tight text-white">
-                Movistar Perú
-              </span>
-              <span className="text-[10px] font-mono bg-[#019DF4]/20 text-[#019DF4] px-2 py-0.5 rounded-full border border-[#019DF4]/40 font-bold">
-                SGMR
-              </span>
-            </div>
-            <p className="text-[11px] text-slate-400 font-sans leading-none">
-              Sistema de Mantenimiento e Infraestructura de Redes
-            </p>
-          </div>
-        </div>
+      <div className="relative w-full max-w-md">
+        {/* Main Card */}
+        <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
 
-        <div className="hidden sm:flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 text-xs font-mono text-[#00A86B] bg-[#00A86B]/15 px-3 py-1 rounded-full border border-[#00A86B]/30 font-bold">
-            <span className="w-2 h-2 rounded-full bg-[#00A86B] animate-ping" />
-            CORE ONLINE
-          </span>
-        </div>
-      </header>
-
-      {/* Main Login Card Container */}
-      <main className="flex-1 flex items-center justify-center z-10 py-8">
-        <div className="w-full max-w-md bg-[#121418] border border-[#1E232B] rounded-3xl p-6 sm:p-8 shadow-card-dark relative overflow-hidden">
-          {/* Top Brand Stripe in Movistar Blue & Green */}
-          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#0B2742] via-[#019DF4] to-[#00A86B]" />
-
-          {/* Title and Intro */}
-          <div className="mb-6 text-center">
-            <h1 className="text-2xl font-bold text-white font-grotesk">
-              Control de Acceso
-            </h1>
-            <p className="text-xs text-slate-400 font-sans mt-1">
-              Portal corporativo para supervisión NOC y cuadrillas de campo
-            </p>
-          </div>
-
-          {/* Selector Rápido de 3 Perfiles (Requerimiento Prompt) */}
-          <div className="mb-5">
-            <label className="text-[11px] font-mono text-slate-400 uppercase tracking-wider block mb-2 text-center font-bold">
-              Seleccionar Perfil Rápido:
-            </label>
-            <div className="grid grid-cols-3 gap-2">
-              {/* Perfil 1: Ing. NOC */}
-              <button
-                type="button"
-                onClick={() => handleQuickRole("NOC", "noc.central@movistar.pe")}
-                className={`py-2.5 px-2 rounded-xl text-xs font-medium border transition-all cursor-pointer ${
-                  selectedRole === "NOC"
-                    ? "bg-[#0B2742] border-[#019DF4] text-white shadow-md ring-1 ring-[#019DF4]"
-                    : "bg-[#0B0C0E] border-[#1E232B] text-slate-400 hover:text-white"
-                }`}
-              >
-                <Cpu className="w-4 h-4 mx-auto mb-1 text-[#019DF4]" />
-                <span className="font-bold block text-xs">Ing. NOC</span>
-                <span className="text-[9px] text-slate-400 font-mono block">/ots</span>
-              </button>
-
-              {/* Perfil 2: Supervisor */}
-              <button
-                type="button"
-                onClick={() =>
-                  handleQuickRole("SUPERVISOR", "supervisor.lima@movistar.pe")
-                }
-                className={`py-2.5 px-2 rounded-xl text-xs font-medium border transition-all cursor-pointer ${
-                  selectedRole === "SUPERVISOR"
-                    ? "bg-[#0B2742] border-[#019DF4] text-white shadow-md ring-1 ring-[#019DF4]"
-                    : "bg-[#0B0C0E] border-[#1E232B] text-slate-400 hover:text-white"
-                }`}
-              >
-                <ShieldCheck className="w-4 h-4 mx-auto mb-1 text-[#019DF4]" />
-                <span className="font-bold block text-xs">Supervisor</span>
-                <span className="text-[9px] text-slate-400 font-mono block">/batch</span>
-              </button>
-
-              {/* Perfil 3: Técnico */}
-              <button
-                type="button"
-                onClick={() =>
-                  handleQuickRole("TECNICO", "diego.quispe@movistar.pe")
-                }
-                className={`py-2.5 px-2 rounded-xl text-xs font-medium border transition-all cursor-pointer ${
-                  selectedRole === "TECNICO"
-                    ? "bg-[#0B2742] border-[#00A86B] text-white shadow-md ring-1 ring-[#00A86B]"
-                    : "bg-[#0B0C0E] border-[#1E232B] text-slate-400 hover:text-white"
-                }`}
-              >
-                <Smartphone className="w-4 h-4 mx-auto mb-1 text-[#00A86B]" />
-                <span className="font-bold block text-xs">Técnico</span>
-                <span className="text-[9px] text-[#00A86B] font-mono block">/mobile</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Form */}
-          <form onSubmit={handleLogin} className="space-y-4">
-            {/* Campo Usuario */}
-            <div className="space-y-1.5 text-xs">
-              <label className="text-slate-300 font-semibold flex items-center gap-1.5">
-                <User className="w-3.5 h-3.5 text-[#019DF4]" />
-                Usuario Corporativo
-              </label>
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-                placeholder="usuario@movistar.pe"
-                className="w-full bg-[#0B0C0E] border border-[#1E232B] rounded-xl px-3.5 py-2.5 text-slate-100 font-mono text-xs focus:outline-none focus:border-[#019DF4] focus:ring-1 focus:ring-[#019DF4] transition-all"
-              />
-            </div>
-
-            {/* Campo Contraseña */}
-            <div className="space-y-1.5 text-xs">
-              <label className="text-slate-300 font-semibold flex items-center gap-1.5">
-                <Lock className="w-3.5 h-3.5 text-[#019DF4]" />
-                Contraseña
-              </label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                placeholder="••••••••••••"
-                className="w-full bg-[#0B0C0E] border border-[#1E232B] rounded-xl px-3.5 py-2.5 text-slate-100 font-mono text-xs focus:outline-none focus:border-[#019DF4] focus:ring-1 focus:ring-[#019DF4] transition-all"
-              />
-            </div>
-
-            {/* Checkbox "Recordar usuario" */}
-            <div className="flex items-center justify-between text-xs pt-1">
-              <label className="flex items-center gap-2 cursor-pointer select-none text-slate-300">
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 rounded bg-[#0B0C0E] border-[#1E232B] text-[#019DF4] focus:ring-[#019DF4]"
-                />
-                <span>Recordar credenciales</span>
-              </label>
-              <span className="text-[11px] text-[#019DF4] hover:underline cursor-pointer">
-                ¿Olvidó su clave?
-              </span>
-            </div>
-
-            {/* Live Visual Status Message */}
-            {statusMessage && (
-              <div className="p-3 bg-[#0B2742]/70 border border-[#019DF4]/50 rounded-xl flex items-center gap-2 text-[#019DF4] text-xs font-mono animate-in fade-in">
-                {isAuthenticating ? (
-                  <Loader2 className="w-4 h-4 animate-spin shrink-0 text-[#019DF4]" />
-                ) : (
-                  <CheckCircle2 className="w-4 h-4 text-[#00A86B] shrink-0" />
-                )}
-                <span>{statusMessage}</span>
+          {/* Header — Navy brand bar */}
+          <div className="bg-[#0B2742] px-8 py-7">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-[#019DF4] flex items-center justify-center font-bold text-white text-lg shadow-sm">
+                M
               </div>
-            )}
+              <div>
+                <h1 className="text-xl font-bold text-white tracking-tight">
+                  Movistar Perú
+                </h1>
+                <p className="text-[11px] text-[#019DF4] font-mono">
+                  Sistema de Gestión y Mantenimiento de Redes
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-mono font-semibold text-[#00A86B] bg-[#00A86B]/15 px-2.5 py-0.5 rounded-full border border-[#00A86B]/30">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00A86B] animate-ping" />
+                NOC ONLINE
+              </span>
+              <span className="text-[11px] font-mono text-slate-400 bg-[#061625] px-2 py-0.5 rounded border border-white/10">
+                SGMR v2.4
+              </span>
+            </div>
+          </div>
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isAuthenticating}
-              className="w-full bg-[#019DF4] hover:bg-[#0081CB] text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-[#019DF4]/20 flex items-center justify-center gap-2 text-sm transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer"
-            >
-              {isAuthenticating ? (
-                <span>Autenticando perfil...</span>
-              ) : (
-                <>
-                  <span>Ingresar al Sistema</span>
-                  <ArrowRight className="w-4 h-4" />
-                </>
+          {/* Form body */}
+          <div className="px-8 py-7 space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-slate-800 tracking-tight">
+                Control de Acceso
+              </h2>
+              <p className="text-sm text-slate-500 mt-1">
+                Selecciona tu perfil o ingresa tus credenciales
+              </p>
+            </div>
+
+            {/* Quick Profile Selector */}
+            <div className="space-y-2">
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                Acceso Rápido por Perfil
+              </p>
+              <div className="space-y-2">
+                {quickProfiles.map((profile) => {
+                  const Icon = profile.icon;
+                  const isSelected = selectedProfile === profile.id;
+                  return (
+                    <button
+                      key={profile.id}
+                      type="button"
+                      onClick={() => handleSelectProfile(profile)}
+                      className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left ${
+                        isSelected
+                          ? `${profile.bg} ${profile.border} shadow-sm`
+                          : "bg-slate-50 border-slate-200 hover:bg-sky-50 hover:border-sky-200"
+                      }`}
+                    >
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                        isSelected ? profile.bg : "bg-white border border-slate-200"
+                      }`}>
+                        <Icon className={`w-4 h-4 ${isSelected ? profile.color : "text-slate-400"}`} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className={`text-xs font-semibold truncate ${isSelected ? "text-slate-800" : "text-slate-700"}`}>
+                          {profile.name}
+                        </p>
+                        <p className="text-[11px] text-slate-400 truncate">{profile.role}</p>
+                      </div>
+                      {isSelected && (
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${profile.bg} ${profile.color} border ${profile.border}`}>
+                          Activo
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-200" />
+              </div>
+              <div className="relative flex justify-center text-xs">
+                <span className="bg-white px-3 text-slate-400 font-medium">o ingresa manualmente</span>
+              </div>
+            </div>
+
+            {/* Login Form */}
+            <form onSubmit={handleLogin} className="space-y-4">
+              {/* Username */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-700">
+                  Usuario / Nombre
+                </label>
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => { setUsername(e.target.value); setSelectedProfile(null); }}
+                  placeholder="Ej: Ing. Carlos Mendoza"
+                  className="w-full p-3 border border-slate-300 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-400 bg-white transition-all"
+                />
+              </div>
+
+              {/* Password */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-700 flex items-center justify-between">
+                  <span>Contraseña</span>
+                  <span className="text-[11px] text-slate-400 font-normal font-mono">
+                    Demo: noc2026 / campo2026
+                  </span>
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full pl-9 pr-10 py-3 border border-slate-300 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-400 bg-white transition-all"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Error message */}
+              {error && (
+                <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                  {error}
+                </p>
               )}
-            </button>
-          </form>
 
-          {/* Quick Route Links Direct access */}
-          <div className="mt-5 pt-4 border-t border-[#1E232B] text-center space-y-2 text-xs">
-            <p className="text-[11px] font-mono text-slate-400">
-              Acceso directo a pantallas principales:
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-[#019DF4] hover:bg-sky-600 active:scale-[0.98] text-white font-semibold py-3 rounded-xl shadow-md shadow-[#019DF4]/20 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {isLoading ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span>Verificando acceso...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Ingresar al Sistema</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
+
+          {/* Footer — Quick module links */}
+          <div className="px-8 py-5 bg-slate-50 border-t border-slate-200">
+            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-3">
+              Acceso directo a módulos
             </p>
-            <div className="flex justify-center items-center gap-3 font-mono text-[11px]">
-              <button
-                type="button"
-                onClick={() => router.push("/mobile")}
-                className="text-[#00A86B] hover:underline font-bold"
-              >
-                /mobile (Campo)
-              </button>
-              <span className="text-slate-600">·</span>
-              <button
-                type="button"
-                onClick={() => router.push("/batch")}
-                className="text-[#019DF4] hover:underline font-bold"
-              >
-                /batch (Lotes)
-              </button>
-              <span className="text-slate-600">·</span>
-              <button
-                type="button"
-                onClick={() => router.push("/ots")}
-                className="text-slate-300 hover:underline font-bold"
-              >
-                /ots (Despacho)
-              </button>
+            <div className="grid grid-cols-2 gap-2">
+              {quickLinks.map((link) => {
+                const Icon = link.icon;
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white border border-slate-200 hover:border-[#019DF4]/40 hover:shadow-sm text-xs font-medium text-slate-600 hover:text-slate-900 transition-all"
+                  >
+                    <Icon className={`w-3.5 h-3.5 ${link.color} shrink-0`} />
+                    <span className="truncate">{link.label}</span>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </div>
-      </main>
 
-      {/* Footer System Info */}
-      <footer className="text-center text-xs text-slate-500 font-mono z-10 max-w-5xl mx-auto w-full flex flex-col sm:flex-row items-center justify-between gap-2">
-        <span>© 2026 Telefónica del Perú / Movistar Perú · Infraestructura de Redes</span>
-        <span>Módulo de Control de Acceso Unificado</span>
-      </footer>
+        {/* Bottom caption */}
+        <p className="text-center text-[11px] text-slate-400 mt-5 font-mono">
+          © 2026 Movistar Perú · SGMR v2.4 · Acceso restringido a personal autorizado
+        </p>
+      </div>
     </div>
   );
 }

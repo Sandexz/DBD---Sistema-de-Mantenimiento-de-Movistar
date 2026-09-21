@@ -33,6 +33,7 @@ export function MobileFlow() {
 
   // Paso 1: GPS Arribo
   const [gpsConfirmed, setGpsConfirmed] = useState(false);
+  const [checkInTime, setCheckInTime] = useState("09:42:15");
 
   // Paso 2: Materiales escaneados
   const [scannedItems, setScannedItems] = useState<
@@ -68,10 +69,19 @@ export function MobileFlow() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    ctx.strokeStyle = "#0B2742";
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+
     setIsDrawing(true);
     const rect = canvas.getBoundingClientRect();
-    const x = "touches" in e ? e.touches[0].clientX - rect.left : e.clientX - rect.left;
-    const y = "touches" in e ? e.touches[0].clientY - rect.top : e.clientY - rect.top;
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+    const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
+    const x = (clientX - rect.left) * scaleX;
+    const y = (clientY - rect.top) * scaleY;
 
     ctx.beginPath();
     ctx.moveTo(x, y);
@@ -85,8 +95,12 @@ export function MobileFlow() {
     if (!ctx) return;
 
     const rect = canvas.getBoundingClientRect();
-    const x = "touches" in e ? e.touches[0].clientX - rect.left : e.clientX - rect.left;
-    const y = "touches" in e ? e.touches[0].clientY - rect.top : e.clientY - rect.top;
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+    const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
+    const x = (clientX - rect.left) * scaleX;
+    const y = (clientY - rect.top) * scaleY;
 
     ctx.lineTo(x, y);
     ctx.stroke();
@@ -132,6 +146,10 @@ export function MobileFlow() {
   // Step 1: Confirmar Arribo al Sitio
   const handleConfirmArrival = () => {
     setIsLoading(true);
+    const now = new Date();
+    setCheckInTime(
+      now.toLocaleTimeString("es-PE", { hour: "2-digit", minute: "2-digit", second: "2-digit" })
+    );
     setTimeout(() => {
       setIsLoading(false);
       setGpsConfirmed(true);
@@ -203,6 +221,7 @@ export function MobileFlow() {
   const handleReset = () => {
     setCurrentStep(1);
     setGpsConfirmed(false);
+    setCheckInTime("09:42:15");
     setScannedItems([]);
     setEvidencePhoto(false);
     setHasSignature(false);
@@ -470,7 +489,7 @@ export function MobileFlow() {
                   </div>
                   <div className="flex justify-between text-slate-600">
                     <span>Hora Check-in:</span>
-                    <span className="text-slate-800 font-bold">{new Date().toLocaleTimeString()}</span>
+                    <span className="text-slate-800 font-bold" suppressHydrationWarning>{checkInTime}</span>
                   </div>
                 </div>
               </div>

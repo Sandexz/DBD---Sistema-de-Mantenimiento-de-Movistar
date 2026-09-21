@@ -11,10 +11,6 @@ import {
   ClipboardList,
   Layers,
   Smartphone,
-  Server,
-  Zap,
-  Radio,
-  FileCheck2,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -53,14 +49,14 @@ export function Sidebar({ activeTab = "general", onTabChange }: SidebarProps) {
   ];
 
   return (
-    <aside className="w-64 shrink-0 bg-[#0B0C0E] border-r border-[#1E232B] min-h-[calc(100vh-3.5rem)] flex flex-col justify-between p-4 hidden md:flex">
+    <aside className="w-64 shrink-0 bg-white border-r border-slate-200 min-h-[calc(100vh-3.5rem)] flex flex-col justify-between p-5 hidden md:flex shadow-sm">
       <div className="space-y-6">
         {/* Module Title */}
         <div>
-          <p className="text-[11px] uppercase tracking-wider font-mono text-[#00AEEF] font-semibold">
+          <p className="text-[11px] uppercase tracking-wider font-mono text-[#019DF4] font-semibold">
             Vistas del NOC
           </p>
-          <p className="text-xs text-slate-400 mt-0.5">Control de Supervisión</p>
+          <p className="text-xs text-slate-500 mt-0.5">Control de Supervisión</p>
         </div>
 
         {/* Dynamic Section Tabs */}
@@ -72,19 +68,21 @@ export function Sidebar({ activeTab = "general", onTabChange }: SidebarProps) {
               <button
                 key={sec.id}
                 onClick={() => onTabChange?.(sec.id)}
-                className={`w-full text-left flex items-start gap-3 p-2.5 rounded-lg text-xs transition-all ${
+                className={`w-full text-left flex items-start gap-3 p-2.5 rounded-xl text-xs transition-all ${
                   isSelected
-                    ? "bg-[#0A2E5C] text-white border border-[#00AEEF]/40 shadow-sm"
-                    : "text-slate-400 hover:text-slate-100 hover:bg-[#121418]"
+                    ? "bg-[#EBF5FF] text-[#0B2742] border border-[#019DF4]/30 shadow-sm"
+                    : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"
                 }`}
               >
                 <Icon
                   className={`w-4 h-4 mt-0.5 shrink-0 ${
-                    isSelected ? "text-[#00AEEF]" : "text-slate-500"
+                    isSelected ? "text-[#019DF4]" : "text-slate-400"
                   }`}
                 />
                 <div>
-                  <div className="font-semibold text-slate-200">{sec.label}</div>
+                  <div className={`font-semibold ${isSelected ? "text-[#0B2742]" : "text-slate-700"}`}>
+                    {sec.label}
+                  </div>
                   <div className="text-[11px] text-slate-400 leading-tight">
                     {sec.desc}
                   </div>
@@ -95,29 +93,29 @@ export function Sidebar({ activeTab = "general", onTabChange }: SidebarProps) {
         </div>
 
         {/* Main Modules Quick Links */}
-        <div className="pt-4 border-t border-[#1E232B]">
-          <p className="text-[11px] uppercase tracking-wider font-mono text-slate-500 font-semibold mb-2">
+        <div className="pt-4 border-t border-slate-200">
+          <p className="text-[11px] uppercase tracking-wider font-mono text-slate-400 font-semibold mb-2">
             Módulos del Sistema
           </p>
           <div className="space-y-1">
             <Link
               href="/ots"
-              className={`flex items-center gap-2.5 px-3 py-2 text-xs rounded-lg transition-colors ${
+              className={`flex items-center gap-2.5 px-3 py-2 text-xs rounded-xl transition-colors ${
                 pathname === "/ots"
-                  ? "bg-[#121418] text-[#00AEEF] border border-[#1E232B] font-semibold"
-                  : "text-slate-400 hover:text-white hover:bg-[#121418]"
+                  ? "bg-[#EBF5FF] text-[#0B2742] border border-[#019DF4]/30 font-semibold"
+                  : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"
               }`}
             >
-              <ClipboardList className="w-4 h-4 text-[#00AEEF]" />
+              <ClipboardList className="w-4 h-4 text-[#019DF4]" />
               <span>Despacho de OTs</span>
             </Link>
 
             <Link
               href="/mobile"
-              className={`flex items-center gap-2.5 px-3 py-2 text-xs rounded-lg transition-colors ${
+              className={`flex items-center gap-2.5 px-3 py-2 text-xs rounded-xl transition-colors ${
                 pathname === "/mobile"
-                  ? "bg-[#121418] text-[#FF6A13] border border-[#1E232B] font-semibold"
-                  : "text-slate-400 hover:text-white hover:bg-[#121418]"
+                  ? "bg-orange-50 text-orange-700 border border-orange-200 font-semibold"
+                  : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"
               }`}
             >
               <Smartphone className="w-4 h-4 text-[#FF6A13]" />
@@ -126,13 +124,13 @@ export function Sidebar({ activeTab = "general", onTabChange }: SidebarProps) {
 
             <Link
               href="/batch"
-              className={`flex items-center gap-2.5 px-3 py-2 text-xs rounded-lg transition-colors ${
+              className={`flex items-center gap-2.5 px-3 py-2 text-xs rounded-xl transition-colors ${
                 pathname === "/batch"
-                  ? "bg-[#121418] text-[#00AEEF] border border-[#1E232B] font-semibold"
-                  : "text-slate-400 hover:text-white hover:bg-[#121418]"
+                  ? "bg-[#EBF5FF] text-[#0B2742] border border-[#019DF4]/30 font-semibold"
+                  : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"
               }`}
             >
-              <Layers className="w-4 h-4 text-[#00AEEF]" />
+              <Layers className="w-4 h-4 text-[#019DF4]" />
               <span>Batch & Liquidaciones</span>
             </Link>
           </div>
@@ -140,15 +138,15 @@ export function Sidebar({ activeTab = "general", onTabChange }: SidebarProps) {
       </div>
 
       {/* Network telemetry quick pill */}
-      <div className="bg-[#121418] border border-[#1E232B] rounded-lg p-3 space-y-2">
+      <div className="bg-[#F4F6F9] border border-slate-200 rounded-xl p-3 space-y-2">
         <div className="flex items-center justify-between text-[11px]">
-          <span className="text-slate-400 font-sans">Capacidad Nodos</span>
-          <span className="font-mono text-[#00AEEF] font-bold">142/142 OK</span>
+          <span className="text-slate-500 font-sans">Capacidad Nodos</span>
+          <span className="font-mono text-[#019DF4] font-bold">142/142 OK</span>
         </div>
-        <div className="w-full bg-[#0B0C0E] h-1.5 rounded-full overflow-hidden">
-          <div className="bg-[#00AEEF] h-full rounded-full w-[94%]" />
+        <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+          <div className="bg-[#019DF4] h-full rounded-full w-[94%]" />
         </div>
-        <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono">
+        <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono">
           <span>Latencia: 3.8ms</span>
           <span>Buffer: 0%</span>
         </div>

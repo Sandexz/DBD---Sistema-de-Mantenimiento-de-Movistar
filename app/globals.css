@@ -17,8 +17,8 @@
   }
 
   body {
-    background-color: #0B0C0E;
-    color: #E2E8F0;
+    background-color: #F4F6F9;
+    color: #1E293B;
     font-family: var(--font-public-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -34,23 +34,23 @@
   }
 }
 
-/* Custom scrollbar for NOC dashboards */
+/* Custom scrollbar — light corporate theme */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0B0C0E;
+  background: #F1F5F9;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1E232B;
+  background: #CBD5E1;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #2A313C;
+  background: #94A3B8;
 }
 
 /* Pulse animation for live data indicators */

@@ -55,7 +55,7 @@ export function Topbar() {
                 <span className="font-grotesk text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-[#019DF4] transition-colors">
                   Movistar Perú
                 </span>
-                <span className="text-[10px] font-mono bg-[#019DF4]/20 text-[#019DF4] px-1.5 py-0.2 rounded border border-[#019DF4]/40 font-bold">
+                <span className="text-[10px] font-mono bg-[#019DF4]/20 text-[#019DF4] px-1.5 py-0.5 rounded border border-[#019DF4]/40 font-bold">
                   SGMR
                 </span>
               </div>
@@ -103,7 +103,7 @@ export function Topbar() {
         {/* Right Section: Alerts & Profile */}
         <div className="flex items-center gap-3">
           <Link
-            href="/batch#alertas"
+            href="/dashboard#alertas"
             className="relative p-2 text-slate-200 hover:text-white hover:bg-[#123960] rounded-xl transition-colors"
             title="Alertas Activas NOC"
           >
@@ -131,18 +131,18 @@ export function Topbar() {
             </button>
 
             {profileOpen && (
-              <div className="absolute right-0 mt-2 w-56 bg-[#121418] border border-[#1E232B] rounded-2xl shadow-2xl p-2 z-50 animate-in fade-in">
-                <div className="px-3 py-2 border-b border-[#1E232B] mb-1">
-                  <p className="text-xs font-semibold text-white">Diego Quispe</p>
-                  <p className="text-[11px] text-slate-400">Cuadrilla Alfa 01 & Auditoría</p>
-                  <Badge variant="cyan" size="sm" className="mt-1 bg-[#019DF4]/20 text-[#019DF4] border-[#019DF4]/40">
+              <div className="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-2xl shadow-xl p-2 z-50 animate-in fade-in">
+                <div className="px-3 py-2 border-b border-slate-100 mb-1">
+                  <p className="text-xs font-semibold text-slate-900">Diego Quispe</p>
+                  <p className="text-[11px] text-slate-500">Cuadrilla Alfa 01 & Auditoría</p>
+                  <Badge variant="cyan" size="sm" className="mt-1 bg-[#019DF4]/10 text-[#019DF4] border-[#019DF4]/30">
                     Módulos Asignados
                   </Badge>
                 </div>
                 <Link
                   href="/mobile"
                   onClick={() => setProfileOpen(false)}
-                  className="flex items-center gap-2 px-3 py-2 text-xs text-slate-300 hover:text-white hover:bg-[#181B21] rounded-xl transition-colors"
+                  className="flex items-center gap-2 px-3 py-2 text-xs text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-colors"
                 >
                   <Smartphone className="w-4 h-4 text-[#00A86B]" />
                   <span>1. App Móvil Campo (/mobile)</span>
@@ -150,7 +150,7 @@ export function Topbar() {
                 <Link
                   href="/batch"
                   onClick={() => setProfileOpen(false)}
-                  className="flex items-center gap-2 px-3 py-2 text-xs text-slate-300 hover:text-white hover:bg-[#181B21] rounded-xl transition-colors"
+                  className="flex items-center gap-2 px-3 py-2 text-xs text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-colors"
                 >
                   <Layers className="w-4 h-4 text-[#019DF4]" />
                   <span>2. Módulo Batch (/batch)</span>
@@ -158,15 +158,15 @@ export function Topbar() {
                 <Link
                   href="/ots"
                   onClick={() => setProfileOpen(false)}
-                  className="flex items-center gap-2 px-3 py-2 text-xs text-slate-300 hover:text-white hover:bg-[#181B21] rounded-xl transition-colors"
+                  className="flex items-center gap-2 px-3 py-2 text-xs text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-colors"
                 >
-                  <ClipboardList className="w-4 h-4 text-slate-300" />
+                  <ClipboardList className="w-4 h-4 text-slate-500" />
                   <span>3. Gestión OTs (/ots)</span>
                 </Link>
                 <Link
                   href="/login"
                   onClick={() => setProfileOpen(false)}
-                  className="flex items-center gap-2 px-3 py-2 text-xs text-[#FF6A13] hover:bg-[#FF6A13]/10 rounded-xl transition-colors border-t border-[#1E232B] mt-1"
+                  className="flex items-center gap-2 px-3 py-2 text-xs text-[#FF6A13] hover:bg-orange-50 rounded-xl transition-colors border-t border-slate-100 mt-1"
                 >
                   <LogOut className="w-4 h-4" />
                   <span>Cerrar Sesión</span>

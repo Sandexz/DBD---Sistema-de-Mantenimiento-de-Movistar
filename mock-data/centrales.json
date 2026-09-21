@@ -1,0 +1,11 @@
+[
+  { "id": "CEN-LOL", "nombre": "Central Los Olivos", "zonaId": "ZN-NOR", "tipo": "Central principal", "direccion": "Av. Carlos Izaguirre 1210, Los Olivos", "lat": -11.9905, "lng": -77.0707, "clientes": 48200 },
+  { "id": "CEN-PPI", "nombre": "Central Puente Piedra", "zonaId": "ZN-NOR", "tipo": "Central secundaria", "direccion": "Panamericana Norte Km 29.5, Puente Piedra", "lat": -11.8665, "lng": -77.0745, "clientes": 21500 },
+  { "id": "CEN-SIS", "nombre": "Central San Isidro", "zonaId": "ZN-CEN", "tipo": "Central principal con Data Center", "direccion": "Av. Javier Prado Oeste 890, San Isidro", "lat": -12.0953, "lng": -77.0415, "clientes": 63900 },
+  { "id": "CEN-WAS", "nombre": "Central Washington", "zonaId": "ZN-CEN", "tipo": "Central principal", "direccion": "Jr. Washington 1250, Cercado de Lima", "lat": -12.0573, "lng": -77.0423, "clientes": 52400 },
+  { "id": "CEN-CHO", "nombre": "Central Chorrillos", "zonaId": "ZN-SUR", "tipo": "Central principal", "direccion": "Av. Huaylas 1650, Chorrillos", "lat": -12.1728, "lng": -77.0165, "clientes": 38700 },
+  { "id": "CEN-VES", "nombre": "Central Villa El Salvador", "zonaId": "ZN-SUR", "tipo": "Central secundaria", "direccion": "Av. Separadora Industrial 2230, Villa El Salvador", "lat": -12.2105, "lng": -76.942, "clientes": 29800 },
+  { "id": "CEN-MON", "nombre": "Central Monterrico", "zonaId": "ZN-EST", "tipo": "Central principal", "direccion": "Av. Javier Prado Este 4600, Santiago de Surco", "lat": -12.087, "lng": -76.974, "clientes": 41300 },
+  { "id": "CEN-SJL", "nombre": "Central San Juan de Lurigancho", "zonaId": "ZN-EST", "tipo": "Central secundaria", "direccion": "Av. Próceres de la Independencia 1780, SJL", "lat": -11.992, "lng": -77.004, "clientes": 35600 },
+  { "id": "CEN-CAL", "nombre": "Central Callao", "zonaId": "ZN-CAL", "tipo": "Central principal", "direccion": "Av. Sáenz Peña 480, Callao", "lat": -12.06, "lng": -77.139, "clientes": 27900 }
+]

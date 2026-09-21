@@ -1,0 +1,12 @@
+[
+  { "id": "VAL-2026-3301", "otId": "OT-2026-9032", "cuadrillaId": "C-18", "tecnico": "Daniel Flores", "codigo": "MV-SFP-10G", "cantidad": 1, "fecha": "2026-09-18 15:05" },
+  { "id": "VAL-2026-3308", "otId": "OT-2026-9038", "cuadrillaId": "C-09", "tecnico": "Eduardo Torre", "codigo": "MV-MUF-048", "cantidad": 1, "fecha": "2026-09-19 08:10" },
+  { "id": "VAL-2026-3309", "otId": "OT-2026-9038", "cuadrillaId": "C-09", "tecnico": "Eduardo Torre", "codigo": "MV-TER-060", "cantidad": 12, "fecha": "2026-09-19 08:11" },
+  { "id": "VAL-2026-3314", "otId": "OT-2026-9045", "cuadrillaId": "C-07", "tecnico": "Raúl Vega", "codigo": "MV-TER-060", "cantidad": 6, "fecha": "2026-09-19 20:30" },
+  { "id": "VAL-2026-3315", "otId": "OT-2026-9045", "cuadrillaId": "C-07", "tecnico": "Raúl Vega", "codigo": "MV-CIN-VUL", "cantidad": 1, "fecha": "2026-09-19 20:31" },
+  { "id": "VAL-2026-3316", "otId": "OT-2026-9045", "cuadrillaId": "C-07", "tecnico": "Raúl Vega", "codigo": "MV-CON-SCA", "cantidad": 4, "fecha": "2026-09-19 20:33" },
+  { "id": "VAL-2026-3319", "otId": "OT-2026-9039", "cuadrillaId": "C-10", "tecnico": "Kevin Salazar", "codigo": "MV-JMP-RF", "cantidad": 2, "fecha": "2026-09-19 18:20" },
+  { "id": "VAL-2026-3322", "otId": "OT-2026-9049", "cuadrillaId": "C-12", "tecnico": "Pedro Huamán", "codigo": "MV-PAD-LIM", "cantidad": 1, "fecha": "2026-09-20 09:35" },
+  { "id": "VAL-2026-3323", "otId": "OT-2026-9049", "cuadrillaId": "C-12", "tecnico": "Pedro Huamán", "codigo": "MV-CIN-VUL", "cantidad": 1, "fecha": "2026-09-20 09:36" },
+  { "id": "VAL-2026-3325", "otId": "OT-2026-9042", "cuadrillaId": "C-03", "tecnico": "Marco Silva", "codigo": "MV-SFP-10G", "cantidad": 1, "fecha": "2026-09-20 10:10" }
+]

@@ -1,0 +1,16 @@
+[
+  { "codigo": "MV-MUF-048", "nombre": "Mufa de empalme 48FO", "unidad": "und" },
+  { "codigo": "MV-PIG-SCA", "nombre": "Pigtail SC/APC 1.5 m", "unidad": "und" },
+  { "codigo": "MV-TER-060", "nombre": "Tubo termocontraíble 60 mm", "unidad": "und" },
+  { "codigo": "MV-CIN-VUL", "nombre": "Cinta vulcanizante", "unidad": "rollo" },
+  { "codigo": "MV-CON-SCA", "nombre": "Conector mecánico SC/APC", "unidad": "und" },
+  { "codigo": "MV-FO-144", "nombre": "Cable de fibra óptica 144 hilos", "unidad": "m" },
+  { "codigo": "MV-SFP-10G", "nombre": "Módulo SFP+ 10G-LR 1310 nm", "unidad": "und" },
+  { "codigo": "MV-FUS-063", "nombre": "Fusible NH 63 A", "unidad": "und" },
+  { "codigo": "MV-RCT-050", "nombre": "Módulo rectificador 48 V / 50 A", "unidad": "und" },
+  { "codigo": "MV-BAT-12V", "nombre": "Batería VRLA 12 V 100 Ah", "unidad": "und" },
+  { "codigo": "MV-PAD-LIM", "nombre": "Kit de limpieza de conectores", "unidad": "kit" },
+  { "codigo": "MV-SPL-116", "nombre": "Splitter PLC 1x16", "unidad": "und" },
+  { "codigo": "MV-JMP-RF", "nombre": "Jumper RF 1/2\"", "unidad": "und" },
+  { "codigo": "MV-TAP-NAP", "nombre": "Tapa de caja NAP 16 puertos", "unidad": "und" }
+]

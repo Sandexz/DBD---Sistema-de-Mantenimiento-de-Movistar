@@ -1,50 +1,10 @@
 [
-  {
-    "id": "SLA-CRIT",
-    "severidad": "CRÍTICA",
-    "prioridad": "P1 - Indisponibilidad Masiva",
-    "descripcion": "Corte de fibra óptica troncal, caída de Data Center o estación BTS principal",
-    "tiempoMaximoAtencion": "2 horas",
-    "tiempoObjetivoSolucion": "4 horas",
-    "horarioCobertura": "24/7/365 (NOC Inmediato)",
-    "penalidadOsiptel": "15 UIT / hora de retardo",
-    "estado": "Vigente",
-    "color": "red"
-  },
-  {
-    "id": "SLA-ALTA",
-    "severidad": "ALTA",
-    "prioridad": "P2 - Degradación Severa",
-    "descripcion": "Atenuación óptica grave en OLT, falla en grupo electrógeno con batería en descarga",
-    "tiempoMaximoAtencion": "4 horas",
-    "tiempoObjetivoSolucion": "8 horas",
-    "horarioCobertura": "24/7/365",
-    "penalidadOsiptel": "8 UIT / hora de retardo",
-    "estado": "Vigente",
-    "color": "orange"
-  },
-  {
-    "id": "SLA-MEDIA",
-    "severidad": "MEDIA",
-    "prioridad": "P3 - Afectación Parcial",
-    "descripcion": "Caja NAP con puertos aislados, repetidor secundario sin redundancia",
-    "tiempoMaximoAtencion": "8 horas",
-    "tiempoObjetivoSolucion": "24 horas",
-    "horarioCobertura": "Lunes a Domingo 07:00 - 22:00",
-    "penalidadOsiptel": "3 UIT / día de retardo",
-    "estado": "Vigente",
-    "color": "yellow"
-  },
-  {
-    "id": "SLA-BAJA",
-    "severidad": "BAJA",
-    "prioridad": "P4 - Mantenimiento Programado",
-    "descripcion": "Inspección preventiva programada, reemplazo de etiquetado o pruebas de rutina",
-    "tiempoMaximoAtencion": "24 horas",
-    "tiempoObjetivoSolucion": "48 horas",
-    "horarioCobertura": "Días laborables 08:00 - 18:00",
-    "penalidadOsiptel": "1 UIT / semana de retardo",
-    "estado": "Vigente",
-    "color": "blue"
-  }
+  { "id": "SLA-01", "severidad": "CRÍTICA", "prioridad": "P1", "alcance": "Caída de nodo core o más de 1,000 clientes afectados", "atencionMin": 60, "solucionMin": 240, "estado": "Vigente" },
+  { "id": "SLA-02", "severidad": "CRÍTICA", "prioridad": "P1", "alcance": "Corte de fibra troncal", "atencionMin": 60, "solucionMin": 120, "estado": "Vigente" },
+  { "id": "SLA-03", "severidad": "CRÍTICA", "prioridad": "P1", "alcance": "Cliente corporativo Platinum (VIP)", "atencionMin": 60, "solucionMin": 240, "estado": "Vigente" },
+  { "id": "SLA-04", "severidad": "ALTA", "prioridad": "P2", "alcance": "Falla de energía o respaldo en sitio crítico", "atencionMin": 120, "solucionMin": 480, "estado": "Vigente" },
+  { "id": "SLA-05", "severidad": "ALTA", "prioridad": "P2", "alcance": "Red de distribución (100 a 1,000 clientes)", "atencionMin": 120, "solucionMin": 480, "estado": "Vigente" },
+  { "id": "SLA-06", "severidad": "MEDIA", "prioridad": "P3", "alcance": "Red de acceso y degradación de señal", "atencionMin": 240, "solucionMin": 1440, "estado": "Vigente" },
+  { "id": "SLA-07", "severidad": "BAJA", "prioridad": "P4", "alcance": "Avería individual o sin afectación de servicio", "atencionMin": 1440, "solucionMin": 4320, "estado": "Vigente" },
+  { "id": "SLA-08", "severidad": "MEDIA", "prioridad": "P3", "alcance": "Estación base con degradación parcial", "atencionMin": 180, "solucionMin": 720, "estado": "En revisión" }
 ]

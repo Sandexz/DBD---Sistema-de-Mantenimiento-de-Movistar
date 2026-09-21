@@ -1,218 +1,245 @@
 "use client";
 
+// Tabla de órdenes de trabajo (componente existente, conservado y ampliado).
+// Se mantienen: búsqueda, filtros por criticidad y estado, contador, copiar ID,
+// marca NUEVA, estado vacío y ficha de detalle. Se agregan: filtro y etiqueta por tipo
+// (OT PREVENTIVA / OT CORRECTIVA), columna de actividad y accesos de asignación/despacho.
 import React, { useState } from "react";
-import {
-  Search,
-  Filter,
-  MapPin,
-  Clock,
-  HardHat,
-  ChevronRight,
-  Sparkles,
-} from "lucide-react";
-import { Badge } from "./ui/badge";
+import { MapPin, Clock, HardHat, Sparkles, Copy, Check, Eye, Send, UserPlus } from "lucide-react";
+import type { OrdenTrabajo } from "@/lib/types";
+import { useSgmr } from "@/lib/store";
+import { fmtFechaHora } from "@/lib/fechas";
+import { OtDetailModal } from "./ot-detail-modal";
+import { CriticidadBadge, Pill, SearchInput, TipoOtTag, toneOt, cx } from "./sgmr/ui";
 
-export interface OtRecord {
-  id: string;
-  origin: string;
-  criticality: "ALTA" | "CRÍTICA" | "MEDIA" | "BAJA";
-  slaHours: string;
-  infra: string;
-  crew: string;
-  status: string;
-  statusBadge?: string;
-  coordinates: string;
-  createdAt: string;
-  materials?: string;
-  isNew?: boolean;
-}
+export type OtRecord = OrdenTrabajo & { statusBadge?: string };
 
 interface OtTableProps {
   ots: OtRecord[];
 }
 
+const ESTADOS = ["PENDIENTE", "ASIGNADA", "EN RUTA", "EN EJECUCIÓN", "PENDIENTE DE CIERRE", "CERRADA"];
+
 export function OtTable({ ots }: OtTableProps) {
+  const { despacharOt, notificar } = useSgmr();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCrit, setFilterCrit] = useState("ALL");
+  const [filterStatus, setFilterStatus] = useState("ALL");
+  const [filterTipo, setFilterTipo] = useState("ALL");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
+  const q = searchTerm.toLowerCase();
   const filteredOts = ots.filter((ot) => {
     const matchesSearch =
-      ot.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      ot.infra.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      ot.crew.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      ot.origin.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesCrit =
-      filterCrit === "ALL" || ot.criticality === filterCrit;
-
-    return matchesSearch && matchesCrit;
+      !q ||
+      [ot.id, ot.infra, ot.crew, ot.origin, ot.materials ?? "", ot.actividad, ot.ticketId ?? "", ot.planId ?? ""].some((v) =>
+        v.toLowerCase().includes(q)
+      );
+    const matchesCrit = filterCrit === "ALL" || ot.criticality === filterCrit;
+    const matchesStatus = filterStatus === "ALL" || ot.status === filterStatus;
+    const matchesTipo = filterTipo === "ALL" || ot.tipo === filterTipo;
+    return matchesSearch && matchesCrit && matchesStatus && matchesTipo;
   });
 
+  const handleCopyId = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigator.clipboard?.writeText(id);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const chip = (activo: boolean) =>
+    cx(
+      "rounded-full border px-2.5 py-1 text-xs font-medium transition-colors",
+      activo ? "border-mv-ink bg-mv-ink text-white" : "border-mv-line bg-white text-mv-ink-2 hover:bg-mv-surface"
+    );
+
+  const selected = ots.find((o) => o.id === selectedId) ?? null;
+
   return (
-    <div className="bg-[#121418] border border-[#1E232B] rounded-xl overflow-hidden shadow-card-dark">
-      {/* Search and Filters Header */}
-      <div className="p-4 border-b border-[#1E232B] bg-[#0B0C0E]/70 flex flex-col sm:flex-row items-center justify-between gap-3">
-        {/* Quick Search */}
-        <div className="relative w-full sm:w-80">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
+    <div className="overflow-hidden rounded-lg border border-mv-line bg-white">
+      <div className="space-y-3 border-b border-mv-line bg-mv-surface-2 p-4">
+        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+          <SearchInput
+            className="w-full max-w-md"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Buscar por ID, Nodo, Cuadrilla u Origen..."
-            className="w-full pl-9 pr-3 py-1.5 bg-[#121418] border border-[#1E232B] rounded-md text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-[#00AEEF]"
+            onChange={setSearchTerm}
+            placeholder="Buscar por OT, ticket, activo, cuadrilla u origen…"
           />
+          <span className="num text-xs text-mv-ink-2">
+            Mostrando {filteredOts.length} de {ots.length} OT
+          </span>
         </div>
 
-        {/* Filter Badges */}
-        <div className="flex items-center gap-1.5 w-full sm:w-auto overflow-x-auto text-xs">
-          <span className="text-slate-400 text-[11px] font-mono mr-1">
-            Filtrar:
-          </span>
-          {["ALL", "CRÍTICA", "ALTA", "MEDIA", "BAJA"].map((f) => (
-            <button
-              key={f}
-              onClick={() => setFilterCrit(f)}
-              className={`px-2.5 py-1 rounded text-[11px] font-mono transition-colors ${
-                filterCrit === f
-                  ? "bg-[#0A2E5C] text-[#00AEEF] border border-[#00AEEF]/40 font-semibold"
-                  : "bg-[#0B0C0E] text-slate-400 hover:text-white border border-[#1E232B]"
-              }`}
-            >
-              {f === "ALL" ? "Todas" : f}
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="mr-1 text-[11px] font-semibold uppercase tracking-wide text-mv-muted">Tipo:</span>
+            {[
+              { id: "ALL", label: "Todas" },
+              { id: "PREVENTIVO", label: "Preventivas" },
+              { id: "CORRECTIVO", label: "Correctivas" },
+            ].map((t) => (
+              <button key={t.id} onClick={() => setFilterTipo(t.id)} className={chip(filterTipo === t.id)}>
+                {t.label}
+              </button>
+            ))}
+          </div>
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="mr-1 text-[11px] font-semibold uppercase tracking-wide text-mv-muted">Criticidad:</span>
+            {[
+              { id: "ALL", label: "Todas" },
+              { id: "CRÍTICA", label: "Crítica" },
+              { id: "ALTA", label: "Alta" },
+              { id: "MEDIA", label: "Media" },
+              { id: "BAJA", label: "Baja" },
+            ].map((f) => (
+              <button key={f.id} onClick={() => setFilterCrit(f.id)} className={chip(filterCrit === f.id)}>
+                {f.label}
+              </button>
+            ))}
+          </div>
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="mr-1 text-[11px] font-semibold uppercase tracking-wide text-mv-muted">Estado:</span>
+            <button onClick={() => setFilterStatus("ALL")} className={chip(filterStatus === "ALL")}>
+              Todos
             </button>
-          ))}
+            {ESTADOS.map((st) => (
+              <button key={st} onClick={() => setFilterStatus(st)} className={chip(filterStatus === st)}>
+                {st.charAt(0) + st.slice(1).toLowerCase()} <span className="num opacity-70">{ots.filter((o) => o.status === st).length}</span>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Table Container */}
       <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse text-xs">
+        <table className="tbl">
           <thead>
-            <tr className="bg-[#0A2E5C]/40 border-b border-[#1E232B] text-[11px] font-mono text-slate-400 uppercase tracking-wider">
-              <th className="py-3 px-4">ID de Orden</th>
-              <th className="py-3 px-4">Criticidad / SLA</th>
-              <th className="py-3 px-4">Nodo / Infraestructura</th>
-              <th className="py-3 px-4">Origen</th>
-              <th className="py-3 px-4">Cuadrilla Asignada</th>
-              <th className="py-3 px-4">Estado Operativo</th>
-              <th className="py-3 px-4 text-right">Acción</th>
+            <tr>
+              <th>Orden / tipo</th>
+              <th>Criticidad / SLA</th>
+              <th>Activo / actividad</th>
+              <th>Origen</th>
+              <th>Cuadrilla</th>
+              <th>Estado</th>
+              <th className="text-right">Acción</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#1E232B]">
+          <tbody>
             {filteredOts.length === 0 ? (
               <tr>
-                <td colSpan={7} className="py-8 text-center text-slate-500 font-mono">
-                  No se encontraron órdenes con el criterio especificado.
+                <td colSpan={7} className="py-12 text-center">
+                  <p className="font-semibold text-mv-ink">No se encontraron órdenes</p>
+                  <p className="text-xs text-mv-ink-2">Pruebe con otro término de búsqueda o restablezca los filtros.</p>
                 </td>
               </tr>
             ) : (
-              filteredOts.map((ot) => {
-                const isCrit = ot.criticality === "CRÍTICA" || ot.criticality === "ALTA";
-
-                return (
-                  <tr
-                    key={ot.id}
-                    className={`hover:bg-[#181B21] transition-colors group ${
-                      ot.isNew ? "bg-[#00AEEF]/5 border-l-2 border-l-[#00AEEF]" : ""
-                    }`}
-                  >
-                    {/* ID & Date */}
-                    <td className="py-3.5 px-4 font-mono font-bold whitespace-nowrap">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[#019DF4]">{ot.id}</span>
-                        {ot.isNew && (
-                          <span className="inline-flex items-center gap-0.5 text-[9px] font-sans font-bold bg-[#019DF4] text-white px-1.5 py-0.5 rounded-full">
-                            <Sparkles className="w-2.5 h-2.5" /> NUEVA
-                          </span>
-                        )}
-                      </div>
-                      <span className="block text-[10px] text-slate-500 font-normal">
-                        {ot.createdAt}
-                      </span>
-                    </td>
-
-                    {/* Criticality & SLA */}
-                    <td className="py-3.5 px-4 whitespace-nowrap">
-                      <div className="flex flex-col gap-1">
-                        <Badge
-                          variant={isCrit ? "orange" : "cyan"}
-                          size="sm"
-                          pulse={ot.criticality === "CRÍTICA"}
-                        >
-                          {ot.criticality}
-                        </Badge>
-                        <span className="text-[10px] font-mono text-slate-400 flex items-center gap-1">
-                          <Clock className="w-3 h-3 text-slate-500" />
-                          SLA: {ot.slaHours}
-                        </span>
-                      </div>
-                    </td>
-
-                    {/* Infraestructura */}
-                    <td className="py-3.5 px-4">
-                      <div className="font-semibold text-slate-200">{ot.infra}</div>
-                      <div className="text-[10px] font-mono text-slate-400 flex items-center gap-1 mt-0.5">
-                        <MapPin className="w-3 h-3 text-[#00AEEF]" />
-                        {ot.coordinates}
-                      </div>
-                    </td>
-
-                    {/* Origen */}
-                    <td className="py-3.5 px-4 text-slate-300">
-                      <span>{ot.origin}</span>
-                    </td>
-
-                    {/* Cuadrilla */}
-                    <td className="py-3.5 px-4">
-                      <div className="flex items-center gap-1.5 text-slate-200">
-                        <HardHat className="w-3.5 h-3.5 text-[#00AEEF] shrink-0" />
-                        <span className="truncate">{ot.crew}</span>
-                      </div>
-                      {ot.materials && (
-                        <span className="block text-[10px] font-mono text-slate-400 truncate max-w-[180px]">
-                          Mat: {ot.materials}
+              filteredOts.map((ot) => (
+                <tr key={ot.id} onClick={() => setSelectedId(ot.id)} className={cx("is-clickable group", ot.isNew && "bg-st-info-bg/50")}>
+                  <td className="whitespace-nowrap">
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-mono text-xs font-bold text-mv-ink">{ot.id}</span>
+                      {ot.isNew && (
+                        <span className="inline-flex items-center gap-0.5 rounded-full bg-st-info px-1.5 py-0.5 text-[9px] font-bold text-white">
+                          <Sparkles className="h-2.5 w-2.5" /> NUEVA
                         </span>
                       )}
-                    </td>
-
-                    {/* Estado */}
-                    <td className="py-3.5 px-4 whitespace-nowrap">
-                      <Badge
-                        variant={
-                          ot.status === "EN ATENCIÓN" || ot.status === "EN RUTA"
-                            ? "orange"
-                            : "cyan"
-                        }
-                        size="sm"
-                      >
-                        {ot.status}
-                      </Badge>
-                    </td>
-
-                    {/* Acciones */}
-                    <td className="py-3.5 px-4 text-right whitespace-nowrap">
                       <button
                         type="button"
-                        className="inline-flex items-center gap-1 text-[11px] font-mono text-[#00AEEF] hover:text-white px-2 py-1 rounded hover:bg-[#0A2E5C] transition-colors"
+                        onClick={(e) => handleCopyId(ot.id, e)}
+                        title="Copiar ID"
+                        className="p-0.5 text-mv-muted opacity-0 transition-opacity hover:text-mv-ink group-hover:opacity-100"
                       >
-                        <span>Detalle</span>
-                        <ChevronRight className="w-3.5 h-3.5" />
+                        {copiedId === ot.id ? <Check className="h-3 w-3 text-st-ok" /> : <Copy className="h-3 w-3" />}
                       </button>
-                    </td>
-                  </tr>
-                );
-              })
+                    </div>
+                    <span className="mt-0.5 block font-mono text-[11px] text-mv-muted">{fmtFechaHora(ot.createdAt)}</span>
+                    <span className="mt-1 block">
+                      <TipoOtTag tipo={ot.tipo} short />
+                    </span>
+                  </td>
+                  <td className="whitespace-nowrap">
+                    <CriticidadBadge c={ot.criticality} />
+                    <span className="mt-1 flex items-center gap-1 font-mono text-[11px] text-mv-ink-2">
+                      <Clock className="h-3 w-3" /> {ot.slaHours}
+                    </span>
+                  </td>
+                  <td className="min-w-[190px]">
+                    <div className="font-semibold text-mv-ink">{ot.infra}</div>
+                    <div className="text-[12px] text-mv-ink-2">{ot.actividad}</div>
+                    <div className="mt-0.5 flex items-center gap-1 font-mono text-[11px] text-mv-muted">
+                      <MapPin className="h-3 w-3" /> {ot.coordinates}
+                    </div>
+                  </td>
+                  <td className="min-w-[130px] max-w-[170px] text-mv-ink-2">
+                    <span className="line-clamp-2 text-[12px]">{ot.origin}</span>
+                    <span className="mt-0.5 block font-mono text-[10px] text-mv-muted">{ot.ticketId ?? ot.planId ?? "Sin documento"}</span>
+                  </td>
+                  <td className="min-w-[140px] max-w-[190px]">
+                    <div className="flex items-center gap-1.5 font-medium text-mv-ink">
+                      <HardHat className="h-3.5 w-3.5 shrink-0 text-mv-muted" />
+                      <span className="truncate">{ot.crew}</span>
+                    </div>
+                    {ot.materials && <span className="mt-0.5 block max-w-[180px] truncate font-mono text-[11px] text-mv-muted">{ot.materials}</span>}
+                  </td>
+                  <td className="whitespace-nowrap">
+                    <Pill tone={toneOt(ot.status)} dot>
+                      {ot.status}
+                    </Pill>
+                  </td>
+                  <td className="whitespace-nowrap text-right">
+                    <div className="inline-flex items-center gap-1.5">
+                      {ot.status === "ASIGNADA" && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            despacharOt(ot.id);
+                            notificar(`${ot.id} despachada: ${ot.crew} en ruta.`);
+                          }}
+                          className="inline-flex items-center gap-1 rounded-md border border-mv-green/40 bg-mv-green-50 px-2 py-1 text-xs font-semibold text-mv-green-800 hover:bg-mv-green-100"
+                        >
+                          <Send className="h-3.5 w-3.5" /> Despachar
+                        </button>
+                      )}
+                      {ot.status === "PENDIENTE" && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedId(ot.id);
+                          }}
+                          className="inline-flex items-center gap-1 rounded-md border border-st-warn/50 bg-st-warn-bg px-2 py-1 text-xs font-semibold text-st-warn-fg"
+                        >
+                          <UserPlus className="h-3.5 w-3.5" /> Asignar
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedId(ot.id);
+                        }}
+                        className="inline-flex items-center gap-1 rounded-md border border-mv-line bg-white px-2 py-1 text-xs font-semibold text-mv-ink hover:bg-mv-surface"
+                      >
+                        <Eye className="h-3.5 w-3.5" /> Detalle
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
             )}
           </tbody>
         </table>
       </div>
 
-      {/* Table Footer */}
-      <div className="px-4 py-3 bg-[#0B0C0E] border-t border-[#1E232B] flex items-center justify-between text-xs text-slate-400 font-mono">
-        <span>Mostrando {filteredOts.length} de {ots.length} registros en memoria</span>
-        <span className="text-[11px] text-slate-500">Datos mock actualizados</span>
+      <div className="flex flex-col items-center justify-between gap-2 border-t border-mv-line bg-mv-surface-2 px-4 py-2.5 text-xs text-mv-ink-2 sm:flex-row">
+        <span>Datos compartidos en memoria con consultas, campo y reportes</span>
+        <span className="num text-mv-muted">Total de órdenes cargadas: {ots.length}</span>
       </div>
+
+      <OtDetailModal ot={selected} isOpen={Boolean(selected)} onClose={() => setSelectedId(null)} />
     </div>
   );
 }

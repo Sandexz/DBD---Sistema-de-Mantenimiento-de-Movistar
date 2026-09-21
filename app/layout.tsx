@@ -1,30 +1,20 @@
-import type { Metadata } from "next";
-import { Space_Grotesk, Public_Sans, IBM_Plex_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import "@fontsource-variable/figtree";
+import "@fontsource/ibm-plex-mono/400.css";
+import "@fontsource/ibm-plex-mono/500.css";
 import "./globals.css";
-import { UserProvider } from "@/components/layout/user-context";
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  variable: "--font-space-grotesk",
-  display: "swap",
-});
-
-const publicSans = Public_Sans({
-  subsets: ["latin"],
-  variable: "--font-public-sans",
-  display: "swap",
-});
-
-const ibmPlexMono = IBM_Plex_Mono({
-  weight: ["400", "500", "600"],
-  subsets: ["latin"],
-  variable: "--font-ibm-plex-mono",
-  display: "swap",
-});
+import { SgmrProvider } from "@/lib/store";
 
 export const metadata: Metadata = {
-  title: "SGMR — Sistema de Mantenimiento e Infraestructura de Redes | Movistar Perú",
-  description: "Plataforma Integral NOC, Supervisión Gerencial, Gestión Operativa de OTs, Auditoría Batch y App Móvil de Campo para Movistar Perú",
+  title: "SGMR Movistar | Sistema de Mantenimiento de Redes",
+  description:
+    "Sistema de Mantenimiento de Redes de Movistar: gestión gerencial y operativa del mantenimiento preventivo y correctivo.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#5BC500",
 };
 
 export default function RootLayout({
@@ -33,14 +23,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="es"
-      className={`${spaceGrotesk.variable} ${publicSans.variable} ${ibmPlexMono.variable}`}
-    >
-      <body className="min-h-screen bg-[#F8FAFC] text-slate-800 antialiased selection:bg-[#019DF4]/20 selection:text-[#0B2742]">
-        <UserProvider>
-          {children}
-        </UserProvider>
+    <html lang="es">
+      <body className="min-h-screen bg-white text-mv-ink antialiased selection:bg-mv-green-100 selection:text-mv-ink">
+        <SgmrProvider>{children}</SgmrProvider>
       </body>
     </html>
   );

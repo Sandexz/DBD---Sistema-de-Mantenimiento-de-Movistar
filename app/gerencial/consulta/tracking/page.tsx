@@ -1,299 +1,181 @@
 "use client";
 
-import React, { useState } from "react";
-import {
-  Navigation,
-  MapPin,
-  Truck,
-  HardHat,
-  Filter,
-  CheckCircle2,
-  Clock,
-  Radio,
-  Compass,
-} from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import initialTracking from "@/mock-data/tracking.json";
+// GERENCIAL › Consulta › Tracking y Geolocalización
+import React, { useMemo, useState } from "react";
+import { Navigation, Truck, Clock } from "lucide-react";
+import { AppShell } from "@/components/sgmr/shell";
+import { GeoMap, LeyendaItem, type MapLine, type MapPoint } from "@/components/sgmr/geo-map";
+import { EmptyState, KV, Panel, Pill, SearchInput, Select, Stat, TipoOtTag, toneTracking, cx } from "@/components/sgmr/ui";
+import { useCatalogos, useSgmr } from "@/lib/store";
+import { distanciaM, fmtCoord, fmtDistancia } from "@/lib/data";
+import type { EstadoTracking } from "@/lib/types";
+
+const ESTADOS: EstadoTracking[] = ["Disponible", "En ruta", "En sitio", "En ejecución", "Finalizado"];
+const VEL_KMH = 25; // velocidad media urbana supuesta para el tiempo estimado de arribo
 
 export default function TrackingPage() {
-  const [trackingList, setTrackingList] = useState(initialTracking);
-  const [selectedMobile, setSelectedMobile] = useState<any>(initialTracking[0]);
-  const [filterEstado, setFilterEstado] = useState("TODOS");
-  const [filterTipo, setFilterTipo] = useState("TODOS");
+  const { datos } = useSgmr();
+  const cat = useCatalogos();
+  const [estado, setEstado] = useState<EstadoTracking | "">("");
+  const [zona, setZona] = useState("");
+  const [q, setQ] = useState("");
+  const [sel, setSel] = useState<string | null>("C-01");
 
-  const filtered = trackingList.filter((m) => {
-    const matchEstado = filterEstado === "TODOS" || m.estado === filterEstado;
-    const matchTipo = filterTipo === "TODOS" || m.tipoMantenimiento === filterTipo;
-    return matchEstado && matchTipo;
-  });
+  const filas = useMemo(
+    () =>
+      datos.cuadrillas.map((c) => {
+        const tr = datos.tracking.find((t) => t.cuadrillaId === c.id);
+        const ot = cat.ot(tr?.otId);
+        const destino = cat.activo(ot?.activoId);
+        const dist = tr && destino ? distanciaM(tr.lat, tr.lng, destino.lat, destino.lng) : null;
+        return { c, tr, estado: (tr?.estado ?? "Disponible") as EstadoTracking, ot, destino, dist };
+      }),
+    [datos.cuadrillas, datos.tracking, cat]
+  );
+
+  const filtradas = filas.filter(
+    (f) =>
+      (!estado || f.estado === estado) &&
+      (!zona || f.c.zonaId === zona) &&
+      (!q || [f.c.id, f.c.nombre, f.c.lider, f.ot?.id ?? ""].some((v) => v.toLowerCase().includes(q.toLowerCase())))
+  );
+
+  const puntos: MapPoint[] = [
+    ...filtradas
+      .filter((f) => f.destino && f.estado !== "Finalizado")
+      .map((f) => ({ id: `dest-${f.c.id}`, lat: f.destino!.lat, lng: f.destino!.lng, label: f.destino!.codigo, tone: "neutral" as const, kind: "activo" as const })),
+    ...filtradas
+      .filter((f) => f.tr)
+      .map((f) => ({ id: f.c.id, lat: f.tr!.lat, lng: f.tr!.lng, label: `${f.c.id} ${f.c.nombre}`, tone: toneTracking(f.estado), kind: "cuadrilla" as const })),
+  ];
+  const lineas: MapLine[] = filtradas
+    .filter((f) => f.tr && f.destino && (f.estado === "En ruta" || f.estado === "En sitio"))
+    .map((f) => ({ from: f.tr!, to: f.destino!, tone: toneTracking(f.estado), dashed: f.estado === "En ruta" }));
+
+  const s = filas.find((f) => f.c.id === sel);
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-mono font-bold text-[#0070B8] bg-[#E5F4FD] px-2 py-0.5 rounded border border-[#B8E2FB]">
-              CONSULTA GERENCIAL
-            </span>
-            <span className="text-xs text-slate-400 font-mono">/ Geolocalización en Vivo</span>
+    <AppShell fn="tracking">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+        {ESTADOS.map((e) => (
+          <Stat
+            key={e}
+            label={e}
+            value={filas.filter((f) => f.estado === e).length}
+            tone={toneTracking(e) === "neutral" ? undefined : toneTracking(e)}
+            onClick={() => setEstado(estado === e ? "" : e)}
+            active={estado === e}
+          />
+        ))}
+      </div>
+
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
+        <div className="space-y-3">
+          <div className="flex flex-wrap gap-2">
+            <SearchInput className="w-full max-w-xs" value={q} onChange={setQ} placeholder="Cuadrilla, técnico u OT" />
+            <Select className="w-auto" value={zona} onChange={(e) => setZona(e.target.value)}>
+              <option value="">Todas las zonas</option>
+              {datos.zonas.map((z) => (
+                <option key={z.id} value={z.id}>{z.nombre}</option>
+              ))}
+            </Select>
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold font-grotesk tracking-tight text-slate-900 mt-1">
-            Tracking y Geolocalización de Cuadrillas
-          </h1>
-          <p className="text-xs text-slate-500 font-sans mt-0.5">
-            Monitoreo en tiempo real del desplazamiento y posicionamiento de móviles técnicos para preventivo y correctivo
-          </p>
+          <GeoMap
+            points={puntos}
+            lines={lineas}
+            selected={sel}
+            onSelect={(id) => !id.startsWith("dest-") && setSel(id)}
+            height={460}
+            leyenda={
+              <>
+                {ESTADOS.map((e) => (
+                  <LeyendaItem key={e} tone={toneTracking(e)} label={e} shape="diamond" />
+                ))}
+                <LeyendaItem tone="neutral" label="Activo destino" />
+              </>
+            }
+          />
         </div>
 
-        <div className="flex items-center gap-2">
-          <Badge variant="movistar" size="md" pulse>
-            TELEMETRÍA GPS ACTIVA
-          </Badge>
-        </div>
-      </div>
-
-      {/* Filter Bar */}
-      <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-        <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto">
-          <span className="text-slate-400 font-mono text-[11px]">Estado:</span>
-          {["TODOS", "Disponible", "En ruta", "En sitio", "En ejecución", "Finalizado"].map((st) => (
-            <button
-              key={st}
-              onClick={() => setFilterEstado(st)}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-mono transition-colors ${
-                filterEstado === st
-                  ? "bg-[#5BC500] text-white font-bold"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-              }`}
-            >
-              {st}
-            </button>
-          ))}
-        </div>
-
-        <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto">
-          <span className="text-slate-400 font-mono text-[11px]">Tipo Mantenimiento:</span>
-          {["TODOS", "PREVENTIVO", "CORRECTIVO"].map((tp) => (
-            <button
-              key={tp}
-              onClick={() => setFilterTipo(tp)}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-mono transition-colors ${
-                filterTipo === tp
-                  ? "bg-slate-900 text-white font-bold"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-              }`}
-            >
-              {tp}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Grid: Interactive GPS Map + Cuadrillas List */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Mapa SVG de Cuadrillas (2 Cols) */}
-        <div className="lg:col-span-2 space-y-2">
-          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-card-clean">
-            {/* Map Topbar */}
-            <div className="flex items-center justify-between px-4 py-2.5 bg-slate-50 border-b border-slate-200 text-xs">
+        <Panel title={s ? `${s.c.id} ${s.c.nombre}` : "Cuadrilla"} subtitle={s ? `${s.c.lider} · ${cat.contratista(s.c.contratistaId)?.empresa}` : undefined} icon={<Truck className="h-4 w-4" />}>
+          {!s ? (
+            <EmptyState title="Seleccione una cuadrilla en el mapa o la tabla" />
+          ) : (
+            <div className="space-y-4 text-[13px]">
               <div className="flex items-center gap-2">
-                <Radio className="w-4 h-4 text-[#5BC500] animate-pulse" />
-                <span className="font-grotesk font-bold text-slate-800">
-                  Visualizador Geo-Espacial de Cuadrillas Movistar
-                </span>
+                <Pill tone={toneTracking(s.estado)} dot>{s.estado}</Pill>
+                {s.tr && <span className="flex items-center gap-1 text-xs text-mv-ink-2"><Clock className="h-3 w-3" /> act. {s.tr.actualizado}</span>}
               </div>
-              <div className="flex items-center gap-1.5 font-mono text-[10px] text-slate-500">
-                <Compass className="w-3.5 h-3.5 text-[#019DF4]" />
-                <span>GPS WGS-84 / Escala OSP 1:50,000</span>
-              </div>
-            </div>
-
-            {/* SVG Visual Canvas with crew markers */}
-            <div className="relative h-[420px] w-full bg-slate-900 overflow-hidden flex items-center justify-center">
-              {/* Radar and Grid */}
-              <div
-                className="absolute inset-0 opacity-25 pointer-events-none"
-                style={{
-                  backgroundImage: `radial-gradient(#019DF4 1px, transparent 1px), linear-gradient(to right, #334155 1px, transparent 1px), linear-gradient(to bottom, #334155 1px, transparent 1px)`,
-                  backgroundSize: "24px 24px, 48px 48px, 48px 48px",
-                }}
-              />
-
-              {/* Radar sweep */}
-              <div className="absolute w-[600px] h-[600px] rounded-full border border-sky-500/15 pointer-events-none flex items-center justify-center">
-                <div
-                  className="absolute inset-0 origin-center animate-radar pointer-events-none"
-                  style={{
-                    background:
-                      "conic-gradient(from 0deg at 50% 50%, rgba(91, 197, 0, 0.15) 0deg, transparent 60deg, transparent 360deg)",
-                  }}
-                />
-              </div>
-
-              {/* SVG Topology with Crew Coordinates */}
-              <svg viewBox="0 0 600 420" className="w-full h-full absolute inset-0 select-none">
-                {/* Arterias viales simuladas */}
-                <path
-                  d="M 120 40 L 260 180 L 380 260 L 520 380"
-                  stroke="#475569"
-                  strokeWidth="3"
-                  fill="none"
-                  strokeDasharray="6 4"
-                />
-                <path
-                  d="M 480 80 L 380 260 L 210 320"
-                  stroke="#334155"
-                  strokeWidth="2"
-                  fill="none"
-                />
-
-                {/* Marcadores de cuadrillas */}
-                {filtered.map((m, idx) => {
-                  const x = 150 + idx * 80;
-                  const y = 90 + idx * 60;
-                  const isSelected = selectedMobile?.id === m.id;
-                  const isPreventivo = m.tipoMantenimiento === "PREVENTIVO";
-
-                  return (
-                    <g
-                      key={m.id}
-                      transform={`translate(${x}, ${y})`}
-                      onClick={() => setSelectedMobile(m)}
-                      className="cursor-pointer group"
-                    >
-                      {/* Pulse Ring */}
-                      <circle
-                        r={isSelected ? "18" : "12"}
-                        fill={isPreventivo ? "#5BC500" : "#FF6A13"}
-                        fillOpacity={isSelected ? "0.4" : "0.2"}
-                        className="transition-all duration-200"
-                      />
-                      {/* Pin Center */}
-                      <circle
-                        r="7"
-                        fill={isPreventivo ? "#5BC500" : "#FF6A13"}
-                        stroke="#FFFFFF"
-                        strokeWidth="2"
-                      />
-                      {/* Label */}
-                      <text
-                        x="12"
-                        y="4"
-                        fill={isSelected ? "#5BC500" : "#E2E8F0"}
-                        fontSize="11"
-                        fontFamily="monospace"
-                        fontWeight="bold"
-                        className="select-none"
-                      >
-                        {m.cuadrilla}
-                      </text>
-                    </g>
-                  );
-                })}
-              </svg>
-
-              {/* Overlay Selected Crew Detail Card */}
-              {selectedMobile && (
-                <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md border border-slate-200 rounded-xl p-3.5 shadow-xl text-xs text-slate-800 space-y-2">
-                  <div className="flex items-center justify-between border-b border-slate-150 pb-2">
-                    <div className="flex items-center gap-2">
-                      <HardHat className="w-4 h-4 text-[#5BC500]" />
-                      <strong className="font-grotesk font-bold text-sm text-slate-900">
-                        {selectedMobile.cuadrilla}
-                      </strong>
-                      <Badge
-                        variant={selectedMobile.tipoMantenimiento === "PREVENTIVO" ? "movistar" : "yellow"}
-                        size="sm"
-                      >
-                        {selectedMobile.tipoMantenimiento}
-                      </Badge>
-                    </div>
-                    <Badge variant="blue" size="sm">
-                      {selectedMobile.estado}
-                    </Badge>
+              <dl className="grid grid-cols-2 gap-3">
+                <KV k="Zona" v={cat.zona(s.c.zonaId)?.nombre} />
+                <KV k="Integrantes" v={s.c.integrantes} />
+                <KV k="Especialidad" v={s.c.especialidad} />
+                <KV k="Posición" v={s.tr ? fmtCoord(s.tr.lat, s.tr.lng) : "Sin reporte GPS"} mono />
+              </dl>
+              {s.ot ? (
+                <div className="space-y-2 rounded-lg border border-mv-line p-3">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-xs font-bold">{s.ot.id}</span>
+                    <TipoOtTag tipo={s.ot.tipo} short />
                   </div>
-
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-[11px]">
-                    <div>
-                      <span className="text-slate-400 block text-[10px]">Técnico Líder:</span>
-                      <span className="font-bold text-slate-800">{selectedMobile.tecnico}</span>
+                  <p className="text-xs text-mv-ink">{s.ot.actividad}</p>
+                  <p className="text-xs text-mv-ink-2">Destino: {s.destino?.codigo} · {s.destino?.direccion}</p>
+                  {s.dist !== null && (
+                    <div className="grid grid-cols-2 gap-2 pt-1">
+                      <KV k="Distancia al activo" v={<span className="num font-semibold">{fmtDistancia(s.dist)}</span>} />
+                      <KV
+                        k={s.estado === "En ruta" ? "Arribo estimado" : "Check-in"}
+                        v={
+                          s.estado === "En ruta"
+                            ? `≈ ${Math.max(1, Math.round((s.dist / 1000 / VEL_KMH) * 60))} min`
+                            : s.dist <= 50
+                            ? "Dentro del radio"
+                            : "Fuera del radio"
+                        }
+                      />
                     </div>
-                    <div>
-                      <span className="text-slate-400 block text-[10px]">OT Vinculada:</span>
-                      <span className="font-bold text-[#0070B8]">{selectedMobile.otId || "En guardia"}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400 block text-[10px]">Ubicación Actual:</span>
-                      <span className="text-slate-700 truncate block">{selectedMobile.ubicacion}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400 block text-[10px]">Distancia al Activo:</span>
-                      <span className="text-[#3F8500] font-bold">{selectedMobile.distanciaAlActivoMetros}m (GPS)</span>
-                    </div>
-                  </div>
+                  )}
                 </div>
+              ) : (
+                <p className="text-xs text-mv-muted">Sin orden asignada en este momento.</p>
               )}
             </div>
-          </div>
-        </div>
-
-        {/* Lista Lateral de Cuadrillas Monitoreadas */}
-        <div className="space-y-3">
-          <h2 className="text-xs uppercase font-mono font-bold text-slate-500 flex items-center justify-between">
-            <span className="flex items-center gap-1.5">
-              <Truck className="w-4 h-4 text-[#019DF4]" />
-              Cuadrillas en Terreno ({filtered.length})
-            </span>
-            <span className="text-[10px] text-[#5BC500] font-mono">100% Online</span>
-          </h2>
-
-          <div className="space-y-2.5 max-h-[460px] overflow-y-auto pr-1">
-            {filtered.map((m) => {
-              const isSelected = selectedMobile?.id === m.id;
-              const isPreventivo = m.tipoMantenimiento === "PREVENTIVO";
-
-              return (
-                <div
-                  key={m.id}
-                  onClick={() => setSelectedMobile(m)}
-                  className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
-                    isSelected
-                      ? "bg-[#F0F9E8] border-[#C6EE94] shadow-sm ring-1 ring-[#5BC500]"
-                      : "bg-white border-slate-200 hover:bg-slate-50"
-                  }`}
-                >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <span className="font-mono font-bold text-slate-900 text-xs block">
-                        {m.cuadrilla}
-                      </span>
-                      <span className="text-[11px] text-slate-500 font-sans">
-                        {m.tecnico} ({m.contratista})
-                      </span>
-                    </div>
-                    <Badge variant={m.estado === "En ejecución" ? "blue" : "gray"} size="sm">
-                      {m.estado}
-                    </Badge>
-                  </div>
-
-                  <p className="text-[11px] text-slate-600 line-clamp-1 mt-1 font-sans">
-                    {m.actividad}
-                  </p>
-
-                  <div className="pt-2 mt-2 border-t border-slate-150 flex items-center justify-between text-[10px] font-mono">
-                    <span className="text-slate-500">{m.vehiculo}</span>
-                    <Badge variant={isPreventivo ? "movistar" : "yellow"} size="sm">
-                      {m.tipoMantenimiento}
-                    </Badge>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+          )}
+        </Panel>
       </div>
-    </div>
+
+      <Panel noPad title="Cuadrillas" subtitle={`${filtradas.length} de ${filas.length}`} icon={<Navigation className="h-4 w-4" />}>
+        <div className="overflow-x-auto">
+          <table className="tbl">
+            <thead>
+              <tr>
+                <th>Cuadrilla</th>
+                <th>Técnico líder</th>
+                <th>Zona</th>
+                <th>Estado</th>
+                <th>OT</th>
+                <th>Activo destino</th>
+                <th className="text-right">Distancia</th>
+                <th>Actualizado</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtradas.map((f) => (
+                <tr key={f.c.id} onClick={() => setSel(f.c.id)} className={cx("is-clickable", sel === f.c.id && "is-selected")}>
+                  <td className="whitespace-nowrap font-semibold">{f.c.id} {f.c.nombre}</td>
+                  <td>{f.c.lider}</td>
+                  <td className="text-mv-ink-2">{cat.zona(f.c.zonaId)?.nombre}</td>
+                  <td><Pill tone={toneTracking(f.estado)} dot>{f.estado}</Pill></td>
+                  <td className="whitespace-nowrap font-mono text-xs">{f.ot?.id ?? "—"}</td>
+                  <td className="font-mono text-xs">{f.destino?.codigo ?? "—"}</td>
+                  <td className="num text-right">{f.dist !== null ? fmtDistancia(f.dist) : "—"}</td>
+                  <td className="font-mono text-xs text-mv-ink-2">{f.tr?.actualizado ?? "—"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Panel>
+    </AppShell>
   );
 }

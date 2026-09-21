@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import {
   Layers,
   Wrench,
@@ -13,27 +12,22 @@ import {
   FileText,
   Eye,
   CheckCircle2,
+  Clock,
+  TrendingUp,
   Award,
+  Calendar,
   AlertOctagon,
-  Smartphone,
-  Sparkles,
 } from "lucide-react";
 import { Topbar } from "@/components/layout/topbar";
+import { Card, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardHeader } from "@/components/ui/card";
 import { Modal } from "@/components/ui/modal";
 import liquidacionesData from "@/mock-data/liquidaciones.json";
 
 export default function BatchPage() {
-  // Modal states
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [isPenaltiesModalOpen, setIsPenaltiesModalOpen] = useState(false);
-  const [isPreliqModalOpen, setIsPreliqModalOpen] = useState(false);
-
-  // Export modal state
-  const [exportFormat, setExportFormat] = useState<"excel" | "pdf">("excel");
-  const [dateRange, setDateRange] = useState("ultimo-lote");
   const [isExporting, setIsExporting] = useState(false);
   const [exportSuccess, setExportSuccess] = useState(false);
 
@@ -48,512 +42,444 @@ export default function BatchPage() {
       setTimeout(() => {
         setExportSuccess(false);
         setIsExportModalOpen(false);
-      }, 1600);
-    }, 900);
+      }, 1800);
+    }, 1000);
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#0B0C0E] text-slate-100 flex flex-col font-sans">
       <Topbar />
 
       <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full">
         {/* Module Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-5">
-          <div className="space-y-1">
-            <div className="flex flex-wrap items-center gap-2.5">
-              <div className="w-10 h-10 rounded-xl bg-[#EBF5FF] border border-[#019DF4]/30 flex items-center justify-center text-[#019DF4] shadow-sm">
-                <Layers className="w-5 h-5" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="text-xl sm:text-2xl font-bold font-grotesk tracking-tight text-slate-900">
-                    Procesamiento Lote & Auditoría de Contratistas
-                  </h1>
-                </div>
-                <p className="text-xs text-slate-500 font-sans mt-0.5">
-                  Liquidación de servicios de planta externa, auditoría nocturna de SLA y deducción de penalidades · Movistar Perú
-                </p>
-              </div>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#1E232B] pb-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <Layers className="w-6 h-6 text-[#00AEEF]" />
+              <h1 className="text-xl sm:text-2xl font-bold font-grotesk tracking-tight text-white">
+                Procesamiento Batch & Liquidaciones
+              </h1>
+              <Badge variant="cyan" size="sm">
+                Q3 2026 AUDITORÍA
+              </Badge>
             </div>
-          </div>
-
-          {/* Header Action Badges & Buttons */}
-          <div className="flex flex-wrap items-center gap-3">
-            {/* Badge: BATCH COMPLETO - 03:00 AM */}
-            <div className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-300/60 px-3 py-1.5 rounded-xl text-xs font-mono font-bold text-emerald-700 shadow-sm">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-              </span>
-              <span>BATCH COMPLETO — 03:00 AM</span>
-            </div>
-
-            {/* Botón Prominente: Exportar Reporte General */}
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => setIsExportModalOpen(true)}
-              className="bg-[#019DF4] hover:bg-[#0081CB] text-white shadow-md shadow-[#019DF4]/20 font-bold"
-            >
-              <Download className="w-3.5 h-3.5 mr-1.5" />
-              <span>Exportar Reporte General</span>
-            </Button>
-          </div>
-        </div>
-
-        {/* Quick Shortcut Buttons Banner for modules */}
-        <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 bg-white border border-slate-200 rounded-2xl text-xs shadow-sm">
-          <div className="flex items-center gap-2 text-slate-600">
-            <Sparkles className="w-4 h-4 text-[#019DF4]" />
-            <span>Módulos de Auditoría:</span>
-            <span className="font-mono text-[#019DF4] font-bold">
-              /batch (Liquidaciones) & /mobile (App Técnica)
-            </span>
+            <p className="text-xs text-slate-400 font-sans mt-0.5">
+              Cierre periódico de órdenes de mantenimiento, auditoría de contratistas y penalizaciones
+            </p>
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setIsPreliqModalOpen(true)}
-              className="px-3 py-1.5 rounded-lg bg-[#EBF5FF] hover:bg-[#019DF4] text-[#019DF4] hover:text-white border border-[#019DF4]/30 font-semibold transition-all cursor-pointer"
-            >
-              Ver Pre-Liquidaciones
-            </button>
-            <button
-              type="button"
-              onClick={() => setIsPenaltiesModalOpen(true)}
-              className="px-3 py-1.5 rounded-lg bg-orange-50 hover:bg-[#FF6A13] text-[#FF6A13] hover:text-white border border-[#FF6A13]/30 font-semibold transition-all cursor-pointer"
-            >
-              Ver Actas de Penalidades
-            </button>
-            <Link
-              href="/mobile"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#5BC500] hover:bg-[#489E00] text-white font-bold transition-all shadow-sm"
-            >
-              <Smartphone className="w-3.5 h-3.5" />
-              <span>Ir a App de Campo</span>
-            </Link>
+            <Badge variant="cyan" size="md">
+              PERÍODO: 01-15 SEP 2026
+            </Badge>
           </div>
         </div>
 
-        {/* 4 Cards Grid */}
+        {/* 4 Cards Grid as specified */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* ═══ TARJETA 1: MANTENIMIENTO PREVENTIVO ═══ */}
-          <div className="bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col hover:border-[#019DF4]/40 transition-colors p-5">
-            <CardHeader
-              title="Mantenimiento Preventivo (Batch)"
-              subtitle="Avance del ciclo trimestral de inspección en planta externa"
-              icon={<Wrench className="w-5 h-5 text-[#019DF4]" />}
-              action={
-                <Badge variant="cyan" size="sm" className="bg-[#019DF4]/20 text-[#019DF4] border-[#019DF4]/40">
-                  {preventivo.cumplimientoPorcentaje} AVANCE
-                </Badge>
-              }
-            />
+          {/* ================= TARJETA 1: MANTENIMIENTO PREVENTIVO ================= */}
+          <Card className="flex flex-col justify-between">
+            <div>
+              <CardHeader
+                title="Mantenimiento Preventivo (Batch)"
+                subtitle="Avance del ciclo trimestral de inspección en planta"
+                icon={<Wrench className="w-5 h-5" />}
+                action={
+                  <Badge variant="cyan" size="sm">
+                    {preventivo.cumplimientoPorcentaje} AVANCE
+                  </Badge>
+                }
+              />
 
-            <div className="space-y-4 pt-1 flex-1">
-              <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-slate-500 font-mono">Lote Automático Nocturno:</span>
-                  <span className="text-xs font-mono font-bold text-emerald-600">SLA ÓPTIMO</span>
-                </div>
-                <p className="text-sm font-bold text-slate-900 font-grotesk leading-snug">
-                  1,240 OTs Preventivas Generadas Automáticamente por Vida Útil de Activos
-                </p>
-                <p className="text-[11px] text-slate-500">
-                  Algoritmo preventivo basado en horas de operación, atenuación dBm y telemetría de fallas.
-                </p>
-              </div>
-
-              {/* Barra de progreso */}
-              <div className="space-y-1.5">
-                <div className="flex justify-between text-xs font-mono text-slate-500">
-                  <span>Cumplimiento del Lote Batch</span>
-                  <span className="text-[#019DF4] font-bold">{preventivo.cumplimientoPorcentaje} Completado</span>
-                </div>
-                <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
-                  <div
-                    className="bg-gradient-to-r from-[#019DF4] to-[#00A86B] h-full rounded-full transition-all duration-700 shadow-sm"
-                    style={{ width: preventivo.cumplimientoPorcentaje }}
-                  />
-                </div>
-                <div className="flex justify-between text-[11px] font-mono text-slate-500">
-                  <span>{preventivo.ejecutado} Ejecutadas</span>
-                  <span>{preventivo.totalProgramado - preventivo.ejecutado - preventivo.pendientes} En Progreso</span>
-                  <span>{preventivo.pendientes} Pendientes</span>
-                </div>
-              </div>
-
-              {/* Muestreo de Nodos */}
-              <div className="space-y-1.5 pt-1">
-                <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider block font-bold">
-                  Muestreo de Nodos Auditados en Lote:
-                </span>
-                {preventivo.detalles.map((d, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center justify-between p-2 bg-slate-50 rounded-lg border border-slate-200 text-xs font-mono"
-                  >
-                    <div>
-                      <span className="text-slate-900 font-semibold">{d.nodo}</span>
-                      <span className="text-[10px] text-slate-500 block">{d.tipo}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[#019DF4]">{d.inspeccion}</span>
-                      <span
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded ${
-                          d.estado === "CONFORME" || d.estado === "OK"
-                            ? "bg-emerald-100 text-emerald-700"
-                            : "bg-amber-100 text-amber-700"
-                        }`}
-                      >
-                        {d.estado}
-                      </span>
-                    </div>
+              <div className="space-y-4">
+                {/* Stats Bar */}
+                <div className="grid grid-cols-3 gap-3 text-center">
+                  <div className="bg-[#0B0C0E] p-3 rounded-lg border border-[#1E232B]">
+                    <span className="text-[11px] text-slate-400 block font-sans">
+                      Programadas
+                    </span>
+                    <span className="text-xl font-bold font-mono text-white">
+                      {preventivo.totalProgramado}
+                    </span>
                   </div>
-                ))}
+                  <div className="bg-[#0B0C0E] p-3 rounded-lg border border-[#1E232B]">
+                    <span className="text-[11px] text-slate-400 block font-sans">
+                      Ejecutadas
+                    </span>
+                    <span className="text-xl font-bold font-mono text-[#00AEEF]">
+                      {preventivo.ejecutado}
+                    </span>
+                  </div>
+                  <div className="bg-[#0B0C0E] p-3 rounded-lg border border-[#1E232B]">
+                    <span className="text-[11px] text-slate-400 block font-sans">
+                      Pendientes
+                    </span>
+                    <span className="text-xl font-bold font-mono text-slate-400">
+                      {preventivo.pendientes}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Progress bar */}
+                <div>
+                  <div className="flex justify-between text-xs font-mono text-slate-400 mb-1.5">
+                    <span>Cumplimiento Q3</span>
+                    <span className="text-[#00AEEF] font-bold">
+                      {preventivo.cumplimientoPorcentaje}
+                    </span>
+                  </div>
+                  <div className="w-full bg-[#0B0C0E] h-2 rounded-full overflow-hidden border border-[#1E232B]">
+                    <div
+                      className="bg-[#00AEEF] h-full rounded-full transition-all duration-500"
+                      style={{ width: preventivo.cumplimientoPorcentaje }}
+                    />
+                  </div>
+                </div>
+
+                {/* Details list */}
+                <div className="space-y-1.5 pt-2">
+                  <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">
+                    Muestreo de Nodos Auditados:
+                  </span>
+                  {preventivo.detalles.map((d, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center justify-between p-2 bg-[#0B0C0E] rounded border border-[#1E232B] text-xs font-mono"
+                    >
+                      <span className="text-slate-200">{d.nodo}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[#00AEEF]">{d.inspeccion}</span>
+                        <Badge
+                          variant={d.estado === "OK" ? "cyan" : "orange"}
+                          size="sm"
+                        >
+                          {d.estado}
+                        </Badge>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
-            <div className="pt-3 mt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-mono">
+            <div className="mt-4 pt-3 border-t border-[#1E232B] flex items-center justify-between text-xs text-slate-500 font-mono">
               <span>Próxima Auditoría: {preventivo.proximaAuditoria}</span>
-              <span className="text-emerald-600 font-bold">✓ Sincronizado</span>
+              <span className="text-[#00AEEF]">Sincronización Batch OK</span>
             </div>
-          </div>
+          </Card>
 
           {/* ================= TARJETA 2: RENDIMIENTO DE CONTRATISTAS ================= */}
-          <div className="bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col hover:border-[#019DF4]/40 transition-colors p-5">
-            <CardHeader
-              title="Rendimiento de Contratistas"
-              subtitle="Evaluación de cuadrillas y cumplimiento de SLA (Cobra / Lari / CAM)"
-              icon={<Users className="w-5 h-5 text-[#019DF4]" />}
-              action={
-                <span className="text-xs font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
-                  {contratistas.length} Contratistas
-                </span>
-              }
-            />
+          <Card className="flex flex-col justify-between">
+            <div>
+              <CardHeader
+                title="Rendimiento de Contratistas"
+                subtitle="Evaluación de cuadrillas y cumplimiento de SLA"
+                icon={<Users className="w-5 h-5" />}
+                action={
+                  <span className="text-xs font-mono text-slate-400">
+                    3 Empresas
+                  </span>
+                }
+              />
 
-            <div className="space-y-3 pt-1 flex-1">
-              {contratistas.map((c, index) => {
-                const isObservado = c.estado === "BAJO OBSERVACIÓN";
-                return (
-                  <div
-                    key={c.id}
-                    className={`p-3.5 rounded-xl border text-xs space-y-2 ${
-                      isObservado
-                        ? "bg-amber-50/50 border-amber-200"
-                        : "bg-slate-50 border-slate-200"
-                    }`}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div>
+              <div className="space-y-3">
+                {contratistas.map((c, index) => {
+                  const isObservado = c.estado === "BAJO OBSERVACIÓN";
+                  return (
+                    <div
+                      key={c.id}
+                      className={`p-3 rounded-lg border transition-all text-xs space-y-2 ${
+                        isObservado
+                          ? "bg-[#0B0C0E] border-[#FF6A13]/30"
+                          : "bg-[#0B0C0E] border-[#1E232B]"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-slate-900 font-grotesk text-sm">
-                            {c.nombre}
+                          <span className="font-mono text-[10px] text-slate-400 bg-[#121418] px-1.5 py-0.5 rounded border border-[#1E232B]">
+                            #{index + 1}
                           </span>
-                          <span
-                            className={`text-[10px] font-bold font-mono px-2 py-0.5 rounded-full ${
-                              isObservado
-                                ? "bg-amber-100 text-amber-800"
-                                : "bg-emerald-100 text-emerald-700"
-                            }`}
-                          >
-                            {c.estado}
-                          </span>
+                          <div>
+                            <h4 className="font-bold text-white font-grotesk text-xs">
+                              {c.nombre}
+                            </h4>
+                            <span className="text-[11px] font-mono text-slate-400">
+                              {c.cuadrillas} Cuadrillas · {c.otsCompletadas} OTs
+                            </span>
+                          </div>
                         </div>
-                        <p className="text-[11px] text-slate-500 font-mono mt-0.5">
-                          {c.cuadrillas} Cuadrillas activas · {c.otsCompletadas} OTs Conformes
-                        </p>
+
+                        <Badge
+                          variant={isObservado ? "orange" : "cyan"}
+                          size="sm"
+                        >
+                          {c.estado}
+                        </Badge>
                       </div>
 
-                      <div className="text-right">
-                        <span className={`text-lg font-bold font-mono ${isObservado ? "text-amber-700" : "text-emerald-600"}`}>
-                          {c.calificacion ? `${Math.round(parseFloat(c.calificacion) * 20)}%` : "90%"}
+                      <div className="flex items-center justify-between text-xs pt-1 border-t border-[#1E232B] font-mono">
+                        <span className="text-slate-400">
+                          SLA Cumplido:{" "}
+                          <strong
+                            className={
+                              isObservado ? "text-[#FF6A13]" : "text-[#00AEEF]"
+                            }
+                          >
+                            {c.slaCumplido}
+                          </strong>
                         </span>
-                        <span className="text-[10px] text-slate-400 block font-mono">
-                          Eficiencia
+                        <span className="text-amber-400 font-bold flex items-center gap-1">
+                          <Award className="w-3.5 h-3.5 text-amber-400" />
+                          {c.calificacion}
                         </span>
                       </div>
                     </div>
-
-                    <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full rounded-full ${isObservado ? "bg-amber-500" : "bg-emerald-500"}`}
-                        style={{ width: `${Math.round(parseFloat(c.calificacion) * 20)}%` }}
-                      />
-                    </div>
-
-                    <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 pt-1 border-t border-slate-200">
-                      <span>SLA Cumplido: <strong className="text-slate-800">{c.slaCumplido}</strong></span>
-                      <span className="text-amber-500 font-bold flex items-center gap-1">
-                        <Award className="w-3.5 h-3.5" /> {c.calificacion} / 5.0
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
 
-            <div className="pt-3 mt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-mono">
+            <div className="mt-4 pt-3 border-t border-[#1E232B] flex items-center justify-between text-xs text-slate-500 font-mono">
               <span>Auditoría de Cuadrillas en Línea</span>
-              <span className="text-[#019DF4]">Ranking Semanal Cerrado</span>
+              <span className="text-[#00AEEF]">Ranking Semanal</span>
             </div>
-          </div>
+          </Card>
 
-          {/* ================= TARJETA 3: PRE-LIQUIDACIONES MENSUALES ================= */}
-          <div className="bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col hover:border-emerald-400/40 transition-colors p-5">
-            <CardHeader
-              title="Pre-Liquidaciones de Servicios"
-              subtitle="Cálculo consolidado para facturación de contratistas"
-              icon={<DollarSign className="w-5 h-5 text-[#00A86B]" />}
-              action={
-                <Badge variant="cyan" size="sm" className="bg-[#00A86B]/20 text-[#00A86B] border-[#00A86B]/40">
-                  {preliquidaciones.estadoCierre}
-                </Badge>
-              }
-            />
+          {/* ================= TARJETA 3: PRE-LIQUIDACIONES (CON BOTÓN EXPORTAR) ================= */}
+          <Card className="flex flex-col justify-between">
+            <div>
+              <CardHeader
+                title="Pre-Liquidaciones de Servicios"
+                subtitle="Cálculo acumulado de facturación y servicios de campo"
+                icon={<DollarSign className="w-5 h-5" />}
+                action={
+                  <Badge variant="cyan" size="sm">
+                    {preliquidaciones.estadoCierre}
+                  </Badge>
+                }
+              />
 
-            <div className="space-y-4 pt-1 flex-1">
-              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 flex items-baseline justify-between">
-                <div>
-                  <span className="text-xs text-slate-500 block font-sans">
-                    Monto Total Calculado para Pago de Servicios:
-                  </span>
-                  <span className="text-3xl sm:text-4xl font-extrabold text-slate-900 font-grotesk tracking-tight">
-                    {preliquidaciones.montoTotal}
-                  </span>
-                </div>
-                <div className="text-right">
-                  <span className="text-xs font-mono text-[#019DF4] block font-bold">
-                    {preliquidaciones.ordenesFacturables} OTs
-                  </span>
-                  <span className="text-[10px] text-slate-500 font-mono">
-                    Auditadas 100%
-                  </span>
-                </div>
-              </div>
-
-              {/* Desglose de Costos Operativos */}
-              <div className="space-y-1.5">
-                <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider block font-bold">
-                  Desglose de Facturación Auditada:
-                </span>
-                {preliquidaciones.desglose.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs font-mono"
-                  >
-                    <span className="text-slate-600">{item.rubro}</span>
-                    <span className="text-slate-900 font-bold">{item.monto}</span>
+              <div className="space-y-4">
+                {/* Total Value */}
+                <div className="bg-[#0B0C0E] p-4 rounded-xl border border-[#1E232B] flex items-baseline justify-between">
+                  <div>
+                    <span className="text-xs text-slate-400 block font-sans">
+                      Monto Total Pre-Liquidado:
+                    </span>
+                    <span className="text-2xl sm:text-3xl font-extrabold text-white font-grotesk tracking-tight">
+                      {preliquidaciones.montoTotal}
+                    </span>
                   </div>
-                ))}
+                  <div className="text-right">
+                    <span className="text-xs font-mono text-[#00AEEF] block">
+                      {preliquidaciones.ordenesFacturables} OTs
+                    </span>
+                    <span className="text-[10px] text-slate-500 font-mono">
+                      Auditadas 100%
+                    </span>
+                  </div>
+                </div>
+
+                {/* Desglose */}
+                <div className="space-y-1.5">
+                  <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">
+                    Desglose de Costos Operativos:
+                  </span>
+                  {preliquidaciones.desglose.map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center justify-between p-2 bg-[#0B0C0E] rounded border border-[#1E232B] text-xs font-mono"
+                    >
+                      <span className="text-slate-300">{item.rubro}</span>
+                      <span className="text-white font-bold">{item.monto}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
-            <div className="pt-3 mt-4 border-t border-slate-100 flex items-center justify-between">
-              <span className="text-xs text-slate-500 font-mono">
+            {/* Action Button: Exportar (Opens modal only, as required) */}
+            <div className="mt-5 pt-4 border-t border-[#1E232B] flex items-center justify-between">
+              <span className="text-xs text-slate-400 font-mono">
                 Período: {preliquidaciones.periodo}
               </span>
 
-              <button
-                type="button"
-                onClick={() => setIsPreliqModalOpen(true)}
-                className="flex items-center gap-1.5 text-xs font-bold text-[#019DF4] hover:underline"
+              <Button
+                variant="orange"
+                size="sm"
+                onClick={() => setIsExportModalOpen(true)}
               >
-                <Eye className="w-3.5 h-3.5" />
-                <span>Ver Detalle de Pre-Liquidaciones</span>
-              </button>
+                <Download className="w-3.5 h-3.5 mr-1.5" />
+                <span>Exportar reporte de pago</span>
+              </Button>
             </div>
-          </div>
+          </Card>
 
-          {/* ================= TARJETA 4: PENALIDADES SLA ================= */}
-          <div className="bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col hover:border-orange-400/40 transition-colors p-5">
-            <CardHeader
-              title="Penalidades & Deducciones SLA"
-              subtitle="Deducciones acumuladas por demoras o reincidencias de fallas"
-              icon={<AlertTriangle className="w-5 h-5 text-[#FF6A13]" />}
-              action={
-                <Badge variant="red" size="sm">
-                  {penalidades.estado}
-                </Badge>
-              }
-            />
+          {/* ================= TARJETA 4: PENALIDADES (CON BOTÓN VER DETALLE) ================= */}
+          <Card className="flex flex-col justify-between">
+            <div>
+              <CardHeader
+                title="Penalidades & Deducciones"
+                subtitle="Descuentos aplicados por incumplimiento de SLA"
+                icon={<AlertTriangle className="w-5 h-5 text-[#FF6A13]" />}
+                action={
+                  <Badge variant="orange" size="sm">
+                    {penalidades.estado}
+                  </Badge>
+                }
+              />
 
-            <div className="space-y-4 pt-1 flex-1">
-              <div className="bg-orange-50 p-4 rounded-xl border border-orange-200/60 flex items-baseline justify-between">
-                <div>
-                  <span className="text-xs text-slate-500 block font-sans">
-                    Monto Acumulado por Penalidades SLA:
-                  </span>
-                  <span className="text-3xl sm:text-4xl font-extrabold text-[#FF6A13] font-grotesk tracking-tight">
-                    -{penalidades.totalPenalidades}
-                  </span>
-                </div>
-                <div className="text-right">
-                  <span className="text-xs font-mono text-[#FF6A13] block font-bold">
-                    {penalidades.casosRegistrados} Actas Emitidas
-                  </span>
-                  <span className="text-[10px] text-slate-500 font-mono">
-                    Cobra & Lari
-                  </span>
-                </div>
-              </div>
-
-              {/* Motivos Clave de Penalización */}
-              <div className="space-y-2">
-                {penalidades.casos.slice(0, 2).map((caso) => (
-                  <div key={caso.id} className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-1">
-                    <div className="flex items-center justify-between text-slate-500 font-mono text-[11px]">
-                      <span>{caso.contratista} · {caso.otId}:</span>
-                      <span className="text-[#FF6A13] font-bold">-{caso.monto}</span>
-                    </div>
-                    <p className="font-bold text-slate-900 font-grotesk">
-                      {caso.motivo}
-                    </p>
-                    <p className="text-slate-500 text-[11px]">
-                      {caso.detalle || caso.nodo}
-                    </p>
+              <div className="space-y-4">
+                {/* Total Penalties Value */}
+                <div className="bg-[#0B0C0E] p-4 rounded-xl border border-[#FF6A13]/30 flex items-baseline justify-between">
+                  <div>
+                    <span className="text-xs text-slate-400 block font-sans">
+                      Total Penalizaciones Deducidas:
+                    </span>
+                    <span className="text-2xl sm:text-3xl font-extrabold text-[#FF6A13] font-grotesk tracking-tight">
+                      {penalidades.totalPenalidades}
+                    </span>
                   </div>
-                ))}
+                  <div className="text-right">
+                    <span className="text-xs font-mono text-[#FF6A13] block font-bold">
+                      {penalidades.casosRegistrados} Casos
+                    </span>
+                    <span className="text-[10px] text-slate-500 font-mono">
+                      Q3 Liquidación
+                    </span>
+                  </div>
+                </div>
+
+                {/* Preview of top incident */}
+                <div className="p-3 bg-[#0B0C0E] rounded-lg border border-[#1E232B] text-xs space-y-1">
+                  <div className="flex items-center justify-between text-slate-400 font-mono text-[11px]">
+                    <span>Mayor Deducción Registrada:</span>
+                    <span className="text-[#FF6A13] font-bold">
+                      {penalidades.casos[0].monto}
+                    </span>
+                  </div>
+                  <p className="font-bold text-white font-grotesk">
+                    {penalidades.casos[0].contratista}
+                  </p>
+                  <p className="text-slate-400 text-[11px]">
+                    {penalidades.casos[0].motivo}
+                  </p>
+                </div>
               </div>
             </div>
 
-            <div className="pt-3 mt-4 border-t border-slate-100 flex items-center justify-between">
-              <span className="text-xs text-slate-500 font-mono">
-                {penalidades.casos.length} Actas formalizadas
+            {/* Action Button: Ver Detalle (Opens modal only, as required) */}
+            <div className="mt-5 pt-4 border-t border-[#1E232B] flex items-center justify-between">
+              <span className="text-xs text-slate-400 font-mono">
+                {penalidades.casos.length} incidentes con acta
               </span>
 
-              <button
-                type="button"
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setIsPenaltiesModalOpen(true)}
-                className="flex items-center gap-1.5 text-xs font-bold text-[#FF6A13] hover:underline"
+                className="text-slate-200 hover:text-white"
               >
-                <AlertOctagon className="w-3.5 h-3.5 text-[#FF6A13]" />
-                <span>Ver Actas de Penalidades</span>
-              </button>
+                <Eye className="w-3.5 h-3.5 mr-1.5 text-[#00AEEF]" />
+                <span>Ver detalle</span>
+              </Button>
             </div>
-          </div>
+          </Card>
         </div>
       </main>
 
-      {/* =========================================================================
-          MODAL 1: EXPORTACIÓN DE REPORTES (Excel / PDF / Fechas / Descargar)
-      ========================================================================= */}
+      {/* ================= MODAL 1: EXPORTAR REPORTE DE PAGO ================= */}
       <Modal
         isOpen={isExportModalOpen}
         onClose={() => setIsExportModalOpen(false)}
-        title="Exportación de Reporte General de Auditoría"
-        subtitle="Generación consolidada de liquidaciones y auditorías para Movistar Perú"
+        title="Exportar Reporte de Pre-Liquidación"
+        subtitle="Generación de acta de pago y resumen consolidado"
         footer={
           <>
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => setIsExportModalOpen(false)}
             >
               Cancelar
             </Button>
             <Button
-              variant="primary"
+              variant="orange"
               size="sm"
               onClick={handleSimulateExport}
               isLoading={isExporting}
-              className="bg-[#019DF4] hover:bg-[#0081CB] text-white font-bold"
             >
-              <Download className="w-3.5 h-3.5 mr-1.5" />
-              <span>Descargar Documento</span>
+              <Download className="w-3.5 h-3.5 mr-1" />
+              <span>Confirmar Descarga (Simulada)</span>
             </Button>
           </>
         }
       >
         <div className="space-y-4">
           {exportSuccess ? (
-            <div className="p-4 bg-[#E6F6F0] border border-[#00A86B] rounded-2xl flex items-center gap-3 text-[#00A86B] animate-in fade-in">
-              <CheckCircle2 className="w-6 h-6 text-[#00A86B] shrink-0" />
+            <div className="p-4 bg-emerald-500/15 border border-emerald-500/40 rounded-xl flex items-center gap-3 text-emerald-300">
+              <CheckCircle2 className="w-6 h-6 text-emerald-400 shrink-0" />
               <div>
                 <p className="font-bold font-grotesk text-sm">
-                  ¡Documento descargado exitosamente!
+                  ¡Reporte generado exitosamente!
                 </p>
-                <p className="text-xs text-slate-600 font-mono mt-0.5">
-                  Archivo: Movistar_Auditoria_Batch_Q3_{exportFormat.toUpperCase()}.{exportFormat === "excel" ? "xlsx" : "pdf"}
+                <p className="text-xs text-slate-300 font-mono mt-0.5">
+                  Archivo simulado: SGMR_Liquidacion_Q3_SEP2026.xlsx
                 </p>
               </div>
             </div>
           ) : (
             <>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Seleccione el formato oficial y el rango de fechas para el cierre financiero de contratistas:
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Seleccione el formato de salida para exportar la pre-liquidación correspondiente al período del{" "}
+                <strong className="text-white">{preliquidaciones.periodo}</strong>.
               </p>
 
-              {/* Selector de Formato: Excel (.xlsx) o PDF Ejecutivo */}
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-mono text-slate-500 uppercase tracking-wider block font-bold">
-                  Formato de Salida:
+              <div className="grid grid-cols-2 gap-3 pt-1">
+                <label className="p-3 bg-[#0B0C0E] border border-[#00AEEF]/50 rounded-lg flex items-center gap-2.5 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="format"
+                    defaultChecked
+                    className="text-[#00AEEF]"
+                  />
+                  <div>
+                    <div className="flex items-center gap-1.5 font-bold text-white text-xs">
+                      <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
+                      <span>Formato Excel</span>
+                    </div>
+                    <span className="text-[10px] text-slate-400">
+                      .XLSX con fórmulas
+                    </span>
+                  </div>
                 </label>
-                <div className="grid grid-cols-2 gap-3">
-                  <div
-                    onClick={() => setExportFormat("excel")}
-                    className={`p-3.5 rounded-xl border cursor-pointer transition-all flex items-center gap-3 ${
-                      exportFormat === "excel"
-                        ? "bg-[#0B2742] border-[#019DF4] text-white shadow-sm ring-1 ring-[#019DF4]"
-                        : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
-                    }`}
-                  >
-                    <FileSpreadsheet className="w-6 h-6 text-[#00A86B]" />
-                    <div>
-                      <span className="font-bold text-xs block text-slate-900">Excel (.xlsx)</span>
-                      <span className="text-[10px] text-slate-500">Planilla con fórmulas & OTs</span>
-                    </div>
-                  </div>
 
-                  <div
-                    onClick={() => setExportFormat("pdf")}
-                    className={`p-3.5 rounded-xl border cursor-pointer transition-all flex items-center gap-3 ${
-                      exportFormat === "pdf"
-                        ? "bg-[#0B2742] border-[#019DF4] text-white shadow-sm ring-1 ring-[#019DF4]"
-                        : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
-                    }`}
-                  >
-                    <FileText className="w-6 h-6 text-[#FF6A13]" />
-                    <div>
-                      <span className="font-bold text-xs block text-slate-900">PDF Ejecutivo</span>
-                      <span className="text-[10px] text-slate-500">Acta formal con firmas</span>
+                <label className="p-3 bg-[#0B0C0E] border border-[#1E232B] rounded-lg flex items-center gap-2.5 cursor-pointer">
+                  <input type="radio" name="format" className="text-[#00AEEF]" />
+                  <div>
+                    <div className="flex items-center gap-1.5 font-bold text-white text-xs">
+                      <FileText className="w-4 h-4 text-[#FF6A13]" />
+                      <span>Formato PDF</span>
                     </div>
+                    <span className="text-[10px] text-slate-400">
+                      Acta formal con firma
+                    </span>
                   </div>
-                </div>
+                </label>
               </div>
 
-              {/* Opciones de Rango de Fechas */}
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-mono text-slate-500 uppercase tracking-wider block font-bold">
-                  Rango de Fechas / Período:
-                </label>
-                <select
-                  value={dateRange}
-                  onChange={(e) => setDateRange(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-800 text-xs font-mono focus:outline-none focus:border-[#019DF4] cursor-pointer"
-                >
-                  <option value="ultimo-lote">Último Lote Procesado (03:00 AM - Hoy)</option>
-                  <option value="quincena-1">1 al 15 de Septiembre 2026 (Quincena Actual)</option>
-                  <option value="mes-completo">Mes Completo Septiembre 2026</option>
-                  <option value="trimestre-q3">Trimestre Q3 2026 Consolidado</option>
-                </select>
-              </div>
-
-              {/* Resumen Financiero del Reporte */}
-              <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1.5 text-xs font-mono">
+              <div className="p-3 bg-[#0B0C0E] rounded-lg border border-[#1E232B] space-y-1.5 text-xs font-mono">
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Total Pre-Liquidación:</span>
-                  <span className="text-slate-900 font-bold">{preliquidaciones.montoTotal}</span>
+                  <span className="text-slate-400">Total Liquidable:</span>
+                  <span className="text-white font-bold">{preliquidaciones.montoTotal}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Deducción de Penalidades:</span>
+                  <span className="text-slate-400">Total Deducciones:</span>
                   <span className="text-[#FF6A13] font-bold">-{penalidades.totalPenalidades}</span>
                 </div>
-                <div className="flex justify-between pt-1.5 border-t border-slate-200 text-sm">
-                  <span className="text-[#00A86B] font-bold">Neto a Liquidar:</span>
-                  <span className="text-[#00A86B] font-bold">S/ 423,780.00</span>
+                <div className="flex justify-between pt-1 border-t border-[#1E232B]">
+                  <span className="text-[#00AEEF] font-bold">Neto a Transferir:</span>
+                  <span className="text-[#00AEEF] font-bold">$ 144,070.00 USD</span>
                 </div>
               </div>
             </>
@@ -561,14 +487,12 @@ export default function BatchPage() {
         </div>
       </Modal>
 
-      {/* =========================================================================
-          MODAL 2: DETALLE DE PENALIDADES SLA (Tabla detallada con montos)
-      ========================================================================= */}
+      {/* ================= MODAL 2: VER DETALLE DE PENALIDADES ================= */}
       <Modal
         isOpen={isPenaltiesModalOpen}
         onClose={() => setIsPenaltiesModalOpen(false)}
-        title="Actas de Penalidades & Deducciones SLA"
-        subtitle="Registro de expedientes por incumplimiento de MTTR y reincidencias"
+        title="Detalle de Penalidades Aplicadas"
+        subtitle="Registro de actas de incumplimiento técnico y SLA"
         maxWidth="xl"
         footer={
           <Button
@@ -580,135 +504,44 @@ export default function BatchPage() {
           </Button>
         }
       >
-        <div className="space-y-4">
-          <div className="p-3 bg-orange-50 rounded-xl border border-[#FF6A13]/40 flex items-center justify-between text-xs font-mono">
-            <span>Total Deducciones Auditadas:</span>
-            <span className="text-[#FF6A13] font-bold text-base">-{penalidades.totalPenalidades}</span>
-          </div>
+        <div className="space-y-3">
+          <p className="text-xs text-slate-300">
+            Desglose de los casos auditados durante el período actual. Todas las penalidades cuentan con validación técnica del NOC.
+          </p>
 
-          {/* Tabla de Actas */}
-          <div className="overflow-x-auto border border-slate-200 rounded-xl bg-white">
-            <table className="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr className="border-b border-slate-200 text-[11px] font-mono text-slate-500 bg-slate-50">
-                  <th className="py-2.5 px-3">ID Acta</th>
-                  <th className="py-2.5 px-3">Contrata</th>
-                  <th className="py-2.5 px-4">Motivo de Penalidad</th>
-                  <th className="py-2.5 px-3">OT / Nodo</th>
-                  <th className="py-2.5 px-3 text-right">Deducción</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 font-mono">
-                {penalidades.casos.map((caso) => (
-                  <tr key={caso.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="py-3 px-3 font-bold text-slate-900 whitespace-nowrap">
+          <div className="space-y-2.5">
+            {penalidades.casos.map((caso) => (
+              <div
+                key={caso.id}
+                className="p-3 bg-[#0B0C0E] border border-[#1E232B] rounded-lg text-xs space-y-1.5"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono font-bold text-white">
                       {caso.id}
-                    </td>
-                    <td className="py-3 px-3 whitespace-nowrap">
-                      <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                          caso.contratista === "Cobra"
-                            ? "bg-[#019DF4]/15 text-[#019DF4]"
-                            : "bg-[#00A86B]/15 text-[#00A86B]"
-                        }`}
-                      >
-                        {caso.contratista}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-slate-700">
-                      <p className="font-semibold text-slate-900">{caso.motivo}</p>
-                      <p className="text-[10px] text-slate-500 font-sans mt-0.5">{caso.detalle}</p>
-                    </td>
-                    <td className="py-3 px-3 text-slate-500 whitespace-nowrap text-[11px]">
-                      <div>{caso.otId}</div>
-                      <div className="text-[10px] text-[#019DF4]">{caso.nodo}</div>
-                    </td>
-                    <td className="py-3 px-3 text-right font-bold text-[#FF6A13] whitespace-nowrap">
-                      -{caso.monto}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </span>
+                    <Badge variant="orange" size="sm">
+                      {caso.monto}
+                    </Badge>
+                  </div>
+                  <span className="text-[11px] font-mono text-slate-400">
+                    {caso.fecha}
+                  </span>
+                </div>
 
-          <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-[11px] text-slate-500 flex items-center justify-between font-mono">
-            <span>Validado por NOC Central Movistar Perú</span>
-            <span className="text-[#00A86B] font-semibold">Todas las actas cuentan con sustento OTDR</span>
-          </div>
-        </div>
-      </Modal>
+                <div className="text-slate-300">
+                  <span className="text-slate-400">Contratista: </span>
+                  <strong className="text-white">{caso.contratista}</strong>
+                  <span className="text-slate-400 font-mono ml-2">
+                    (Ref: {caso.otId})
+                  </span>
+                </div>
 
-      {/* =========================================================================
-          MODAL 3: DETALLE DE PRE-LIQUIDACIONES
-      ========================================================================= */}
-      <Modal
-        isOpen={isPreliqModalOpen}
-        onClose={() => setIsPreliqModalOpen(false)}
-        title="Detalle de Pre-Liquidaciones por Contratista"
-        subtitle="Cálculo acumulado de facturación correspondiente al período actual"
-        maxWidth="xl"
-        footer={
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setIsPreliqModalOpen(false)}
-          >
-            Cerrar Detalle
-          </Button>
-        }
-      >
-        <div className="space-y-4">
-          <div className="p-3 bg-[#E6F6F0] rounded-xl border border-[#00A86B]/40 flex items-center justify-between text-xs font-mono">
-            <span>Monto Total Pre-Liquidado:</span>
-            <span className="text-[#00A86B] font-bold text-base">{preliquidaciones.montoTotal}</span>
-          </div>
-
-          {/* Tabla Desglose por Contratista */}
-          <div className="overflow-x-auto border border-slate-200 rounded-xl bg-white">
-            <table className="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr className="border-b border-slate-200 text-[11px] font-mono text-slate-500 bg-slate-50">
-                  <th className="py-2.5 px-3">Contratista</th>
-                  <th className="py-2.5 px-3">OTs Conformes</th>
-                  <th className="py-2.5 px-3 text-right">Subtotal Facturable</th>
-                  <th className="py-2.5 px-3 text-right">Penalidades</th>
-                  <th className="py-2.5 px-3 text-right">Neto Aprobado</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 font-mono">
-                {preliquidaciones.porContratista.map((c, idx) => (
-                  <tr key={idx} className="hover:bg-slate-50 transition-colors">
-                    <td className="py-3 px-3 font-semibold text-slate-900">
-                      {c.contratista}
-                    </td>
-                    <td className="py-3 px-3 text-slate-600">
-                      {c.ots} OTs
-                    </td>
-                    <td className="py-3 px-3 text-right text-slate-900">
-                      {c.subtotal}
-                    </td>
-                    <td className="py-3 px-3 text-right text-[#FF6A13]">
-                      -{c.penalidades}
-                    </td>
-                    <td className="py-3 px-3 text-right font-bold text-[#00A86B]">
-                      {c.neto}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-xs font-mono space-y-1">
-            <div className="flex justify-between">
-              <span className="text-slate-500">Estado de Aprobación:</span>
-              <span className="text-[#00A86B] font-bold">PRE-APROBADO PARA TRANSFERENCIA</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-500">Auditor Responsable:</span>
-              <span className="text-slate-800">Gerencia de Planta Externa & Finanzas</span>
-            </div>
+                <p className="text-slate-400 text-[11px] bg-[#121418] p-2 rounded border border-[#1E232B]">
+                  {caso.motivo}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </Modal>

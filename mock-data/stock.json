@@ -1,0 +1,12 @@
+{
+  "C-01": { "MV-MUF-048": 1, "MV-PIG-SCA": 6, "MV-TER-060": 24, "MV-CIN-VUL": 3, "MV-CON-SCA": 12, "MV-PAD-LIM": 2, "MV-FO-144": 0, "MV-SPL-116": 0 },
+  "C-02": { "MV-CIN-VUL": 4, "MV-CON-SCA": 20, "MV-PAD-LIM": 2, "MV-SPL-116": 1, "MV-TAP-NAP": 2 },
+  "C-03": { "MV-SFP-10G": 1, "MV-PAD-LIM": 3, "MV-PIG-SCA": 4 },
+  "C-05": { "MV-FUS-063": 4, "MV-RCT-050": 1, "MV-BAT-12V": 2 },
+  "C-07": { "MV-TER-060": 10, "MV-CIN-VUL": 2, "MV-CON-SCA": 8 },
+  "C-09": { "MV-MUF-048": 2, "MV-FO-144": 60, "MV-TER-060": 40, "MV-PIG-SCA": 8 },
+  "C-10": { "MV-JMP-RF": 2, "MV-PAD-LIM": 1 },
+  "C-12": { "MV-PAD-LIM": 2, "MV-CIN-VUL": 2, "MV-TER-060": 12 },
+  "C-15": { "MV-FUS-063": 2, "MV-BAT-12V": 1 },
+  "C-18": { "MV-SFP-10G": 1, "MV-PAD-LIM": 2 }
+}

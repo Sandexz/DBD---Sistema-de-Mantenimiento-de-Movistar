@@ -1,0 +1,15 @@
+[
+  { "id": "TB-01", "actividad": "Inspección técnica", "tipoActivo": "Nodo", "periodicidad": "Semestral", "duracionMin": 180, "toleranciaDias": 7 },
+  { "id": "TB-02", "actividad": "Revisión de puertos y actualización de firmware", "tipoActivo": "Switch Core", "periodicidad": "Semestral", "duracionMin": 240, "toleranciaDias": 7 },
+  { "id": "TB-03", "actividad": "Limpieza de conectores y medición de potencia", "tipoActivo": "OLT", "periodicidad": "Trimestral", "duracionMin": 120, "toleranciaDias": 5 },
+  { "id": "TB-04", "actividad": "Medición OTDR de tramo", "tipoActivo": "Tramo de fibra óptica", "periodicidad": "Anual", "duracionMin": 240, "toleranciaDias": 10 },
+  { "id": "TB-05", "actividad": "Revisión de banco de baterías", "tipoActivo": "Equipo de respaldo", "periodicidad": "Trimestral", "duracionMin": 90, "toleranciaDias": 5 },
+  { "id": "TB-06", "actividad": "Prueba de funcionamiento con carga", "tipoActivo": "Equipo de respaldo", "periodicidad": "Mensual", "duracionMin": 60, "toleranciaDias": 3 },
+  { "id": "TB-07", "actividad": "Inspección de antenas y alineamiento", "tipoActivo": "BTS", "periodicidad": "Semestral", "duracionMin": 240, "toleranciaDias": 7 },
+  { "id": "TB-08", "actividad": "Revisión de hermeticidad y medición OTDR", "tipoActivo": "Mufa", "periodicidad": "Anual", "duracionMin": 120, "toleranciaDias": 10 },
+  { "id": "TB-09", "actividad": "Inspección de caja y potencia óptica", "tipoActivo": "Caja NAP", "periodicidad": "Trimestral", "duracionMin": 60, "toleranciaDias": 10 },
+  { "id": "TB-10", "actividad": "Revisión de climatización y energía", "tipoActivo": "Data Center", "periodicidad": "Mensual", "duracionMin": 180, "toleranciaDias": 3 },
+  { "id": "TB-11", "actividad": "Revisión de climatización y energía", "tipoActivo": "Central", "periodicidad": "Mensual", "duracionMin": 180, "toleranciaDias": 3 },
+  { "id": "TB-12", "actividad": "Limpieza y certificación de puertos", "tipoActivo": "ODF", "periodicidad": "Anual", "duracionMin": 120, "toleranciaDias": 10 },
+  { "id": "TB-13", "actividad": "Medición de pérdida de inserción", "tipoActivo": "Splitter", "periodicidad": "Anual", "duracionMin": 45, "toleranciaDias": 10 }
+]

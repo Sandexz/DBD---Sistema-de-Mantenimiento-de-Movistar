@@ -1,0 +1,6 @@
+[
+  { "id": "UMB-01", "parametro": "Potencia óptica en caja NAP (rango óptimo)", "valor": "-15 a -22 dBm", "accion": "Operación normal" },
+  { "id": "UMB-02", "parametro": "Atenuación óptica (umbral de alerta)", "valor": "< -27.0 dBm", "accion": "Genera alarma y ticket por detección automática" },
+  { "id": "UMB-03", "parametro": "Corte de fibra troncal (tiempo máximo de reposición)", "valor": "120 minutos", "accion": "Escalamiento a jefatura de zona al superar el 75 %" },
+  { "id": "UMB-04", "parametro": "Autonomía mínima de banco de baterías", "valor": "4 horas", "accion": "Alerta crítica si la carga baja de 50 %" }
+]

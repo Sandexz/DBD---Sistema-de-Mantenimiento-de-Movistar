@@ -3,80 +3,77 @@ module.exports = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./lib/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
       colors: {
-        movistar: {
-          green: '#5BC500',        // Verde Movistar clásico
-          'green-dark': '#489E00',   // Hover verde
-          'green-light': '#F0F9E8',  // Fondo sutil verde
-          'green-border': '#C6EE94',
-          blue: '#019DF4',         // Azul corporativo Movistar
-          'blue-dark': '#0070B8',
-          'blue-light': '#E5F4FD',
-          'blue-border': '#B8E2FB',
-          navy: '#0B2742',         // Azul marino para topbar/contraste
-          'navy-dark': '#061625',
-          'navy-light': '#123960',
-          text: '#1E293B',         // Gris oscuro para textos principales
-          'text-secondary': '#64748B', // Gris medio para textos secundarios
-          border: '#E2E8F0',       // Gris claro para bordes y separadores
-          'border-light': '#F1F5F9',
-          bg: '#F8FAFC',           // Fondo predominante limpio
-          card: '#FFFFFF',         // Fondo tarjetas blanco
-          white: '#FFFFFF',
-          light: '#F4F6F9',
+        // Identidad corporativa Movistar (Gerencial / Operativo)
+        mv: {
+          green: "#5BC500", // identidad: marca, indicador activo, acentos
+          "green-600": "#4AA300",
+          "green-700": "#3B8500", // acciones primarias y texto verde sobre blanco (AA)
+          "green-800": "#2F6A00",
+          "green-50": "#F2FAEA",
+          "green-100": "#E2F3D0",
+          teal: "#00A3B4", // complementario moderado (módulo Operativo)
+          "teal-700": "#007A87",
+          "teal-50": "#E6F6F8",
+          ink: "#1F2A30", // texto principal (gris oscuro)
+          "ink-2": "#4A5760", // texto secundario
+          muted: "#7C8891",
+          line: "#E3E7EA",
+          "line-2": "#CFD6DB",
+          surface: "#F4F6F7", // gris claro: fondos secundarios
+          "surface-2": "#FAFBFB",
         },
+        // Colores semánticos (estados funcionales, distintos de la identidad)
+        st: {
+          "ok-fg": "#0F7A55",
+          "ok-bg": "#E6F4EE",
+          ok: "#16A36F",
+          "warn-fg": "#8A5A00",
+          "warn-bg": "#FFF4D6",
+          warn: "#E9A800",
+          "crit-fg": "#B42318",
+          "crit-bg": "#FDECEA",
+          crit: "#E0362B",
+          "info-fg": "#1B5FC1",
+          "info-bg": "#EAF1FD",
+          info: "#2F7BEA",
+        },
+        // Paleta anterior: se conserva porque el módulo Batch la utiliza
         brand: {
-          blue: '#0B2742',
-          'blue-dark': '#061625',
-          'blue-light': '#123960',
-          cyan: '#019DF4',
-          'cyan-muted': '#019DF41A',
-          orange: '#FF6A13',
-          'orange-muted': '#FF6A131A',
-          green: '#00A86B',
-          dark: '#0B2742',
-          'dark-card': '#FFFFFF',
-          'dark-card-hover': '#F8FAFC',
-          'dark-border': '#E2E8F0',
-          'dark-border-light': '#CBD5E1',
-          white: '#FFFFFF',
-          'gray-muted': '#64748B',
-          'gray-light': '#F1F5F9',
+          blue: "#0A2E5C",
+          "blue-dark": "#061D3A",
+          "blue-light": "#144585",
+          cyan: "#00AEEF",
+          "cyan-muted": "#00AEEF1A",
+          orange: "#FF6A13",
+          "orange-muted": "#FF6A131A",
+          dark: "#0B0C0E",
+          "dark-card": "#121418",
+          "dark-card-hover": "#181B21",
+          "dark-border": "#1E232B",
+          "dark-border-light": "#2A313C",
+          white: "#FFFFFF",
+          "gray-muted": "#8A99AD",
+          "gray-light": "#D2D9E2",
         },
-        status: {
-          ok: '#16A34A',
-          'ok-light': '#DCFCE7',
-          'ok-border': '#86EFAC',
-          warning: '#D97706',
-          'warning-light': '#FEF3C7',
-          'warning-border': '#FDE68A',
-          danger: '#DC2626',
-          'danger-light': '#FEE2E2',
-          'danger-border': '#FCA5A5',
-          info: '#0284C7',
-          'info-light': '#E0F2FE',
-          'info-border': '#BAE6FD',
-        }
       },
       fontFamily: {
-        grotesk: ['var(--font-space-grotesk)', 'sans-serif'],
-        sans: ['var(--font-public-sans)', 'sans-serif'],
-        mono: ['var(--font-ibm-plex-mono)', 'monospace'],
+        sans: ["Figtree Variable", "Figtree", "Segoe UI", "Helvetica Neue", "Arial", "sans-serif"],
+        // alias heredado: Batch usa `font-grotesk` en sus títulos
+        grotesk: ["Figtree Variable", "Figtree", "Segoe UI", "Arial", "sans-serif"],
+        mono: ["IBM Plex Mono", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
       },
       boxShadow: {
-        'glow-cyan': '0 0 15px rgba(1, 157, 244, 0.35)',
-        'glow-blue': '0 0 15px rgba(1, 157, 244, 0.35)',
-        'glow-green': '0 0 15px rgba(0, 168, 107, 0.35)',
-        'glow-orange': '0 0 15px rgba(255, 106, 19, 0.35)',
-        'card-dark': '0 4px 20px -2px rgba(0, 0, 0, 0.5)',
-        'card-clean': '0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05)',
-        'card-hover': '0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04)',
-        'movistar-green': '0 2px 10px rgba(91, 197, 0, 0.25)',
-      }
+        pop: "0 12px 32px -8px rgba(31, 42, 48, 0.22)",
+        "glow-cyan": "0 0 15px rgba(0, 174, 239, 0.35)",
+        "glow-orange": "0 0 15px rgba(255, 106, 19, 0.35)",
+        "card-dark": "0 4px 20px -2px rgba(0, 0, 0, 0.5)",
+      },
     },
   },
   plugins: [],
-}
+};

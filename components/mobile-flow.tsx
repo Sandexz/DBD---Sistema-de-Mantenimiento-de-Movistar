@@ -1,6 +1,14 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+// App de campo (componente existente, conservado y ampliado de 3 a 5 pasos).
+// Secuencia: OT → Check-in (GPS) → ATS → Validación → Ejecución → Repuestos → Cierre.
+// Cada fase corresponde a una función de la arquitectura OPERATIVO › DATA ENTRY:
+//   · Check-in y Ejecución Dinámica  → pasos 1, 2 y 3
+//   · Descargo de Repuestos          → paso 4
+//   · Cierre Transaccional           → paso 5
+import React, { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   MapPin,
   QrCode,
@@ -8,909 +16,948 @@ import {
   PenTool,
   CheckCircle2,
   HardHat,
-  Clock,
-  ArrowRight,
-  RotateCcw,
   Wifi,
   Battery,
   Signal,
   Check,
   Package,
   FileCheck2,
-  AlertCircle,
-  Smartphone,
-  Navigation,
-  Sparkles,
-  Zap,
-  Trash2,
-  Maximize2,
-  ScanLine,
   ShieldCheck,
-  ShieldAlert,
+  Crosshair,
+  Navigation,
+  Lock,
+  Plus,
+  Trash2,
+  ClipboardList,
+  ArrowRight,
+  FileText,
 } from "lucide-react";
+import { useCatalogos, useSgmr } from "@/lib/store";
+import {
+  CAUSAS_FALLA,
+  CLIMAS_ATS,
+  EPP_ATS,
+  MATERIALES,
+  RIESGOS_ATS,
+  actividadesPara,
+  fmtCoord,
+  fmtDistancia,
+  medicionSugerida,
+  riesgosSugeridos,
+  RADIO_CHECKIN_M,
+} from "@/lib/data";
+import { validarAts, validarCierre, validarProximidad, validarStock, type Chequeo, type LineaDescargo } from "@/lib/validaciones";
+import type { Activo, AtsRegistro, Ejecucion, OrdenTrabajo } from "@/lib/types";
+import { Callout, CheckboxRow, Checklist, CriticidadBadge, Field, Input, Pill, Select, Textarea, TipoOtTag, toneOt, cx } from "./sgmr/ui";
 
-export function MobileFlow() {
-  // Pasos del flujo de campo:
-  // 1: Llegada & Check-in GPS (< 50m)
-  // 2: Verificación de Materiales & Escáner QR
-  // 3: Cierre, Evidencia OTDR y Firma Digital en Lienzo
-  // 4: Resumen / Éxito
-  const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
-  const [isLoading, setIsLoading] = useState(false);
+export type FaseCampo = "checkin" | "repuestos" | "cierre";
 
-  // Paso 1: GPS Arribo
-  const [distanciaMetros, setDistanciaMetros] = useState<number>(12);
-  const isGpsValido = distanciaMetros <= 50;
-  const [gpsConfirmed, setGpsConfirmed] = useState(false);
-  const [checkInTime, setCheckInTime] = useState("09:42:15");
+const PASOS = [
+  { n: 1, label: "Check-in", fase: "checkin" as FaseCampo },
+  { n: 2, label: "ATS", fase: "checkin" as FaseCampo },
+  { n: 3, label: "Ejecución", fase: "checkin" as FaseCampo },
+  { n: 4, label: "Repuestos", fase: "repuestos" as FaseCampo },
+  { n: 5, label: "Cierre", fase: "cierre" as FaseCampo },
+];
 
-  // Paso 2: Materiales escaneados
-  const [scannedItems, setScannedItems] = useState<
-    Array<{ id: string; name: string; sn: string; category: string }>
-  >([]);
-  const [isScanningActive, setIsScanningActive] = useState(false);
+function BigBtn({
+  children,
+  onClick,
+  disabled,
+  tone = "primary",
+  type = "button",
+}: {
+  children: React.ReactNode;
+  onClick?: () => void;
+  disabled?: boolean;
+  tone?: "primary" | "secondary" | "teal";
+  type?: "button" | "submit";
+}) {
+  return (
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      className={cx(
+        "flex h-12 w-full items-center justify-center gap-2 rounded-lg text-sm font-bold transition-colors active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40",
+        tone === "primary" && "bg-mv-green-700 text-white hover:bg-mv-green-800",
+        tone === "teal" && "bg-mv-teal-700 text-white hover:bg-[#006570]",
+        tone === "secondary" && "border border-mv-line-2 bg-white text-mv-ink hover:bg-mv-surface"
+      )}
+    >
+      {children}
+    </button>
+  );
+}
 
-  // Paso 3: Evidencia y Firma
-  const [evidencePhoto, setEvidencePhoto] = useState<boolean>(false);
-  const [hasSignature, setHasSignature] = useState(false);
-  const [signerName, setSignerName] = useState("Ing. Roberto Mendoza (Supervisor Planta)");
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [isDrawing, setIsDrawing] = useState(false);
+function StepTitle({ icon, title, children }: { icon: React.ReactNode; title: string; children?: React.ReactNode }) {
+  return (
+    <div className="flex items-start gap-3 rounded-lg border border-mv-line bg-mv-surface-2 p-3">
+      <span className="mt-0.5 text-mv-green-700">{icon}</span>
+      <div>
+        <h3 className="text-sm font-bold text-mv-ink">{title}</h3>
+        {children && <p className="mt-0.5 text-xs text-mv-ink-2">{children}</p>}
+      </div>
+    </div>
+  );
+}
 
-  // Initialize Canvas for Signature
+export function MobileFlow({ fase = "checkin", otId }: { fase?: FaseCampo; otId?: string | null }) {
+  const router = useRouter();
+  const { datos, sesion, ahora } = useSgmr();
+  const cat = useCatalogos();
+  const ot = cat.ot(otId);
+  const activo = cat.activo(ot?.activoId);
+  const ej = cat.ejecucion(ot?.id);
+  const tr = datos.tracking.find((t) => t.cuadrillaId === ot?.cuadrillaId);
+  const consumos = datos.consumos.filter((c) => c.otId === ot?.id);
+  const [vista, setVista] = useState<number | null>(null);
+  const [cambiosCierre, setCambiosCierre] = useState<string[] | null>(null);
+
   useEffect(() => {
-    if (currentStep === 3 && canvasRef.current) {
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext("2d");
-      if (ctx) {
-        ctx.strokeStyle = "#0B2742";
-        ctx.lineWidth = 2.5;
-        ctx.lineCap = "round";
-        ctx.lineJoin = "round";
-      }
+    setVista(null);
+    setCambiosCierre(null);
+  }, [otId, fase]);
+
+  const hecho = {
+    1: !!ej?.checkIn?.valido,
+    2: !!ej?.atsValido,
+    3: ot?.status === "PENDIENTE DE CIERRE" || ot?.status === "CERRADA",
+    4: consumos.length > 0 || !!ej?.sinConsumo,
+    5: ot?.status === "CERRADA",
+  } as Record<number, boolean>;
+
+  const pasoNatural = fase === "repuestos" ? 4 : fase === "cierre" ? 5 : !hecho[1] ? 1 : !hecho[2] ? 2 : 3;
+  const paso = vista ?? pasoNatural;
+
+  const irA = (n: number) => {
+    const p = PASOS[n - 1];
+    if (!ot) return;
+    if (p.fase === fase) {
+      if (p.fase === "checkin") setVista(n === pasoNatural ? null : n <= pasoNatural ? n : null);
+      return;
     }
-  }, [currentStep]);
-
-  // Handle Canvas Drawing (Mouse & Touch)
-  const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    ctx.strokeStyle = "#0B2742";
-    ctx.lineWidth = 2.5;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-
-    setIsDrawing(true);
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
-    const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
-    const x = (clientX - rect.left) * scaleX;
-    const y = (clientY - rect.top) * scaleY;
-
-    ctx.beginPath();
-    ctx.moveTo(x, y);
+    router.push(`/operativo/campo/${p.fase}?ot=${ot.id}`);
   };
 
-  const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-    if (!isDrawing) return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
-    const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
-    const x = (clientX - rect.left) * scaleX;
-    const y = (clientY - rect.top) * scaleY;
-
-    ctx.lineTo(x, y);
-    ctx.stroke();
-    setHasSignature(true);
-  };
-
-  const stopDrawing = () => {
-    setIsDrawing(false);
-  };
-
-  const handleClearSignature = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    setHasSignature(false);
-  };
-
-  const handleAutoSign = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = "#0B2742";
-    ctx.lineWidth = 2.5;
-
-    ctx.beginPath();
-    ctx.moveTo(25, 45);
-    ctx.bezierCurveTo(45, 15, 65, 60, 95, 25);
-    ctx.bezierCurveTo(120, 10, 135, 55, 170, 35);
-    ctx.lineTo(240, 45);
-    ctx.moveTo(110, 50);
-    ctx.lineTo(210, 50);
-    ctx.stroke();
-
-    setHasSignature(true);
-  };
-
-  // Step 1: Confirmar Arribo al Sitio
-  const handleConfirmArrival = () => {
-    if (!isGpsValido) return;
-    setIsLoading(true);
-    const now = new Date();
-    setCheckInTime(
-      now.toLocaleTimeString("es-PE", { hour: "2-digit", minute: "2-digit", second: "2-digit" })
-    );
-    setTimeout(() => {
-      setIsLoading(false);
-      setGpsConfirmed(true);
-      setTimeout(() => {
-        setCurrentStep(2);
-      }, 700);
-    }, 600);
-  };
-
-  // Step 2: Escanear Repuesto
-  const availableItemsToScan = [
-    {
-      id: "REP-01",
-      name: "Mufa Óptica 24 hilos",
-      sn: "SN: M-9921",
-      category: "Fibra Óptica FTTH",
-    },
-    {
-      id: "REP-02",
-      name: "10m Cable Drop FTTH",
-      sn: "Lote #DP-4402",
-      category: "Conectividad Planta Externa",
-    },
-    {
-      id: "REP-03",
-      name: "Conector Rápido SC/APC (x2)",
-      sn: "SN: CN-8812",
-      category: "Accesorios de Terminación",
-    },
-  ];
-
-  const handleScanRepuesto = () => {
-    setIsScanningActive(true);
-    setIsLoading(true);
-
-    setTimeout(() => {
-      setIsLoading(false);
-      setIsScanningActive(false);
-
-      if (scannedItems.length === 0) {
-        setScannedItems([availableItemsToScan[0]]);
-      } else if (scannedItems.length === 1) {
-        setScannedItems([availableItemsToScan[0], availableItemsToScan[1]]);
-      } else if (scannedItems.length === 2) {
-        setScannedItems(availableItemsToScan);
-      }
-    }, 700);
-  };
-
-  // Step 3: Simular Foto OTDR
-  const handleSimulatePhoto = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      setEvidencePhoto(true);
-    }, 500);
-  };
-
-  // Step 3: Cerrar y Despachar OT
-  const handleCloseAndDispatch = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      setCurrentStep(4);
-    }, 800);
-  };
-
-  // Step 4: Reiniciar Simulación
-  const handleReset = () => {
-    setCurrentStep(1);
-    setDistanciaMetros(12);
-    setGpsConfirmed(false);
-    setCheckInTime("09:42:15");
-    setScannedItems([]);
-    setEvidencePhoto(false);
-    setHasSignature(false);
-  };
+  const cuadrilla = cat.cuadrilla(ot?.cuadrillaId);
 
   return (
-    <div className="flex flex-col items-center justify-center w-full">
-      {/* Smartphone Outer Shell */}
-      <div className="w-full max-w-[420px] bg-white rounded-[40px] shadow-2xl border-[8px] border-[#0B2742] overflow-hidden flex flex-col min-h-[760px] font-sans relative ring-1 ring-black/10">
-        {/* Mobile Top Speaker & Camera Notch */}
-        <div className="bg-[#0B2742] text-white px-6 pt-3 pb-2 flex items-center justify-between text-xs font-mono select-none">
-          <span className="font-bold tracking-tight text-slate-100">09:41</span>
-          {/* Hardware Dynamic Island Notch */}
-          <div className="w-20 h-3.5 bg-black/70 rounded-full flex items-center justify-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#019DF4]/60" />
-            <span className="w-2 h-2 rounded-full bg-slate-800" />
-          </div>
-          <div className="flex items-center gap-2">
-            <Signal className="w-3.5 h-3.5 text-[#019DF4]" />
-            <Wifi className="w-3.5 h-3.5 text-white" />
-            <Battery className="w-4 h-4 text-[#00A86B]" />
-          </div>
-        </div>
-
-        {/* Encabezado Corporativo Movistar Campo */}
-        <div className="bg-[#0B2742] text-white px-5 py-3 border-b border-[#019DF4]/30 shadow-md">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-lg bg-[#019DF4] text-white flex items-center justify-center font-bold text-xs shadow-sm">
-                M
-              </div>
-              <div>
-                <h1 className="text-sm font-bold font-grotesk tracking-wide leading-tight text-white">
-                  Movistar Campo - OT #89421
-                </h1>
-                <p className="text-[10px] text-slate-300 font-mono">
-                  Cuadrilla Alfa 01 · Téc. Diego Quispe
-                </p>
-              </div>
-            </div>
-
-            {/* Badge de Estado: EN PROGRESO */}
-            <span className="inline-flex items-center gap-1.5 bg-[#019DF4]/20 border border-[#019DF4] text-[#019DF4] px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono uppercase">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#019DF4] animate-pulse" />
-              EN PROGRESO
-            </span>
-          </div>
-        </div>
-
-        {/* Barra de Progreso de 4 Pasos */}
-        <div className="bg-[#F4F6F9] border-b border-slate-200 px-4 py-3">
-          <div className="flex items-center justify-between relative">
-            {/* Step 1 */}
-            <div className="flex flex-col items-center flex-1 z-10">
-              <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold font-mono transition-all ${
-                  currentStep > 1 || gpsConfirmed
-                    ? "bg-[#00A86B] text-white shadow-sm"
-                    : currentStep === 1
-                    ? "bg-[#0B2742] text-white ring-2 ring-[#019DF4]"
-                    : "bg-slate-300 text-slate-600"
-                }`}
-              >
-                {currentStep > 1 || gpsConfirmed ? (
-                  <Check className="w-4 h-4" />
-                ) : (
-                  "1"
-                )}
-              </div>
-              <span className="text-[9px] font-bold mt-1 text-slate-700">
-                1. Llegada
-              </span>
-            </div>
-
-            <div
-              className={`h-0.5 flex-1 mx-0.5 -mt-3 transition-colors ${
-                currentStep > 1 ? "bg-[#00A86B]" : "bg-slate-300"
-              }`}
-            />
-
-            {/* Step 2 */}
-            <div className="flex flex-col items-center flex-1 z-10">
-              <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold font-mono transition-all ${
-                  currentStep > 2 || scannedItems.length >= 2
-                    ? "bg-[#00A86B] text-white shadow-sm"
-                    : currentStep === 2
-                    ? "bg-[#0B2742] text-white ring-2 ring-[#019DF4]"
-                    : "bg-slate-300 text-slate-600"
-                }`}
-              >
-                {currentStep > 2 || scannedItems.length >= 2 ? (
-                  <Check className="w-4 h-4" />
-                ) : (
-                  "2"
-                )}
-              </div>
-              <span className="text-[9px] font-bold mt-1 text-slate-700">
-                2. Material
-              </span>
-            </div>
-
-            <div
-              className={`h-0.5 flex-1 mx-0.5 -mt-3 transition-colors ${
-                currentStep > 2 ? "bg-[#00A86B]" : "bg-slate-300"
-              }`}
-            />
-
-            {/* Step 3 */}
-            <div className="flex flex-col items-center flex-1 z-10">
-              <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold font-mono transition-all ${
-                  currentStep > 3
-                    ? "bg-[#00A86B] text-white shadow-sm"
-                    : currentStep === 3
-                    ? "bg-[#0B2742] text-white ring-2 ring-[#019DF4]"
-                    : "bg-slate-300 text-slate-600"
-                }`}
-              >
-                {currentStep > 3 ? <Check className="w-4 h-4" /> : "3"}
-              </div>
-              <span className="text-[9px] font-bold mt-1 text-slate-700">
-                3. Cierre
-              </span>
-            </div>
-
-            <div
-              className={`h-0.5 flex-1 mx-0.5 -mt-3 transition-colors ${
-                currentStep === 4 ? "bg-[#00A86B]" : "bg-slate-300"
-              }`}
-            />
-
-            {/* Step 4 */}
-            <div className="flex flex-col items-center flex-1 z-10">
-              <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold font-mono transition-all ${
-                  currentStep === 4
-                    ? "bg-[#00A86B] text-white ring-2 ring-[#00A86B]/40 shadow-sm"
-                    : "bg-slate-300 text-slate-600"
-                }`}
-              >
-                {currentStep === 4 ? <Check className="w-4 h-4" /> : "4"}
-              </div>
-              <span className="text-[9px] font-bold mt-1 text-slate-700">
-                4. Éxito
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Sub-header de Orden (Fondo blanco de alto contraste) */}
-        <div className="bg-white border-b border-slate-100 p-3.5 text-xs">
-          <div className="flex items-center justify-between">
-            <span className="font-mono font-bold text-[#0B2742] text-sm">
-              OT #89421 — FTTH / HFC
-            </span>
-            <span className="bg-[#019DF4]/10 text-[#019DF4] border border-[#019DF4]/40 font-mono text-[10px] font-bold px-2 py-0.5 rounded-full">
-              SLA: 120 MIN
-            </span>
-          </div>
-          <p className="text-slate-600 text-xs mt-1">
-            Destino: <strong className="text-[#0B2742]">Nodo NOD-CARABAYLLO-04</strong>
-          </p>
-          <p className="text-[11px] text-slate-500 font-mono">
-            Ubicación: Av. Túpac Amaru Km 21.5 · Carabayllo, Lima
-          </p>
-        </div>
-
-        {/* Dynamic Step Content Container (White Background #FFFFFF) */}
-        <div className="flex-1 p-4 flex flex-col justify-between space-y-4 bg-white text-slate-800">
-          {/* =========================================================================
-              PASO 1: LLEGADA GPS
-          ========================================================================= */}
-          {currentStep === 1 && (
-            <div className="space-y-4 flex-1 flex flex-col justify-between">
-              <div className="space-y-3">
-                {/* Simulated GPS Map */}
-                <div className="relative w-full h-48 bg-slate-900 rounded-2xl overflow-hidden border border-slate-200 shadow-inner">
-                  {/* Vectorial Map Background */}
-                  <svg
-                    className="w-full h-full opacity-60"
-                    viewBox="0 0 400 200"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    {/* Street Grids */}
-                    <path
-                      d="M0 40 H400 M0 100 H400 M0 160 H400"
-                      stroke="#1E3A5F"
-                      strokeWidth="2"
-                    />
-                    <path
-                      d="M60 0 V200 M160 0 V200 M260 0 V200 M360 0 V200"
-                      stroke="#1E3A5F"
-                      strokeWidth="2"
-                    />
-                    {/* Diagonal Avenue */}
-                    <path
-                      d="M-20 180 L280 20 L420 80"
-                      stroke="#019DF4"
-                      strokeWidth="3"
-                      strokeDasharray="6 4"
-                    />
-                    {/* Concentric GPS Radar Rings */}
-                    <circle
-                      cx="210"
-                      cy="95"
-                      r="45"
-                      stroke="#00A86B"
-                      strokeWidth="1.5"
-                      strokeDasharray="3 3"
-                    />
-                    <circle
-                      cx="210"
-                      cy="95"
-                      r="25"
-                      stroke="#00A86B"
-                      strokeWidth="1.5"
-                    />
-                  </svg>
-
-                  {/* Target Node Pin (NOD-CARABAYLLO-04) */}
-                  <div className="absolute top-[80px] left-[195px] flex flex-col items-center">
-                    <div className="w-8 h-8 rounded-full bg-[#0B2742] border-2 border-[#019DF4] flex items-center justify-center text-white shadow-lg animate-pulse">
-                      <MapPin className="w-4 h-4 text-[#019DF4]" />
-                    </div>
-                    <span className="text-[9px] font-bold font-mono bg-[#0B2742] text-white px-2 py-0.5 rounded shadow mt-0.5 whitespace-nowrap">
-                      NOD-CARABAYLLO-04
-                    </span>
-                  </div>
-
-                  {/* Technician Location Pin */}
-                  <div className="absolute top-[105px] left-[165px] flex items-center gap-1 bg-[#00A86B] text-white px-2 py-0.5 rounded-full text-[10px] font-bold shadow-md">
-                    <span className="w-2 h-2 rounded-full bg-white animate-ping" />
-                    <span>Técnico (Tú)</span>
-                  </div>
-
-                  {/* Telemetry HUD Badge */}
-                  <div className="absolute top-2.5 left-2.5 bg-black/80 backdrop-blur-md px-2.5 py-1 rounded-lg text-[10px] font-mono text-slate-200 border border-white/10">
-                    <span className="text-[#019DF4] font-bold">WGS-84:</span> -11.8542, -77.0345
-                  </div>
-                  <div className="absolute bottom-2.5 right-2.5 bg-[#0B2742]/90 backdrop-blur-md px-2 py-0.5 rounded text-[10px] font-mono text-white">
-                    Distancia: <span className="text-[#00A86B] font-bold">{distanciaMetros} m</span>
-                  </div>
-                </div>
-
-                {/* Alerta Verde de Validación */}
-                {isGpsValido ? (
-                  <div className="p-3 bg-[#E6F6F0] border-2 border-[#00A86B] rounded-2xl flex items-start gap-2.5 text-[#00A86B] shadow-sm animate-in fade-in">
-                    <CheckCircle2 className="w-5 h-5 text-[#00A86B] shrink-0 mt-0.5" />
-                    <div className="text-xs">
-                      <p className="font-bold font-grotesk text-[#00A86B]">
-                        ✓ GPS Validado: Estás a {distanciaMetros} metros del Nodo NOD-CARABAYLLO-04
-                      </p>
-                      <p className="text-[11px] text-slate-600 mt-0.5">
-                        Coordenadas satelitales en rango de tolerancia (&lt; 50m). Autorizado para iniciar trabajos.
-                      </p>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="p-3 bg-rose-50 border-2 border-rose-300 rounded-2xl flex items-start gap-2.5 text-rose-800 shadow-sm animate-in fade-in">
-                    <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
-                    <div className="text-xs">
-                      <p className="font-bold font-grotesk text-rose-700">
-                        ✗ Fuera de rango GPS ({distanciaMetros}m)
-                      </p>
-                      <p className="text-[11px] text-slate-600 mt-0.5">
-                        Debes acercarte a menos de 50 metros del nodo para realizar el check-in.
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Info Card */}
-                <div className="p-3 bg-[#F4F6F9] rounded-xl border border-slate-200 text-xs font-mono space-y-1">
-                  <div className="flex justify-between text-slate-600">
-                    <span>Precisión del Dispositivo:</span>
-                    <span className="text-[#00A86B] font-bold">ALTA (±2.8m)</span>
-                  </div>
-                  <div className="flex justify-between text-slate-600">
-                    <span>Hora Check-in:</span>
-                    <span className="text-slate-800 font-bold" suppressHydrationWarning>{checkInTime}</span>
-                  </div>
-                </div>
-
-                {/* Simulador de Distancia */}
-                <div className="p-2 bg-slate-100 rounded-xl text-[10px] font-mono flex items-center justify-between">
-                  <span className="text-slate-500">Prueba GPS:</span>
-                  <div className="flex gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => setDistanciaMetros(12)}
-                      className={`px-2 py-0.5 rounded font-bold ${
-                        distanciaMetros === 12
-                          ? "bg-[#00A86B] text-white"
-                          : "bg-white text-slate-700 border"
-                      }`}
-                    >
-                      12m (En Rango)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setDistanciaMetros(80)}
-                      className={`px-2 py-0.5 rounded font-bold ${
-                        distanciaMetros === 80
-                          ? "bg-rose-600 text-white"
-                          : "bg-white text-slate-700 border"
-                      }`}
-                    >
-                      80m (Fuera)
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Botón Interactivo: Confirmar Arribo al Sitio */}
-              <button
-                type="button"
-                onClick={handleConfirmArrival}
-                disabled={isLoading || !isGpsValido || gpsConfirmed}
-                className="w-full py-3.5 px-4 bg-[#0B2742] hover:bg-[#061625] text-white font-bold rounded-2xl shadow-lg shadow-[#0B2742]/20 flex items-center justify-center gap-2 text-sm transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer"
-              >
-                {isLoading ? (
-                  <span>Registrando coordenadas en NOC...</span>
-                ) : gpsConfirmed ? (
-                  <span className="flex items-center gap-1.5 text-white">
-                    <Check className="w-4 h-4 text-[#00A86B]" /> Arribo Confirmado
-                  </span>
-                ) : (
-                  <>
-                    <Navigation className="w-4 h-4 text-[#019DF4]" />
-                    <span>Confirmar Arribo al Sitio</span>
-                  </>
-                )}
-              </button>
-            </div>
-          )}
-
-          {/* =========================================================================
-              PASO 2: MATERIALES Y REPUESTOS
-          ========================================================================= */}
-          {currentStep === 2 && (
-            <div className="space-y-4 flex-1 flex flex-col justify-between">
-              <div className="space-y-3">
-                {/* Recuadro simulador de escáner QR/Código de Barras con animación */}
-                <div className="border-2 border-slate-300 bg-slate-900 rounded-2xl p-4 flex flex-col items-center justify-center text-center relative overflow-hidden h-48 shadow-inner">
-                  {/* Visor de Cámara con esquinas */}
-                  <div className="w-36 h-36 border-2 border-[#019DF4] rounded-xl relative flex items-center justify-center bg-black/40">
-                    {/* Animated Scanning Laser Beam */}
-                    <div className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#019DF4] to-transparent shadow-[0_0_12px_#019DF4] animate-scan-beam" />
-
-                    {/* Viewfinder Target Icon */}
-                    <QrCode className="w-16 h-16 text-white/50" />
-
-                    {/* Viewfinder Corner Brackets */}
-                    <div className="absolute top-1 left-1 w-3 h-3 border-t-2 border-l-2 border-white" />
-                    <div className="absolute top-1 right-1 w-3 h-3 border-t-2 border-r-2 border-white" />
-                    <div className="absolute bottom-1 left-1 w-3 h-3 border-b-2 border-l-2 border-white" />
-                    <div className="absolute bottom-1 right-1 w-3 h-3 border-b-2 border-r-2 border-white" />
-                  </div>
-
-                  <p className="text-[11px] font-mono text-slate-300 mt-2 flex items-center gap-1.5">
-                    <ScanLine className="w-3.5 h-3.5 text-[#019DF4] animate-pulse" />
-                    <span>Apunta la cámara al código de barras o QR</span>
-                  </p>
-                </div>
-
-                {/* Botón "Escanear Repuesto" */}
-                <button
-                  type="button"
-                  onClick={handleScanRepuesto}
-                  disabled={isLoading || scannedItems.length >= 3}
-                  className="w-full py-2.5 px-4 bg-[#019DF4] hover:bg-[#0081CB] text-white font-bold rounded-xl shadow-md flex items-center justify-center gap-2 text-xs transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer"
-                >
-                  <QrCode className="w-4 h-4" />
-                  <span>
-                    {isLoading
-                      ? "Procesando código de barras..."
-                      : scannedItems.length === 0
-                      ? "Escanear Repuesto (Mufa Óptica 24 hilos)"
-                      : scannedItems.length === 1
-                      ? "Escanear Siguiente Repuesto (Cable Drop)"
-                      : "Escanear Repuesto Adicional"}
-                  </span>
-                </button>
-
-                {/* Lista de Repuestos Escaneados */}
-                <div className="space-y-2">
-                  <span className="text-[11px] font-mono uppercase tracking-wider text-slate-500 block font-bold">
-                    Materiales Escaneados ({scannedItems.length}):
-                  </span>
-
-                  {scannedItems.length === 0 ? (
-                    <div className="p-3 bg-slate-50 border border-dashed border-slate-300 rounded-xl text-center text-xs text-slate-400">
-                      Ningún repuesto escaneado aún. Pulsa el botón superior para registrar.
-                    </div>
-                  ) : (
-                    scannedItems.map((item, idx) => (
-                      <div
-                        key={idx}
-                        className="p-2.5 bg-[#F4F6F9] border border-slate-200 rounded-xl flex items-center justify-between text-xs animate-in fade-in"
-                      >
-                        <div className="flex items-center gap-2">
-                          <Package className="w-4 h-4 text-[#019DF4]" />
-                          <div>
-                            <p className="font-bold text-[#0B2742]">{item.name}</p>
-                            <p className="text-[10px] font-mono text-slate-500">
-                              {item.sn} · {item.category}
-                            </p>
-                          </div>
-                        </div>
-                        <span className="text-[10px] font-bold text-[#00A86B] bg-[#E6F6F0] px-2 py-0.5 rounded-full">
-                          ✓ OK
-                        </span>
-                      </div>
-                    ))
-                  )}
-                </div>
-
-                {/* Alerta Verde de Validación de Stock */}
-                {scannedItems.length > 0 && (
-                  <div className="p-2.5 bg-[#E6F6F0] border border-[#00A86B] rounded-xl flex items-center gap-2 text-[#00A86B] text-xs font-bold animate-in fade-in">
-                    <CheckCircle2 className="w-4 h-4 shrink-0 text-[#00A86B]" />
-                    <span>✓ Stock verificado en camioneta del técnico</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Botón: Continuar a Evidencia */}
-              <button
-                type="button"
-                onClick={() => setCurrentStep(3)}
-                disabled={scannedItems.length === 0}
-                className="w-full py-3.5 px-4 bg-[#0B2742] hover:bg-[#061625] text-white font-bold rounded-2xl shadow-lg flex items-center justify-center gap-2 text-sm transition-all active:scale-[0.98] disabled:opacity-40 cursor-pointer"
-              >
-                <span>Continuar a Evidencia</span>
-                <ArrowRight className="w-4 h-4 text-[#019DF4]" />
-              </button>
-            </div>
-          )}
-
-          {/* =========================================================================
-              PASO 3: CIERRE Y EVIDENCIA
-          ========================================================================= */}
-          {currentStep === 3 && (
-            <div className="space-y-3.5 flex-1 flex flex-col justify-between">
-              <div className="space-y-3">
-                {/* 1. Subida de Foto de Evidencia (Fusión OTDR) */}
-                <div className="border border-slate-200 rounded-2xl p-3 bg-slate-50">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-bold text-xs text-[#0B2742] flex items-center gap-1.5">
-                      <Camera className="w-4 h-4 text-[#019DF4]" />
-                      Evidencia de Trabajo (Fusión OTDR)
-                    </span>
-                    {evidencePhoto ? (
-                      <span className="text-[10px] font-mono font-bold text-[#00A86B] bg-[#E6F6F0] px-2 py-0.5 rounded-full">
-                        ✓ FOTO ADJUNTA
-                      </span>
-                    ) : (
-                      <span className="text-[10px] font-mono text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
-                        Pendiente
-                      </span>
-                    )}
-                  </div>
-
-                  {evidencePhoto ? (
-                    <div className="p-2.5 bg-white border border-[#00A86B]/40 rounded-xl flex items-center gap-3">
-                      <div className="w-14 h-14 bg-slate-800 rounded-lg flex items-center justify-center relative overflow-hidden shrink-0 border border-slate-700">
-                        {/* Simulated OTDR curve */}
-                        <svg className="w-full h-full p-1" viewBox="0 0 50 50">
-                          <polyline
-                            points="5,40 15,25 25,25 35,10 45,10"
-                            fill="none"
-                            stroke="#00A86B"
-                            strokeWidth="2"
-                          />
-                        </svg>
-                        <span className="absolute bottom-0.5 right-0.5 text-[8px] font-mono text-white bg-black/60 px-1 rounded">
-                          OTDR
-                        </span>
-                      </div>
-                      <div className="text-xs space-y-0.5">
-                        <p className="font-bold text-[#0B2742]">Fusión_FO_OTDR_0942.jpg</p>
-                        <p className="text-[11px] font-mono text-[#00A86B] font-semibold">
-                          Atenuación: 0.02 dB (Conforme &lt; 0.05)
-                        </p>
-                        <p className="text-[10px] text-slate-400 font-mono">
-                          Longitud de Onda: 1310 / 1550nm
-                        </p>
-                      </div>
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={handleSimulatePhoto}
-                      disabled={isLoading}
-                      className="w-full py-2.5 px-3 border border-dashed border-[#019DF4] bg-[#019DF4]/5 hover:bg-[#019DF4]/10 rounded-xl text-xs font-semibold text-[#019DF4] flex items-center justify-center gap-2 transition-colors cursor-pointer"
-                    >
-                      <Camera className="w-4 h-4" />
-                      <span>{isLoading ? "Cargando archivo..." : "Tomar Foto de Fusión OTDR"}</span>
-                    </button>
-                  )}
-                </div>
-
-                {/* 2. Área de Firma Digital (HTML5 Canvas Interactivo) */}
-                <div className="border border-slate-200 rounded-2xl p-3 bg-slate-50 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-xs text-[#0B2742] flex items-center gap-1.5">
-                      <PenTool className="w-4 h-4 text-[#019DF4]" />
-                      Firma Digital del Cliente / Supervisor
-                    </span>
-                    <div className="flex items-center gap-1.5">
-                      <button
-                        type="button"
-                        onClick={handleClearSignature}
-                        title="Borrar Firma"
-                        className="text-slate-400 hover:text-slate-700 p-1 rounded hover:bg-slate-200 text-[10px] font-mono"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleAutoSign}
-                        className="text-[10px] font-mono font-bold text-[#019DF4] hover:underline"
-                      >
-                        Auto-Firma
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Canvas Pad */}
-                  <div className="bg-white border border-slate-300 rounded-xl overflow-hidden shadow-inner relative">
-                    <canvas
-                      ref={canvasRef}
-                      width={340}
-                      height={90}
-                      onMouseDown={startDrawing}
-                      onMouseMove={draw}
-                      onMouseUp={stopDrawing}
-                      onMouseLeave={stopDrawing}
-                      onTouchStart={startDrawing}
-                      onTouchMove={draw}
-                      onTouchEnd={stopDrawing}
-                      className="w-full h-[90px] cursor-crosshair touch-none"
-                    />
-                    {!hasSignature && (
-                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-slate-300 text-xs font-mono">
-                        Dibuja tu firma aquí con mouse o dedo
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex items-center justify-between text-[10px] font-mono text-slate-500">
-                    <span>Firmante: {signerName}</span>
-                    <span className={hasSignature ? "text-[#00A86B] font-bold" : "text-amber-600"}>
-                      {hasSignature ? "✓ Firma Registrada" : "Falta Firma"}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Resumen Checklist */}
-                <div className="p-2.5 bg-[#F4F6F9] rounded-xl text-[11px] font-mono text-slate-600 space-y-1">
-                  <div className="flex justify-between">
-                    <span>GPS Arribo Validado:</span>
-                    <span className="text-[#00A86B] font-bold">{distanciaMetros}m (OK)</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Repuestos Consumidos:</span>
-                    <span className="text-[#00A86B] font-bold">
-                      {scannedItems.length} ítems liquidados
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>SLA Consumido:</span>
-                    <span className="text-[#00A86B] font-bold">34 min / 120 min</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Botón Principal: Cerrar y Despachar OT */}
-              <button
-                type="button"
-                onClick={handleCloseAndDispatch}
-                disabled={isLoading || !evidencePhoto || !hasSignature}
-                className="w-full py-3.5 px-4 bg-[#00A86B] hover:bg-[#008f5b] text-white font-bold rounded-2xl shadow-lg shadow-[#00A86B]/25 flex items-center justify-center gap-2 text-sm transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-              >
-                {isLoading ? (
-                  <span>Sincronizando cierre con NOC Movistar...</span>
-                ) : (
-                  <>
-                    <FileCheck2 className="w-4 h-4" />
-                    <span>Cerrar y Despachar OT</span>
-                  </>
-                )}
-              </button>
-            </div>
-          )}
-
-          {/* =========================================================================
-              PASO 4: ÉXITO
-          ========================================================================= */}
-          {currentStep === 4 && (
-            <div className="space-y-4 flex-1 flex flex-col items-center justify-center text-center p-4">
-              {/* Ícono gigante de verificación verde */}
-              <div className="w-20 h-20 rounded-full bg-[#E6F6F0] border-4 border-[#00A86B] text-[#00A86B] flex items-center justify-center shadow-lg animate-bounce">
-                <Check className="w-10 h-10 stroke-[3]" />
-              </div>
-
-              <div className="space-y-1">
-                <h3 className="text-xl font-extrabold text-[#0B2742] font-grotesk tracking-tight">
-                  ¡Orden de Trabajo Cerrada / Conforme!
-                </h3>
-                <p className="text-xs text-slate-600">
-                  La orden ha sido liquidada en el sistema central de Movistar Perú con SLA óptimo.
-                </p>
-              </div>
-
-              {/* Resumen del Tiempo de Atención */}
-              <div className="w-full bg-[#F4F6F9] border border-slate-200 rounded-2xl p-4 text-xs font-mono text-left space-y-2">
-                <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-                  <span className="text-slate-500">Tiempo de Atención:</span>
-                  <span className="text-base font-bold text-[#00A86B]">34 min</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Folio:</span>
-                  <span className="text-slate-800 font-bold">OT #89421</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Nodo:</span>
-                  <span className="text-slate-800 font-bold">NOD-CARABAYLLO-04</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Materiales Asignados:</span>
-                  <span className="text-[#019DF4] font-bold">
-                    {scannedItems.length || 2} repuestos descargados
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Estado de Liquidación:</span>
-                  <span className="text-[#00A86B] font-bold">LIQUIDADO / CONFORME</span>
-                </div>
-              </div>
-
-              {/* Botón para Reiniciar Simulación */}
-              <button
-                type="button"
-                onClick={handleReset}
-                className="w-full py-3 px-4 bg-[#0B2742] hover:bg-[#061625] text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md"
-              >
-                <RotateCcw className="w-4 h-4 text-[#019DF4]" />
-                <span>Reiniciar Simulación</span>
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Step Navigation Pill Bar (Footer for testing & review) */}
-        <div className="bg-[#F4F6F9] border-t border-slate-200 px-4 py-2 flex items-center justify-between text-xs">
-          <button
-            type="button"
-            onClick={() => setCurrentStep((prev) => (prev > 1 ? ((prev - 1) as any) : 1))}
-            disabled={currentStep === 1}
-            className="text-slate-600 hover:text-[#0B2742] disabled:opacity-30 font-medium cursor-pointer"
-          >
-            ← Paso Anterior
-          </button>
-          <span className="font-mono text-[11px] text-slate-500">
-            Paso {currentStep} de 4
+    <div className="mx-auto w-full max-w-[440px]">
+      <div className="flex min-h-[720px] flex-col overflow-hidden bg-white sm:rounded-[28px] sm:border-[6px] sm:border-mv-ink sm:shadow-pop">
+        {/* Barra de estado del dispositivo */}
+        <div className="flex select-none items-center justify-between bg-mv-ink px-5 py-1.5 font-mono text-[11px] text-white">
+          <span className="font-bold">{ahora.slice(11, 16)}</span>
+          <span className="flex items-center gap-1.5">
+            <Signal className="h-3.5 w-3.5" />
+            <Wifi className="h-3.5 w-3.5" />
+            <span>86%</span>
+            <Battery className="h-4 w-4 text-mv-green" />
           </span>
+        </div>
+
+        {/* Cabecera de la app */}
+        <div className="flex items-center justify-between border-b border-mv-line bg-white px-4 py-2.5">
+          <div className="flex items-center gap-2">
+            <span className="flex h-8 w-8 items-center justify-center rounded-md bg-mv-green text-white">
+              <HardHat className="h-4 w-4" />
+            </span>
+            <div className="leading-tight">
+              <p className="text-sm font-bold text-mv-ink">SGMR Campo</p>
+              <p className="text-[10px] text-mv-ink-2">
+                {sesion?.rol === "TECNICO" ? sesion.usuario : cuadrilla?.lider ?? "—"} · {cuadrilla ? `${cuadrilla.id} ${cuadrilla.nombre}` : "sin cuadrilla"}
+              </p>
+            </div>
+          </div>
+          <span className="rounded-full bg-mv-green-50 px-2 py-0.5 text-[10px] font-bold text-mv-green-800">4G · GPS</span>
+        </div>
+
+        {/* Indicador de 5 pasos */}
+        <div className="border-b border-mv-line bg-mv-surface-2 px-3 py-2.5">
+          <ol className="flex items-start">
+            {PASOS.map((p, i) => {
+              const ok = hecho[p.n];
+              const actual = paso === p.n;
+              return (
+                <li key={p.n} className="relative flex flex-1 flex-col items-center">
+                  {i > 0 && <span className={cx("absolute right-1/2 top-3.5 h-0.5 w-full", hecho[p.n - 1] ? "bg-st-ok" : "bg-mv-line-2")} />}
+                  <button
+                    type="button"
+                    onClick={() => irA(p.n)}
+                    disabled={!ot}
+                    className={cx(
+                      "relative z-[1] flex h-7 w-7 items-center justify-center rounded-full font-mono text-xs font-bold transition-all",
+                      ok && !actual && "bg-st-ok text-white",
+                      actual && "bg-mv-green-700 text-white ring-4 ring-mv-green-100",
+                      !ok && !actual && "bg-mv-line-2 text-mv-ink-2"
+                    )}
+                    aria-current={actual ? "step" : undefined}
+                    aria-label={`Paso ${p.n}: ${p.label}`}
+                  >
+                    {ok && !actual ? <Check className="h-4 w-4" /> : p.n}
+                  </button>
+                  <span className={cx("mt-1 text-[10px] font-bold", actual ? "text-mv-green-800" : "text-mv-ink-2")}>{p.label}</span>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+
+        {!ot || !activo ? (
+          <div className="flex flex-1 flex-col items-center justify-center gap-2 p-6 text-center">
+            <ClipboardList className="h-8 w-8 text-mv-muted" />
+            <p className="text-sm font-semibold text-mv-ink">Seleccione una orden de trabajo</p>
+            <p className="text-xs text-mv-ink-2">Elija una OT asignada para iniciar la secuencia de campo.</p>
+          </div>
+        ) : (
+          <>
+            {/* Contexto de la OT */}
+            <div className="border-b border-mv-line bg-white px-4 py-3 text-xs">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="font-mono text-sm font-bold text-mv-ink">{ot.id}</span>
+                <div className="flex items-center gap-1.5">
+                  <TipoOtTag tipo={ot.tipo} />
+                  <CriticidadBadge c={ot.criticality} />
+                </div>
+              </div>
+              <p className="mt-1 font-medium text-mv-ink">{ot.infra}</p>
+              <p className="text-[11px] text-mv-ink-2">{activo.direccion}</p>
+              <div className="mt-1.5 flex items-center justify-between">
+                <span className="text-[11px] text-mv-ink-2">{ot.actividad}</span>
+                <Pill tone={toneOt(ot.status)}>{ot.status}</Pill>
+              </div>
+            </div>
+
+            <div className="flex flex-1 flex-col gap-4 p-4">
+              {paso === 1 && <StepCheckin ot={ot} activo={activo} ej={ej} trPos={tr ? { lat: tr.lat, lng: tr.lng } : null} />}
+              {paso === 2 && <StepAts ot={ot} activo={activo} ej={ej} />}
+              {paso === 3 && <StepEjecucion ot={ot} activo={activo} ej={ej} />}
+              {paso === 4 && <StepRepuestos ot={ot} ej={ej} />}
+              {paso === 5 &&
+                (ot.status === "CERRADA" ? (
+                  <ResumenCierre ot={ot} cambios={cambiosCierre} />
+                ) : (
+                  <StepCierre ot={ot} ej={ej} consumos={consumos.length} onCerrado={setCambiosCierre} />
+                ))}
+            </div>
+          </>
+        )}
+
+        {/* Navegación inferior entre fases */}
+        <div className="flex items-center justify-between border-t border-mv-line bg-mv-surface-2 px-4 py-2 text-xs">
           <button
             type="button"
-            onClick={() => setCurrentStep((prev) => (prev < 4 ? ((prev + 1) as any) : 4))}
-            disabled={currentStep >= 4}
-            className="text-[#019DF4] hover:underline font-bold disabled:opacity-30 cursor-pointer"
+            onClick={() => irA(Math.max(1, paso - 1))}
+            disabled={!ot || paso === 1}
+            className="font-semibold text-mv-ink-2 hover:text-mv-ink disabled:opacity-30"
           >
-            Paso Siguiente →
+            ← Paso anterior
+          </button>
+          <span className="num font-mono text-[11px] text-mv-muted">Paso {paso} de 5</span>
+          <button
+            type="button"
+            onClick={() => irA(Math.min(5, paso + 1))}
+            disabled={!ot || paso === 5 || !hecho[paso]}
+            className="font-bold text-mv-green-800 hover:underline disabled:opacity-30"
+          >
+            Siguiente →
           </button>
         </div>
       </div>
+    </div>
+  );
+}
+
+// ───────────────────────────── Paso 1: Check-in con validación de proximidad GPS
+function StepCheckin({
+  ot,
+  activo,
+  ej,
+  trPos,
+}: {
+  ot: OrdenTrabajo;
+  activo: Activo;
+  ej?: Ejecucion;
+  trPos: { lat: number; lng: number } | null;
+}) {
+  const { registrarCheckIn, ahora, notificar } = useSgmr();
+  const ultimo = trPos ?? { lat: activo.lat + 0.012, lng: activo.lng + 0.009 };
+  const [pos, setPos] = useState(ultimo);
+  const [origen, setOrigen] = useState<"ultima" | "sitio">("ultima");
+  const [enviando, setEnviando] = useState(false);
+  const v = validarProximidad(activo, pos.lat, pos.lng);
+
+  if (ej?.checkIn?.valido) {
+    return (
+      <div className="space-y-3">
+        <StepTitle icon={<MapPin className="h-5 w-5" />} title="Paso 1 · Check-in registrado" />
+        <Callout tone="ok" title="Arribo validado por GPS">
+          {ej.checkIn.hora.slice(11)} h · a {fmtDistancia(ej.checkIn.distanciaM)} del activo · {fmtCoord(ej.checkIn.lat, ej.checkIn.lng)}
+        </Callout>
+      </div>
+    );
+  }
+
+  const marcar = () => {
+    setEnviando(true);
+    window.setTimeout(() => {
+      registrarCheckIn(ot.id, { lat: pos.lat, lng: pos.lng, distanciaM: v.distancia, valido: v.valido, hora: ahora });
+      setEnviando(false);
+      notificar(v.valido ? `Check-in válido en ${ot.id}. Continúe con el ATS.` : `Check-in rechazado: está a ${fmtDistancia(v.distancia)} del activo.`, v.valido ? "ok" : "crit");
+    }, 600);
+  };
+
+  return (
+    <div className="flex flex-1 flex-col justify-between gap-4">
+      <div className="space-y-3">
+        <StepTitle icon={<MapPin className="h-5 w-5" />} title="Paso 1 · Confirmación de arribo">
+          El check-in solo se acepta a {RADIO_CHECKIN_M} m o menos del activo.
+        </StepTitle>
+
+        <div className="space-y-1.5 rounded-lg border border-mv-line p-3 font-mono text-xs">
+          <div className="flex justify-between text-mv-ink-2">
+            <span>Activo ({activo.codigo})</span>
+            <span className="text-mv-ink">{fmtCoord(activo.lat, activo.lng)}</span>
+          </div>
+          <div className="flex justify-between text-mv-ink-2">
+            <span>Posición del dispositivo</span>
+            <span className="text-mv-ink">{fmtCoord(pos.lat, pos.lng)}</span>
+          </div>
+          <div className="flex justify-between text-mv-ink-2">
+            <span>Distancia al activo</span>
+            <span className={cx("font-bold", v.valido ? "text-st-ok-fg" : "text-st-crit-fg")}>
+              {fmtDistancia(v.distancia)} {v.valido ? "(en rango)" : "(fuera de rango)"}
+            </span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setPos(ultimo);
+              setOrigen("ultima");
+            }}
+            className={cx(
+              "flex items-center justify-center gap-1.5 rounded-lg border px-2 py-2.5 text-xs font-semibold",
+              origen === "ultima" ? "border-mv-ink bg-mv-ink text-white" : "border-mv-line text-mv-ink-2"
+            )}
+          >
+            <Navigation className="h-3.5 w-3.5" /> Última posición
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setPos({ lat: activo.lat + 0.00011, lng: activo.lng - 0.00009 });
+              setOrigen("sitio");
+            }}
+            className={cx(
+              "flex items-center justify-center gap-1.5 rounded-lg border px-2 py-2.5 text-xs font-semibold",
+              origen === "sitio" ? "border-mv-ink bg-mv-ink text-white" : "border-mv-line text-mv-ink-2"
+            )}
+          >
+            <Crosshair className="h-3.5 w-3.5" /> Simular arribo al sitio
+          </button>
+        </div>
+
+        {ej?.checkIn && !ej.checkIn.valido && (
+          <Callout tone="crit" title="Último intento rechazado">
+            {ej.checkIn.hora.slice(11)} h a {fmtDistancia(ej.checkIn.distanciaM)} del activo. Acérquese al punto y vuelva a intentarlo.
+          </Callout>
+        )}
+        <Callout tone={v.valido ? "ok" : "warn"}>{v.mensaje}</Callout>
+      </div>
+
+      <BigBtn onClick={marcar} disabled={enviando}>
+        {enviando ? "Registrando GPS…" : (
+          <>
+            <MapPin className="h-4 w-4" /> Marcar llegada (Check-in)
+          </>
+        )}
+      </BigBtn>
+    </div>
+  );
+}
+
+// ───────────────────────────── Paso 2: Análisis de Trabajo Seguro + Validación
+function StepAts({ ot, activo, ej }: { ot: OrdenTrabajo; activo: Activo; ej?: Ejecucion }) {
+  const { datos, registrarAts, notificar } = useSgmr();
+  const jefe = datos.zonas.find((z) => z.id === activo.zonaId)?.jefeZona ?? "";
+  const [ats, setAts] = useState<AtsRegistro>(
+    ej?.ats ?? { riesgos: riesgosSugeridos(activo.tipo), clima: "", arnes: "", epp: [], autorizadoPor: jefe, autorizado: false }
+  );
+  const checks = validarAts(ats);
+  const ok = checks.every((c) => c.ok);
+  const toggle = (arr: string[], v: string) => (arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
+
+  if (ej?.atsValido && ej.ats) {
+    return (
+      <div className="space-y-3">
+        <StepTitle icon={<ShieldCheck className="h-5 w-5" />} title="Paso 2 · ATS aprobado" />
+        <Checklist items={validarAts(ej.ats)} compact />
+        <Link href={`/operativo/reportes/ats?ot=${ot.id}`} className="inline-flex items-center gap-1 text-xs font-semibold text-mv-green-700 hover:underline">
+          <FileText className="h-3.5 w-3.5" /> Ver papeleta ATS
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <StepTitle icon={<ShieldCheck className="h-5 w-5" />} title="Paso 2 · Análisis de Trabajo Seguro (ATS)">
+        Registre riesgos, clima, arnés, EPP y la autorización antes de ejecutar.
+      </StepTitle>
+
+      <Field label="Riesgos identificados" hint={`Sugeridos para ${activo.tipo}; confirme o ajuste.`}>
+        <div className="grid gap-1.5">
+          {RIESGOS_ATS.map((r) => (
+            <CheckboxRow key={r} checked={ats.riesgos.includes(r)} onChange={() => setAts({ ...ats, riesgos: toggle(ats.riesgos, r) })} label={r} />
+          ))}
+        </div>
+      </Field>
+
+      <div className="grid grid-cols-1 gap-3">
+        <Field label="Condición climática" required>
+          <Select value={ats.clima} onChange={(e) => setAts({ ...ats, clima: e.target.value })}>
+            <option value="">Seleccione…</option>
+            {CLIMAS_ATS.map((c) => (
+              <option key={c}>{c}</option>
+            ))}
+          </Select>
+        </Field>
+        <Field label="¿Usará arnés?" required>
+          <div className="grid grid-cols-3 gap-1.5">
+            {(["Sí", "No", "No aplica"] as const).map((a) => (
+              <button
+                type="button"
+                key={a}
+                onClick={() => setAts({ ...ats, arnes: a })}
+                className={cx(
+                  "h-10 rounded-md border text-xs font-semibold",
+                  ats.arnes === a ? "border-mv-green-700 bg-mv-green-50 text-mv-green-800" : "border-mv-line text-mv-ink-2"
+                )}
+              >
+                {a}
+              </button>
+            ))}
+          </div>
+        </Field>
+      </div>
+
+      <Field label="Equipo de protección personal (EPP)">
+        <div className="grid grid-cols-2 gap-1.5">
+          {EPP_ATS.map((e) => (
+            <label
+              key={e}
+              className={cx(
+                "flex cursor-pointer items-center gap-2 rounded-md border px-2.5 py-2 text-xs",
+                ats.epp.includes(e) ? "border-mv-green/50 bg-mv-green-50 font-semibold text-mv-ink" : "border-mv-line text-mv-ink-2"
+              )}
+            >
+              <input type="checkbox" className="h-3.5 w-3.5 accent-[#3B8500]" checked={ats.epp.includes(e)} onChange={() => setAts({ ...ats, epp: toggle(ats.epp, e) })} />
+              {e}
+            </label>
+          ))}
+        </div>
+      </Field>
+
+      <Field label="Autorización del supervisor" required>
+        <Input value={ats.autorizadoPor} onChange={(e) => setAts({ ...ats, autorizadoPor: e.target.value })} placeholder="Nombre del supervisor" />
+        <div className="pt-1.5">
+          <CheckboxRow checked={ats.autorizado} onChange={(v) => setAts({ ...ats, autorizado: v })} label="El supervisor autoriza el inicio de los trabajos" />
+        </div>
+      </Field>
+
+      <div className="space-y-2">
+        <p className="text-xs font-bold text-mv-ink">Validación previa a la ejecución</p>
+        <Checklist
+          compact
+          items={[
+            { id: "gps", etiqueta: "Check-in validado por GPS", ok: !!ej?.checkIn?.valido, detalle: ej?.checkIn ? `A ${fmtDistancia(ej.checkIn.distanciaM)} del activo.` : "Sin check-in." },
+            ...checks,
+          ]}
+        />
+      </div>
+
+      {ej?.ats && !ej.atsValido && <Callout tone="crit" title="ATS observado">Corrija los puntos marcados en rojo y vuelva a registrar.</Callout>}
+
+      <BigBtn
+        onClick={() => {
+          registrarAts(ot.id, ats, ok);
+          notificar(ok ? "ATS aprobado. Validación superada: puede iniciar la ejecución." : "ATS observado: no se autoriza la ejecución.", ok ? "ok" : "crit");
+        }}
+      >
+        <ShieldCheck className="h-4 w-4" /> Registrar ATS y validar
+      </BigBtn>
+    </div>
+  );
+}
+
+// ───────────────────────────── Paso 3: Ejecución dinámica (preventiva / correctiva)
+function StepEjecucion({ ot, activo, ej }: { ot: OrdenTrabajo; activo: Activo; ej?: Ejecucion }) {
+  const router = useRouter();
+  const { guardarEjecucion, finalizarEjecucion, notificar } = useSgmr();
+  const prev = ot.tipo === "PREVENTIVO";
+  const requeridas = actividadesPara(ot.tipo);
+  const [act, setAct] = useState<string[]>(ej?.actividades ?? []);
+  const [medicion, setMedicion] = useState(ej?.evidencia ?? "");
+  const [causa, setCausa] = useState(ej?.causa ?? "");
+  const [accion, setAccion] = useState(ej?.accion ?? "");
+  const [hallazgos, setHallazgos] = useState(ej?.hallazgos ?? "");
+  const [reqCorr, setReqCorr] = useState(!!ej?.requiereCorrectivo);
+  const finalizada = ot.status === "PENDIENTE DE CIERRE" || ot.status === "CERRADA";
+
+  const guardar = (patch: Partial<Ejecucion>) => guardarEjecucion(ot.id, patch);
+
+  const requisitos: Chequeo[] = [
+    { id: "act", etiqueta: "Actividades completas", ok: requeridas.every((a) => act.includes(a)), detalle: `${act.filter((a) => requeridas.includes(a)).length} de ${requeridas.length}` },
+    { id: "med", etiqueta: "Medición registrada", ok: medicion.trim().length >= 8, detalle: medicion.trim() || medicionSugerida(activo.tipo) },
+    ...(prev
+      ? []
+      : [
+          { id: "causa", etiqueta: "Causa de la falla", ok: !!causa, detalle: causa || "Seleccione la causa." },
+          { id: "accion", etiqueta: "Acción correctiva", ok: accion.trim().length >= 5, detalle: accion.trim() || "Describa la acción aplicada." },
+        ]),
+  ];
+  const listo = requisitos.every((r) => r.ok);
+
+  if (finalizada) {
+    return (
+      <div className="space-y-3">
+        <StepTitle icon={<ClipboardList className="h-5 w-5" />} title="Paso 3 · Ejecución finalizada" />
+        <Callout tone="ok" title={`${requeridas.length} actividades ${prev ? "preventivas" : "correctivas"} registradas`}>
+          Medición: {ej?.evidencia}
+        </Callout>
+        <BigBtn tone="teal" onClick={() => router.push(`/operativo/campo/repuestos?ot=${ot.id}`)}>
+          Ir a Descargo de Repuestos <ArrowRight className="h-4 w-4" />
+        </BigBtn>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <StepTitle icon={<ClipboardList className="h-5 w-5" />} title={`Paso 3 · Ejecución ${prev ? "preventiva" : "correctiva"}`}>
+        Formulario dinámico según el tipo de OT {prev ? "(plan de mantenimiento)" : "(atención de falla)"}.
+      </StepTitle>
+
+      <Field label={prev ? "Actividades del plan preventivo" : "Actividades de atención de la falla"}>
+        <div className="grid gap-1.5">
+          {requeridas.map((a, i) => (
+            <CheckboxRow
+              key={a}
+              checked={act.includes(a)}
+              onChange={(v) => {
+                const n = v ? [...act, a] : act.filter((x) => x !== a);
+                setAct(n);
+                guardar({ actividades: n });
+              }}
+              label={`${i + 1}. ${a}`}
+            />
+          ))}
+        </div>
+      </Field>
+
+      {!prev && (
+        <>
+          <Field label="Causa de la falla" required>
+            <Select
+              value={causa}
+              onChange={(e) => {
+                setCausa(e.target.value);
+                guardar({ causa: e.target.value });
+              }}
+            >
+              <option value="">Seleccione…</option>
+              {CAUSAS_FALLA.map((c) => (
+                <option key={c}>{c}</option>
+              ))}
+            </Select>
+          </Field>
+          <Field label="Acción correctiva aplicada" required>
+            <Textarea value={accion} onChange={(e) => setAccion(e.target.value)} onBlur={() => guardar({ accion })} placeholder="Ej: Fusión de 48 hilos y reemplazo de mufa" />
+          </Field>
+        </>
+      )}
+
+      <Field label="Medición / resultado técnico" required hint={`Sugerido: ${medicionSugerida(activo.tipo)}`}>
+        <Input value={medicion} onChange={(e) => setMedicion(e.target.value)} onBlur={() => guardar({ evidencia: medicion })} placeholder="Ej: Potencia -19,8 dBm" />
+      </Field>
+
+      {prev && (
+        <>
+          <Field label="Hallazgos de la inspección">
+            <Textarea value={hallazgos} onChange={(e) => setHallazgos(e.target.value)} onBlur={() => guardar({ hallazgos })} placeholder="Estado general, desgaste, observaciones" />
+          </Field>
+          <CheckboxRow
+            checked={reqCorr}
+            onChange={(v) => {
+              setReqCorr(v);
+              guardar({ requiereCorrectivo: v });
+            }}
+            label="Se detectó una falla que requiere mantenimiento correctivo"
+            hint="El NOC deberá registrar el ticket correspondiente."
+          />
+        </>
+      )}
+
+      <Checklist items={requisitos} compact />
+
+      <BigBtn
+        disabled={!listo}
+        onClick={() => {
+          guardar({ actividades: act, evidencia: medicion, causa, accion, hallazgos, requiereCorrectivo: reqCorr });
+          finalizarEjecucion(ot.id);
+          notificar(`Ejecución de ${ot.id} finalizada. Registre el descargo de repuestos.`);
+          router.push(`/operativo/campo/repuestos?ot=${ot.id}`);
+        }}
+      >
+        <CheckCircle2 className="h-4 w-4" /> Finalizar ejecución
+      </BigBtn>
+    </div>
+  );
+}
+
+// ───────────────────────────── Paso 4: Descargo de repuestos con validación de stock
+function StepRepuestos({ ot, ej }: { ot: OrdenTrabajo; ej?: Ejecucion }) {
+  const router = useRouter();
+  const { datos, descargarRepuestos, guardarEjecucion, notificar } = useSgmr();
+  const stock = datos.stock[ot.cuadrillaId ?? ""] ?? {};
+  const consumos = datos.consumos.filter((c) => c.otId === ot.id);
+  const [lineas, setLineas] = useState<LineaDescargo[]>([]);
+  const [codigo, setCodigo] = useState("");
+  const [cantidad, setCantidad] = useState(1);
+  const validacion = useMemo(() => validarStock(stock, lineas), [stock, lineas]);
+  const invalidas = validacion.filter((l) => !l.ok);
+  const enStock = MATERIALES.filter((m) => (stock[m.codigo] ?? 0) > 0);
+
+  if (!ej?.atsValido) {
+    return (
+      <div className="space-y-3">
+        <StepTitle icon={<Lock className="h-5 w-5" />} title="Paso 4 · Descargo bloqueado" />
+        <Callout tone="warn" title="Primero complete el check-in y el ATS">
+          El descargo de materiales solo se habilita cuando la ejecución fue autorizada.
+        </Callout>
+        <BigBtn tone="secondary" onClick={() => router.push(`/operativo/campo/checkin?ot=${ot.id}`)}>
+          Ir a Check-in y Ejecución
+        </BigBtn>
+      </div>
+    );
+  }
+
+  const agregar = (cod: string, cant: number) => {
+    if (!cod || cant <= 0) return;
+    setLineas((l) => [...l, { codigo: cod, cantidad: cant }]);
+    setCodigo("");
+    setCantidad(1);
+  };
+
+  const confirmar = () => {
+    const vales = descargarRepuestos(ot.id, lineas);
+    setLineas([]);
+    notificar(`Descargo registrado: ${vales.map((v) => v.id).join(", ")}. Stock de ${ot.cuadrillaId} actualizado.`);
+  };
+
+  const puedeContinuar = (consumos.length > 0 || !!ej.sinConsumo) && ot.status === "PENDIENTE DE CIERRE";
+
+  return (
+    <div className="space-y-4">
+      <StepTitle icon={<QrCode className="h-5 w-5" />} title="Paso 4 · Descargo de repuestos">
+        Escanee o seleccione los materiales usados. Se valida contra el stock de la cuadrilla {ot.cuadrillaId}.
+      </StepTitle>
+
+      <p className="rounded-md bg-mv-surface px-3 py-2 font-mono text-[11px] text-mv-ink-2">Previstos en la OT: {ot.materials || "—"}</p>
+
+      <div className="rounded-lg border-2 border-dashed border-mv-line-2 p-3">
+        <p className="mb-2 flex items-center gap-1.5 text-xs font-bold text-mv-ink">
+          <QrCode className="h-4 w-4 text-mv-green-700" /> Lectura rápida (stock de la cuadrilla)
+        </p>
+        <div className="flex flex-wrap gap-1.5">
+          {enStock.length === 0 && <span className="text-xs text-mv-muted">La cuadrilla no tiene materiales en stock.</span>}
+          {enStock.map((m) => (
+            <button
+              type="button"
+              key={m.codigo}
+              onClick={() => agregar(m.codigo, 1)}
+              className="rounded-full border border-mv-line bg-white px-2 py-1 text-[11px] text-mv-ink-2 hover:border-mv-green/50 hover:text-mv-green-800"
+            >
+              + {m.nombre} <span className="num text-mv-muted">({stock[m.codigo]})</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-[1fr_72px_auto] items-end gap-2">
+        <Field label="Material">
+          <Select value={codigo} onChange={(e) => setCodigo(e.target.value)}>
+            <option value="">Seleccione…</option>
+            {MATERIALES.map((m) => (
+              <option key={m.codigo} value={m.codigo}>
+                {m.nombre} · disp. {stock[m.codigo] ?? 0}
+              </option>
+            ))}
+          </Select>
+        </Field>
+        <Field label="Cant.">
+          <Input type="number" min={1} value={cantidad} onChange={(e) => setCantidad(Math.max(0, parseInt(e.target.value || "0", 10)))} />
+        </Field>
+        <button
+          type="button"
+          onClick={() => agregar(codigo, cantidad)}
+          disabled={!codigo || cantidad <= 0}
+          className="flex h-9 w-9 items-center justify-center rounded-md bg-mv-ink text-white disabled:opacity-30"
+          aria-label="Agregar material"
+        >
+          <Plus className="h-4 w-4" />
+        </button>
+      </div>
+
+      {validacion.length > 0 && (
+        <ul className="divide-y divide-mv-line rounded-lg border border-mv-line text-xs">
+          {validacion.map((l, i) => {
+            const m = MATERIALES.find((x) => x.codigo === l.codigo);
+            return (
+              <li key={i} className={cx("flex items-center justify-between gap-2 px-3 py-2", !l.ok && "bg-st-crit-bg")}>
+                <div className="min-w-0">
+                  <p className="font-semibold text-mv-ink">{m?.nombre}</p>
+                  <p className={cx("text-[11px]", l.ok ? "text-mv-ink-2" : "font-semibold text-st-crit-fg")}>
+                    {l.cantidad} {m?.unidad} · disponible {l.disponible} {l.ok ? "" : "— stock insuficiente"}
+                  </p>
+                </div>
+                <button type="button" onClick={() => setLineas((x) => x.filter((_, j) => j !== i))} className="p-1 text-mv-muted hover:text-st-crit" aria-label="Quitar">
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      {invalidas.length > 0 && (
+        <Callout tone="crit" title="Validación de stock: descargo bloqueado">
+          No hay stock suficiente en la cuadrilla para {invalidas.length === 1 ? "un material" : `${invalidas.length} materiales`}. Solicite reposición al almacén o ajuste la cantidad.
+        </Callout>
+      )}
+
+      <BigBtn tone="teal" onClick={confirmar} disabled={lineas.length === 0 || invalidas.length > 0}>
+        <Package className="h-4 w-4" /> Confirmar descargo ({lineas.length})
+      </BigBtn>
+
+      {consumos.length > 0 && (
+        <div className="rounded-lg border border-st-ok/30 bg-st-ok-bg p-3 text-xs text-st-ok-fg">
+          <p className="font-bold">Materiales descargados</p>
+          <ul className="mt-1 space-y-0.5">
+            {consumos.map((c) => (
+              <li key={c.id} className="flex justify-between gap-2">
+                <span>
+                  {c.id} · {MATERIALES.find((m) => m.codigo === c.codigo)?.nombre}
+                </span>
+                <span className="num font-semibold">× {c.cantidad}</span>
+              </li>
+            ))}
+          </ul>
+          <Link href={`/operativo/reportes/vale-consumo?ot=${ot.id}`} className="mt-1.5 inline-block font-semibold underline">
+            Ver vale de consumo
+          </Link>
+        </div>
+      )}
+
+      {consumos.length === 0 && (
+        <CheckboxRow
+          checked={!!ej.sinConsumo}
+          onChange={(v) => guardarEjecucion(ot.id, { sinConsumo: v })}
+          label="No se utilizaron materiales en esta OT"
+          hint="Deja constancia de consumo cero para el cierre."
+        />
+      )}
+
+      {ot.status === "EN EJECUCIÓN" && (
+        <Callout tone="info">
+          La ejecución aún no fue finalizada. <Link href={`/operativo/campo/checkin?ot=${ot.id}`}>Complete el paso 3</Link> para habilitar el cierre.
+        </Callout>
+      )}
+
+      <BigBtn tone="primary" disabled={!puedeContinuar} onClick={() => router.push(`/operativo/campo/cierre?ot=${ot.id}`)}>
+        Continuar a Cierre Transaccional <ArrowRight className="h-4 w-4" />
+      </BigBtn>
+    </div>
+  );
+}
+
+// ───────────────────────────── Paso 5: Cierre transaccional con validación de evidencia
+function StepCierre({
+  ot,
+  ej,
+  consumos,
+  onCerrado,
+}: {
+  ot: OrdenTrabajo;
+  ej?: Ejecucion;
+  consumos: number;
+  onCerrado: (c: string[]) => void;
+}) {
+  const { datos, guardarEjecucion, cerrarOt, notificar } = useSgmr();
+  const activo = datos.activos.find((a) => a.codigo === ot.activoId);
+  const jefe = datos.zonas.find((z) => z.id === activo?.zonaId)?.jefeZona;
+  const [firmante, setFirmante] = useState(ej?.firmante ?? "");
+  const [obs, setObs] = useState(ej?.observacion ?? "");
+  const [cerrando, setCerrando] = useState(false);
+
+  if (ot.status !== "PENDIENTE DE CIERRE") {
+    return (
+      <div className="space-y-3">
+        <StepTitle icon={<Lock className="h-5 w-5" />} title="Paso 5 · Cierre no disponible" />
+        <Callout tone="warn" title="La OT aún no está pendiente de cierre">
+          Estado actual: {ot.status}. Complete la ejecución (paso 3) y el descargo de repuestos (paso 4).
+        </Callout>
+        <Link href={`/operativo/campo/checkin?ot=${ot.id}`} className="text-xs font-semibold text-mv-green-700 underline">
+          Ir a Check-in y Ejecución
+        </Link>
+      </div>
+    );
+  }
+
+  const checks: Chequeo[] = [
+    ...validarCierre(ot, ej, actividadesPara(ot.tipo)),
+    {
+      id: "repuestos",
+      etiqueta: "Descargo de repuestos",
+      ok: consumos > 0 || !!ej?.sinConsumo,
+      detalle: consumos > 0 ? `${consumos} línea(s) en el vale de consumo.` : ej?.sinConsumo ? "Declarado sin consumo de materiales." : "Registre el descargo o declare consumo cero.",
+    },
+  ];
+  const ok = checks.every((c) => c.ok);
+
+  const cerrar = () => {
+    setCerrando(true);
+    window.setTimeout(() => {
+      const cambios = cerrarOt(ot.id);
+      setCerrando(false);
+      onCerrado(cambios);
+      notificar(`${ot.id} cerrada. Ticket, plan, activo y tracking actualizados.`);
+    }, 700);
+  };
+
+  return (
+    <div className="space-y-4">
+      <StepTitle icon={<FileCheck2 className="h-5 w-5" />} title="Paso 5 · Evidencias y cierre de la OT">
+        La OT solo se cierra con evidencia completa.
+      </StepTitle>
+
+      <div className="flex items-center justify-between rounded-lg border border-mv-line p-3">
+        <span className="flex items-center gap-2 text-xs font-semibold text-mv-ink">
+          <Camera className="h-4 w-4 text-mv-ink-2" /> Fotografía del trabajo terminado
+        </span>
+        {ej?.foto ? (
+          <span className="flex items-center gap-1 font-mono text-xs font-bold text-st-ok-fg">
+            <Check className="h-3.5 w-3.5" /> 1 foto
+          </span>
+        ) : (
+          <button type="button" onClick={() => guardarEjecucion(ot.id, { foto: true })} className="rounded-md bg-mv-surface px-2.5 py-1.5 text-xs font-semibold text-mv-ink hover:bg-mv-line">
+            Capturar evidencia
+          </button>
+        )}
+      </div>
+
+      <Field label="Firmante de la conformidad" required hint={ot.tipo === "PREVENTIVO" ? `Sugerido: ${jefe} (jefe de zona)` : "Representante del cliente o jefe de zona"}>
+        <Input value={firmante} onChange={(e) => setFirmante(e.target.value)} onBlur={() => guardarEjecucion(ot.id, { firmante })} placeholder="Nombre y cargo" />
+      </Field>
+
+      <Field label="Tipo de conformidad" required>
+        <Select value={ej?.conformidad ?? ""} onChange={(e) => guardarEjecucion(ot.id, { conformidad: (e.target.value || undefined) as Ejecucion["conformidad"] })}>
+          <option value="">Seleccione…</option>
+          <option>Conforme</option>
+          <option>Conforme con observaciones</option>
+        </Select>
+      </Field>
+
+      <div className="rounded-lg border border-mv-line p-3">
+        <div className="flex items-center justify-between">
+          <span className="flex items-center gap-2 text-xs font-semibold text-mv-ink">
+            <PenTool className="h-4 w-4 text-mv-ink-2" /> Firma de conformidad
+          </span>
+          {ej?.firma ? (
+            <span className="flex items-center gap-1 font-mono text-xs font-bold text-st-ok-fg">
+              <Check className="h-3.5 w-3.5" /> Firmado
+            </span>
+          ) : (
+            <button
+              type="button"
+              disabled={firmante.trim().length < 3}
+              onClick={() => guardarEjecucion(ot.id, { firma: true, firmante })}
+              className="rounded-md bg-mv-surface px-2.5 py-1.5 text-xs font-semibold text-mv-ink hover:bg-mv-line disabled:opacity-40"
+            >
+              Obtener firma
+            </button>
+          )}
+        </div>
+        {ej?.firma && (
+          <svg viewBox="0 0 200 40" className="mt-2 h-10 w-full text-mv-ink">
+            <path d="M5 30 C 25 5, 35 35, 55 18 S 85 30, 100 12 S 130 34, 150 16 S 180 26, 195 10" fill="none" stroke="currentColor" strokeWidth="2" />
+          </svg>
+        )}
+      </div>
+
+      <Field label="Observaciones">
+        <Textarea value={obs} onChange={(e) => setObs(e.target.value)} onBlur={() => guardarEjecucion(ot.id, { observacion: obs })} placeholder="Opcional" />
+      </Field>
+
+      <div className="space-y-2">
+        <p className="text-xs font-bold text-mv-ink">Validación de evidencia para el cierre</p>
+        <Checklist items={checks} compact />
+      </div>
+
+      <BigBtn onClick={cerrar} disabled={!ok || cerrando}>
+        {cerrando ? "Sincronizando cierre con el NOC…" : (
+          <>
+            <FileCheck2 className="h-4 w-4" /> Cerrar OT {ot.id}
+          </>
+        )}
+      </BigBtn>
+    </div>
+  );
+}
+
+function ResumenCierre({ ot, cambios }: { ot: OrdenTrabajo; cambios: string[] | null }) {
+  const { datos } = useSgmr();
+  const ticket = datos.tickets.find((t) => t.id === ot.ticketId);
+  const lista =
+    cambios ??
+    [
+      `Orden ${ot.id}: CERRADA ${ot.cerradaEn ? `(${ot.cerradaEn.slice(11)})` : ""}`,
+      ticket ? `Ticket ${ticket.id}: ${ticket.estado}` : null,
+      ot.planId ? `Plan ${ot.planId}: Ejecutado` : null,
+    ].filter(Boolean) as string[];
+  return (
+    <div className="flex flex-1 flex-col gap-4">
+      <div className="flex flex-col items-center gap-2 pt-2 text-center">
+        <span className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-st-ok bg-st-ok-bg text-st-ok-fg">
+          <Check className="h-7 w-7" />
+        </span>
+        <h3 className="text-lg font-bold text-mv-ink">Cierre transaccional completado</h3>
+        <p className="text-xs text-mv-ink-2">Todas las actualizaciones se aplicaron en una sola operación.</p>
+      </div>
+      <ul className="space-y-1.5 rounded-lg border border-mv-line bg-mv-surface-2 p-3 text-xs">
+        {lista.map((c) => (
+          <li key={c} className="flex items-start gap-2 text-mv-ink">
+            <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-st-ok" /> {c}
+          </li>
+        ))}
+      </ul>
+      <div className="grid grid-cols-1 gap-2 text-xs">
+        <Link href={`/operativo/reportes/conformidad?ot=${ot.id}`} className="flex items-center justify-between rounded-lg border border-mv-line px-3 py-2.5 font-semibold text-mv-ink hover:bg-mv-surface">
+          Constancia de Conformidad de Servicio <ArrowRight className="h-3.5 w-3.5" />
+        </Link>
+        <Link href={`/operativo/reportes/vale-consumo?ot=${ot.id}`} className="flex items-center justify-between rounded-lg border border-mv-line px-3 py-2.5 font-semibold text-mv-ink hover:bg-mv-surface">
+          Vale de Consumo de Materiales <ArrowRight className="h-3.5 w-3.5" />
+        </Link>
+        <Link href={`/operativo/reportes/ats?ot=${ot.id}`} className="flex items-center justify-between rounded-lg border border-mv-line px-3 py-2.5 font-semibold text-mv-ink hover:bg-mv-surface">
+          Papeleta ATS <ArrowRight className="h-3.5 w-3.5" />
+        </Link>
+      </div>
+      <Link href="/operativo/campo/checkin" className="mt-auto flex h-11 items-center justify-center rounded-lg bg-mv-ink text-sm font-semibold text-white">
+        Volver a mis órdenes
+      </Link>
     </div>
   );
 }

@@ -1,46 +1,8 @@
 [
-  {
-    "id": "ALT-2026-8801",
-    "timestamp": "22:12:04",
-    "severity": "CRITICAL",
-    "severityColor": "naranja",
-    "title": "Corte de Fibra Troncal 48FO Anillo Norte",
-    "location": "Av. Panamericana Km 18.5 (POP-NORTE-01)",
-    "impact": "1,420 Clientes corporativos sin enlace",
-    "status": "Cuadrilla 04 en camino",
-    "slaRemaining": "00:48:15"
-  },
-  {
-    "id": "ALT-2026-8802",
-    "timestamp": "21:58:30",
-    "severity": "WARNING",
-    "severityColor": "celeste",
-    "title": "Atenuación Óptica Severa (-28.4 dBm) en NAP-204",
-    "location": "Sector Industrial Zona B - Puerto 08",
-    "impact": "Degradación de señal en 16 accesos FTTH",
-    "status": "Monitoreo NOC activo",
-    "slaRemaining": "02:15:00"
-  },
-  {
-    "id": "ALT-2026-8803",
-    "timestamp": "21:40:12",
-    "severity": "CRITICAL",
-    "severityColor": "naranja",
-    "title": "Fallo de Alimentación Rectificador AC/DC",
-    "location": "Subestación Repetidor Cerro Verde",
-    "impact": "Banco de baterías en descarga (78% restante)",
-    "status": "Generador de respaldo iniciado",
-    "slaRemaining": "01:10:00"
-  },
-  {
-    "id": "ALT-2026-8804",
-    "timestamp": "21:15:45",
-    "severity": "INFO",
-    "severityColor": "celeste",
-    "title": "Cierre de Mantenimiento Preventivo OSP-89",
-    "location": "Troncal Este Empalme #12",
-    "impact": "Pruebas OTDR completadas con éxito",
-    "status": "Cerrado / Conforme",
-    "slaRemaining": "Cumplido"
-  }
+  { "id": "ALT-2026-8805", "timestamp": "10:08:12", "severity": "WARNING", "severityColor": "amarillo", "title": "VSWR alto en sector 2 de la estación base Callao Puerto", "location": "Av. Guardia Chalaca 1520, Callao (BTS-CAL-07)", "impact": "Degradación de cobertura móvil para 2,300 usuarios", "status": "Ticket TCK-2026-0418 detectado", "slaRemaining": "01:53:00", "activoId": "BTS-CAL-07" },
+  { "id": "ALT-2026-8802", "timestamp": "09:55:30", "severity": "WARNING", "severityColor": "amarillo", "title": "Atenuación óptica severa (-28.4 dBm) en NAP-204", "location": "Sector industrial zona B, puerto 08 (NAP-204)", "impact": "Degradación de señal en 16 accesos FTTH", "status": "Ticket TCK-2026-0416 registrado", "slaRemaining": "03:40:00", "activoId": "NAP-204" },
+  { "id": "ALT-2026-8804", "timestamp": "09:52:45", "severity": "INFO", "severityColor": "azul", "title": "Cierre de mantenimiento preventivo en mufa de empalme #12", "location": "Troncal Este, Av. Wiesse cdra. 12 (MUF-E12)", "impact": "Pruebas OTDR completadas con éxito", "status": "OT-2026-9049 cerrada y conforme", "slaRemaining": "Cumplido", "activoId": "MUF-E12" },
+  { "id": "ALT-2026-8806", "timestamp": "09:48:10", "severity": "CRITICAL", "severityColor": "rojo", "title": "Daño en troncal subterránea 144FO por obras civiles", "location": "Vía Expresa Paseo de la República cdra. 30 (TRM-VEX-144)", "impact": "5,600 clientes residenciales y corporativos afectados", "status": "C-09 en ruta (OT-2026-9046)", "slaRemaining": "00:33:00", "activoId": "TRM-VEX-144" },
+  { "id": "ALT-2026-8801", "timestamp": "09:26:04", "severity": "CRITICAL", "severityColor": "rojo", "title": "Corte de fibra troncal 48FO Anillo Norte", "location": "Panamericana Norte Km 18.5 (TRM-N48)", "impact": "1,420 clientes corporativos sin enlace", "status": "C-01 en ruta (OT-2026-9041)", "slaRemaining": "00:11:00", "activoId": "TRM-N48" },
+  { "id": "ALT-2026-8803", "timestamp": "08:57:40", "severity": "CRITICAL", "severityColor": "rojo", "title": "Fallo de alimentación en rectificador AC/DC", "location": "Repetidor Cerro San Cristóbal (RCT-REP09)", "impact": "Banco de baterías en descarga (78 % restante)", "status": "C-05 en atención (OT-2026-9044)", "slaRemaining": "01:03:00", "activoId": "RCT-REP09" }
 ]

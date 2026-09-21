@@ -96,8 +96,8 @@ export default function TicketsDataEntryPage() {
       setFormData({
         ...formData,
         activoCodigo: codigo,
-        ubicacion: activo.ubicacion,
-        zona: activo.zona,
+        ubicacion: activo.direccion,
+        zona: activo.zonaId,
         severidad: activo.criticidad.toUpperCase() === "ALTA" ? "ALTA" : "MEDIA",
       });
     }

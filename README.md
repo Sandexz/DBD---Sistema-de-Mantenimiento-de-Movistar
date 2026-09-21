@@ -1,72 +1,155 @@
-# Sistema de Mantenimiento e Infraestructura de Redes — Movistar Perú
+# SGMR — Sistema de Mantenimiento de Redes (Movistar)
 
-> **Plataforma Web Frontend de Alta Fidelidad** · Supervisión NOC, Gestión de Incidencias, Despacho de Cuadrillas, Módulo Batch Nocturno y App Móvil de Campo para Técnicos.
+Prototipo académico (curso **SI-505 · Diseño de Base de Datos**) del sistema que planifica, registra, despacha, ejecuta y cierra el mantenimiento **preventivo y correctivo** de la red de Movistar.
 
----
+Este repositorio corresponde al **Diseño Externo de la arquitectura ON-LINE**, en sus módulos **Gerencial** y **Operativo**. El módulo **Batch** pertenece a otro equipo: se conserva sin cambios funcionales y solo se enlaza desde la navegación.
 
-## 📌 Alcance del Proyecto
-
-Este repositorio contiene la maquetación y desarrollo visual interactivo del **"Sistema de Mantenimiento e Infraestructura de Redes de Movistar Perú"** (Fibra Óptica / OSP / FTTH / HFC / Core).
-
-- **100% Frontend & Visual:** Implementado con Next.js (App Router), TypeScript, Tailwind CSS y Lucide Icons.
-- **Sin Backend ni Base de Datos Externa:** Telemetría, KPIs, órdenes de trabajo, contratos y auditorías modeladas con estados locales reactivos (`useState`) y datos estructurados en `mock-data/`.
-- **Experiencia de Usuario Interactiva:** Simulador de escáner QR/Código de Barras láser, mapa vectorial interactivo GPS, lienzo HTML5 de firma digital para pantalla táctil/mouse, modales dinámicos de exportación y deducción de penalidades.
+> No hay backend ni base de datos real. Los datos provienen de `mock-data/*.json` y se mantienen en memoria (y en `sessionStorage`), de modo que las transacciones de una pantalla se reflejan en las demás durante la sesión.
 
 ---
 
-## 🎨 Paleta de Colores Corporativos Movistar
-
-| Nombre | Código HEX | Rol y Uso en la Interfaz |
-|---|---|---|
-| **Azul Marino** | `#0B2742` | Topbar principal, cabeceras de módulos, tarjetas de auditoría y botones de acción |
-| **Azul Movistar** | `#019DF4` | Indicadores de telemetría activa, enlaces, escáner láser, acentos interactivos |
-| **Verde Éxito** | `#00A86B` | Validaciones GPS en rango, stock verificado, sellos de conformidad y cierres |
-| **Gris Claro** | `#F4F6F9` | Fondos de datos de alto contraste, tablas y tarjetas secundarias |
-| **Blanco Puro** | `#FFFFFF` | Fondo de la App Móvil de Campo (legibilidad óptima en exteriores bajo luz solar) |
-
----
-
-## 🖥️ Módulos y Rutas Principales
-
-### 1. `/mobile` — App Móvil Técnica de Campo (Asignada a Diego)
-Simulador en contenedor con formato Smartphone centrado y fondo blanco `#FFFFFF` de alto contraste:
-- **Encabezado:** Título `"Movistar Campo - OT #89421"`, badge `"EN PROGRESO"` y barra de progreso de 4 pasos interactiva.
-- **Paso 1 (Llegada GPS):** Mapa satelital vectorial con coordenadas del nodo FTTH/HFC (`NOD-CARABAYLLO-04`), alerta verde de validación `"✓ GPS Validado: Estás a 12 metros del Nodo NOD-CARABAYLLO-04"` y botón `"Confirmar Arribo al Sitio"`.
-- **Paso 2 (Materiales y Repuestos):** Recuadro con visor de cámara y animación de haz láser QR. Botón `"Escanear Repuesto"` que agrega secuencialmente la Mufa Óptica 24 hilos y Cable Drop FTTH con validación verde `"✓ Stock verificado en camioneta del técnico"`. Botón `"Continuar a Evidencia"`.
-- **Paso 3 (Cierre y Evidencia):** Subida simulada de fotografía de reflectometría OTDR (`0.02 dB - Conforme`) y recuadro de lienzo HTML5 Canvas para captura de **Firma Digital interactiva** a mano alzada. Botón principal `"Cerrar y Despachar OT"`.
-- **Paso 4 (Éxito):** Pantalla con ícono gigante de verificación verde, mensaje `"¡Orden de Trabajo Cerrada / Conforme!"`, resumen del tiempo de atención (`34 min`) y botón `"Reiniciar Simulación"`.
-
-### 2. `/batch` — Módulo Batch, Liquidaciones y Penalidades (Asignada a Diego)
-Dashboard Gerencial nocturno con auditoría de contratistas:
-- **Encabezado:** Título `"Procesamiento Lote & Auditoría de Contratistas"`, badge `"BATCH COMPLETO - 03:00 AM"` y botón `"Exportar Reporte General"`.
-- **4 Tarjetas de Auditoría (KPI Cards):**
-  1. **Mantenimiento Preventivo:** Barra de progreso en `84%`, texto `"1,240 OTs Preventivas Generadas Automáticamente por Vida Útil de Activos"`.
-  2. **Rendimiento de Contratistas:** Eficiencia por contrata (`Cobra: 94%`, `Lari: 88%`, CAM: 82%).
-  3. **Pre-Liquidaciones Mensuales:** Monto `"S/ 452,180.00"` calculado para pago de servicios de campo.
-  4. **Penalidades SLA:** Monto `"-S/ 28,400.00"` acumulado por demoras o reincidencias de fallas.
-- **Modales Interactivos:**
-  - **Modal 1 (Exportación de Reportes):** Selector de formato `"Excel (.xlsx)"` o `"PDF Ejecutivo"`, rango de fechas y botón `"Descargar Documento"`.
-  - **Modal 2 (Detalle de Penalidades SLA):** Tabla detallada con `ID Acta`, `Contrata` (Cobra / Lari), `Motivo` (*"Incumplimiento MTTR > 4hrs"*, *"Reincidencia en Nodo NOD-LIM-02"*) y `Monto de Deducción` (ej. `S/ 4,500.00`, `S/ 8,200.00`).
-  - **Modal 3 (Detalle de Pre-Liquidaciones):** Desglose por contrata de los `S/ 452,180.00`.
-
-### 3. Rutas de Soporte Global
-- **`/login`:** Pantalla corporativa con selector rápido de 3 perfiles:
-  - *Ing. NOC* (`noc.central@movistar.pe`) → Acceso a `/ots`.
-  - *Supervisor* (`supervisor.lima@movistar.pe`) → Acceso a `/batch`.
-  - *Técnico* (`diego.quispe@movistar.pe`) → Acceso directo a `/mobile`.
-- **`/ots`:** Centro de despacho y tabla reactiva de incidencias con formulario rápido, botón `"Generar OT"` que añade órdenes con el badge dinámico `"NUEVA"` y filtros por criticidad (Crítica, Alta, Media, Baja).
-
----
-
-## 🚀 Puesta en Marcha Local
+## Ejecución
 
 ```bash
-# 1. Instalar dependencias
 npm install
-
-# 2. Iniciar servidor de desarrollo
-npm run dev
-
-# 3. Abrir en el navegador
-http://localhost:3000
+npm run dev        # http://localhost:3000
+# o, para producción:
+npm run build && npm start
 ```
+
+Requisitos: Node.js 18 o superior. Las fuentes (Figtree e IBM Plex Mono) están autoalojadas con `@fontsource`, así que el proyecto compila sin acceso a Google Fonts.
+
+---
+
+## Arquitectura implementada y trazabilidad
+
+La arquitectura se define en un único archivo, **`lib/navigation.ts`**. De él salen el menú lateral, las migas de pan, la cabecera de cada pantalla, los permisos por perfil y la página **`/trazabilidad`**.
+
+```text
+ON-LINE
+├── GERENCIAL                                   /gerencial
+│   ├── Supervisión (pantalla existente)
+│   │   └── Dashboard Gerencial                 /dashboard
+│   ├── Mantenimiento de Parámetros
+│   │   ├── Gestión de Activos y Vida Útil      /gerencial/parametros/activos
+│   │   ├── SLA y Tiempos Base                  /gerencial/parametros/sla
+│   │   ├── Zonas y Centrales                   /gerencial/parametros/zonas
+│   │   ├── Contratistas                        /gerencial/parametros/contratistas
+│   │   └── Planificación de Mantenimientos ★   /gerencial/parametros/planificacion
+│   └── Consulta
+│       ├── Tracking y Geolocalización          /gerencial/consulta/tracking
+│       ├── Estado de Tickets e Incidencias     /gerencial/consulta/tickets
+│       ├── Disponibilidad de Red               /gerencial/consulta/disponibilidad
+│       └── Seguimiento de Mantenimientos       /gerencial/consulta/seguimiento
+└── OPERATIVO                                   /operativo
+    ├── DATA ENTRY
+    │   ├── Registro de Tickets e Incidencias   /operativo/data-entry/tickets
+    │   ├── Gestión de Órdenes de Trabajo       /operativo/ots
+    │   ├── Check-in y Ejecución Dinámica       /operativo/campo/checkin
+    │   ├── Descargo de Repuestos               /operativo/campo/repuestos
+    │   └── Cierre Transaccional                /operativo/campo/cierre
+    └── REPORTES
+        ├── Papeleta de Asignación de OT        /operativo/reportes/asignacion-ot
+        ├── Constancia de Conformidad           /operativo/reportes/conformidad
+        ├── Vale Instantáneo de Consumo         /operativo/reportes/vale-consumo
+        └── Papeleta ATS                        /operativo/reportes/ats
+```
+
+★ Función prioritaria. Planifica los mantenimientos, pero **no genera OT**: esa generación la hace el proceso Batch.
+
+**Rutas heredadas**
+
+| Ruta | Comportamiento |
+|---|---|
+| `/` | Redirige a `/login`. |
+| `/ots` | Redirige a `/operativo/ots` (paridad funcional verificada). |
+| `/mobile` | Redirige a `/operativo/campo/checkin`. |
+| `/batch` | Sin cambios funcionales. |
+
+---
+
+## Perfiles de acceso
+
+| Perfil | Gerencial | Operativo |
+|---|---|---|
+| **Ingeniero NOC** | Todo | Registro de tickets, Gestión de OT, Papeleta de asignación |
+| **Supervisor** | Todo | Todo |
+| **Técnico de Campo** | — | Funciones de campo (su cuadrilla, C-01) y los cuatro reportes |
+
+Se elige el perfil en `/login`; si una función no corresponde al perfil, se muestra una pantalla de «Acceso restringido». El menú de usuario permite cambiar de perfil y **restablecer los datos de demostración**.
+
+---
+
+## Validaciones visibles
+
+| Validación | Dónde |
+|---|---|
+| Tickets duplicados | Registro de tickets (vincular reporte o confirmar incidencia distinta) y Gestión de OT (bloquea una OT abierta del mismo tipo sobre el activo). |
+| Proximidad GPS | Check-in; se aceptan 50 m o menos, calculados con la fórmula de Haversine. |
+| ATS | Riesgos, clima, arnés, EPP y autorización, validados antes de ejecutar. |
+| Stock de repuestos | Descargo contra el stock de la cuadrilla. |
+| Evidencia para cierre | Check-in, ATS, actividades, medición, foto, firma y descargo. |
+
+## Secuencia de campo
+
+**OT → Check-in → ATS → Validación → Ejecución → Repuestos → Cierre**
+
+La ejecución es dinámica: la OT preventiva muestra las actividades del plan, la medición, los hallazgos y la opción «requiere correctivo»; la OT correctiva muestra el diagnóstico, la causa de la falla, la acción correctiva y la medición.
+
+El cierre es transaccional y actualiza en una sola operación:
+- la OT, que pasa a CERRADA;
+- el ticket, que pasa a Cerrado;
+- el plan, que pasa a Ejecutado y recalcula el Seguimiento;
+- el activo, que vuelve a Operativo;
+- el tracking de la cuadrilla, que pasa a Finalizado.
+
+---
+
+## Recorrido de demostración (≈ 5 min)
+
+**1. Ingeniero NOC**
+1. En Registro de Tickets, elija el activo `BTS-CAL-07`: el sistema detecta el duplicado `TCK-2026-0418`.
+2. Registre un ticket nuevo sobre `NAP-517`.
+3. Pulse «Generar OT correctiva»: el formulario se prellena. Asigne una cuadrilla y despache.
+
+**2. Técnico de Campo**
+1. Con la OT `OT-2026-9041`, intente el check-in con la «Última posición»: se rechaza, porque está a 3.0 km.
+2. Pulse «Simular arribo al sitio», registre el ATS y complete la ejecución correctiva.
+3. En el descargo, intente 10 m de FO 144 (stock 0): el descargo se bloquea. Descargue la mufa y los pigtails.
+4. Adjunte foto y firma, y cierre la OT. Revise los tres reportes generados.
+
+**3. Supervisor**
+1. Verifique que `TCK-2026-0412` quedó Cerrado y que `TRM-N48` volvió a Operativo.
+2. Cierre la preventiva `OT-2026-9047`.
+3. Seguimiento pasa de **120 / 95 / 18 / 7 · 79.2 %** a **120 / 96 / 17 / 7 · 80.0 %**.
+
+---
+
+## Identidad visual
+
+Fondo blanco predominante y verde Movistar (`mv-green #5BC500`, `mv-green-700 #3B8500`) usado con moderación. Tarjetas en gris claro, textos en gris oscuro y turquesa (`mv-teal`) como color complementario.
+
+Colores semánticos: **verde** correcto, **amarillo** alerta, **rojo** crítico, **azul** información.
+
+La paleta oscura original (`brand.*`) y `components/ui/*` se conservan porque el módulo Batch depende de ellos.
+
+## Estructura del código
+
+```text
+app/                      rutas (App Router); app/batch sin cambios
+components/
+  layout/                 topbar y sidebar compartidos (Batch usa <Topbar />)
+  sgmr/                   kit claro: ui, shell, mapa, hoja documental, plantillas de campo y reportes
+  ot-form, ot-table, ot-detail-modal, mobile-flow, kpi-card, map-placeholder   (existentes, ampliados)
+  ui/                     componentes oscuros originales (los usa Batch)
+lib/
+  navigation.ts           arquitectura, rutas y permisos (fuente única)
+  store.tsx               estado compartido y transacciones
+  validaciones.ts         reglas de validación
+  data.ts · fechas.ts · types.ts · use-query.ts
+mock-data/                datos simulados (liquidaciones.json pertenece a Batch y no se modificó)
+scripts/                  generador determinista del seguimiento del III trimestre
+docs/                     análisis inicial, plan y resumen de entrega
+```
+
+**Fuera de alcance** (por indicación del pliego): IA, aprendizaje automático, análisis predictivo, microservicios, backend y base de datos real.

@@ -40,7 +40,7 @@
       "target": "92.00%",
       "status": "warning",
       "statusColor": "celeste",
-      "statusLabel": "EN METRICA DE SLA",
+      "statusLabel": "EN MÉTRICA DE SLA",
       "onusOnline": "24,850",
       "powerLowAlerts": 19,
       "pendingInstalls": 12,
@@ -52,6 +52,6 @@
     "totalOtsActive": 24,
     "slaGlobal": "96.4%",
     "cuadrillasActive": "18/22",
-    "updatedAt": "2026-09-19T22:15:00-05:00"
+    "updatedAt": "2026-09-20T10:15:00-05:00"
   }
 }

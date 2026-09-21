@@ -1,0 +1,22 @@
+[
+  { "id": "C-01", "nombre": "Alfa", "lider": "Luis Ramos", "contratistaId": "CTR-01", "zonaId": "ZN-NOR", "integrantes": 3, "especialidad": "Fibra óptica" },
+  { "id": "C-03", "nombre": "Beta", "lider": "Marco Silva", "contratistaId": "CTR-01", "zonaId": "ZN-CEN", "integrantes": 3, "especialidad": "Equipos core" },
+  { "id": "C-05", "nombre": "Gamma", "lider": "Julio Gómez", "contratistaId": "CTR-01", "zonaId": "ZN-CEN", "integrantes": 2, "especialidad": "Energía y respaldo" },
+  { "id": "C-08", "nombre": "Theta", "lider": "Víctor Ríos", "contratistaId": "CTR-01", "zonaId": "ZN-CAL", "integrantes": 3, "especialidad": "Radio y BTS" },
+  { "id": "C-10", "nombre": "Kappa", "lider": "Kevin Salazar", "contratistaId": "CTR-01", "zonaId": "ZN-EST", "integrantes": 3, "especialidad": "Radio y BTS" },
+  { "id": "C-12", "nombre": "Omega", "lider": "Pedro Huamán", "contratistaId": "CTR-01", "zonaId": "ZN-EST", "integrantes": 3, "especialidad": "Fibra óptica" },
+  { "id": "C-15", "nombre": "Sigma", "lider": "Andrés Rojas", "contratistaId": "CTR-01", "zonaId": "ZN-NOR", "integrantes": 2, "especialidad": "Energía y respaldo" },
+  { "id": "C-18", "nombre": "Iota", "lider": "Daniel Flores", "contratistaId": "CTR-01", "zonaId": "ZN-SUR", "integrantes": 3, "especialidad": "Equipos core" },
+  { "id": "C-09", "nombre": "Especial FO", "lider": "Eduardo Torre", "contratistaId": "CTR-02", "zonaId": "ZN-CEN", "integrantes": 4, "especialidad": "Fusión y OTDR" },
+  { "id": "C-06", "nombre": "Eta", "lider": "Gabriel Poma", "contratistaId": "CTR-02", "zonaId": "ZN-NOR", "integrantes": 3, "especialidad": "Fusión" },
+  { "id": "C-11", "nombre": "Lambda", "lider": "Sergio Chávez", "contratistaId": "CTR-02", "zonaId": "ZN-SUR", "integrantes": 3, "especialidad": "Fusión" },
+  { "id": "C-13", "nombre": "Mu", "lider": "Tomás Aguilar", "contratistaId": "CTR-02", "zonaId": "ZN-EST", "integrantes": 3, "especialidad": "Fusión" },
+  { "id": "C-14", "nombre": "Nu", "lider": "Walter Cárdenas", "contratistaId": "CTR-02", "zonaId": "ZN-SUR", "integrantes": 3, "especialidad": "Fusión y OTDR" },
+  { "id": "C-16", "nombre": "Xi", "lider": "Bruno Lozano", "contratistaId": "CTR-02", "zonaId": "ZN-CAL", "integrantes": 3, "especialidad": "Fusión" },
+  { "id": "C-02", "nombre": "Delta", "lider": "César Prado", "contratistaId": "CTR-03", "zonaId": "ZN-CEN", "integrantes": 2, "especialidad": "Postería y NAP" },
+  { "id": "C-07", "nombre": "Épsilon", "lider": "Raúl Vega", "contratistaId": "CTR-03", "zonaId": "ZN-SUR", "integrantes": 2, "especialidad": "Postería y NAP" },
+  { "id": "C-17", "nombre": "Pi", "lider": "Nora Torres", "contratistaId": "CTR-03", "zonaId": "ZN-NOR", "integrantes": 2, "especialidad": "Postería y NAP" },
+  { "id": "C-19", "nombre": "Rho", "lider": "Hugo Medina", "contratistaId": "CTR-03", "zonaId": "ZN-CAL", "integrantes": 2, "especialidad": "Postería y NAP" },
+  { "id": "C-20", "nombre": "Tau", "lider": "Jaime Espinoza", "contratistaId": "CTR-04", "zonaId": "ZN-CEN", "integrantes": 2, "especialidad": "Climatización" },
+  { "id": "C-21", "nombre": "Ómicron", "lider": "Elena Salas", "contratistaId": "CTR-04", "zonaId": "ZN-EST", "integrantes": 2, "especialidad": "Energía" }
+]

@@ -1,156 +1,105 @@
 "use client";
 
+// Navegación lateral jerárquica: ARQUITECTURA → MÓDULO → SUBMÓDULO → FUNCIÓN.
+// Se genera desde lib/navigation.ts y muestra solo lo permitido para el perfil activo.
+// Las props heredadas (activeTab / onTabChange) se mantienen opcionales por compatibilidad.
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Sliders,
-  Search,
-  History,
-  LayoutDashboard,
-  ClipboardList,
-  Layers,
-  Smartphone,
-} from "lucide-react";
+import { Layers, GitBranch, Star, ExternalLink } from "lucide-react";
+import { ARQUITECTURA, BATCH, MODULOS, gruposPorModulo, moduloVisible } from "@/lib/navigation";
+import { useSgmr } from "@/lib/store";
 
 interface SidebarProps {
   activeTab?: string;
   onTabChange?: (tab: string) => void;
 }
 
-export function Sidebar({ activeTab = "general", onTabChange }: SidebarProps) {
-  const pathname = usePathname();
-
-  const sections = [
-    {
-      id: "general",
-      label: "Monitoreo General",
-      icon: LayoutDashboard,
-      desc: "Topología y alarmas activas",
-    },
-    {
-      id: "parametros",
-      label: "Parámetros de Red",
-      icon: Sliders,
-      desc: "Umbrales dBm y SLAs",
-    },
-    {
-      id: "consultas",
-      label: "Consultas & Nodos",
-      icon: Search,
-      desc: "Búsqueda de NAP/ODF",
-    },
-    {
-      id: "historico",
-      label: "Histórico de Fallas",
-      icon: History,
-      desc: "Bitácora de eventos 24/7",
-    },
-  ];
+export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
+  const pathname = usePathname() ?? "";
+  const { sesion } = useSgmr();
+  const rol = sesion?.rol ?? null;
 
   return (
-    <aside className="w-64 shrink-0 bg-white border-r border-slate-200 min-h-[calc(100vh-3.5rem)] flex flex-col justify-between p-5 hidden md:flex shadow-sm">
-      <div className="space-y-6">
-        {/* Module Title */}
-        <div>
-          <p className="text-[11px] uppercase tracking-wider font-mono text-[#019DF4] font-semibold">
-            Vistas del NOC
-          </p>
-          <p className="text-xs text-slate-500 mt-0.5">Control de Supervisión</p>
-        </div>
-
-        {/* Dynamic Section Tabs */}
-        <div className="space-y-1">
-          {sections.map((sec) => {
-            const Icon = sec.icon;
-            const isSelected = activeTab === sec.id;
-            return (
-              <button
-                key={sec.id}
-                onClick={() => onTabChange?.(sec.id)}
-                className={`w-full text-left flex items-start gap-3 p-2.5 rounded-xl text-xs transition-all ${
-                  isSelected
-                    ? "bg-[#EBF5FF] text-[#0B2742] border border-[#019DF4]/30 shadow-sm"
-                    : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"
-                }`}
-              >
-                <Icon
-                  className={`w-4 h-4 mt-0.5 shrink-0 ${
-                    isSelected ? "text-[#019DF4]" : "text-slate-400"
-                  }`}
-                />
-                <div>
-                  <div className={`font-semibold ${isSelected ? "text-[#0B2742]" : "text-slate-700"}`}>
-                    {sec.label}
-                  </div>
-                  <div className="text-[11px] text-slate-400 leading-tight">
-                    {sec.desc}
-                  </div>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Main Modules Quick Links */}
-        <div className="pt-4 border-t border-slate-200">
-          <p className="text-[11px] uppercase tracking-wider font-mono text-slate-400 font-semibold mb-2">
-            Módulos del Sistema
-          </p>
-          <div className="space-y-1">
-            <Link
-              href="/ots"
-              className={`flex items-center gap-2.5 px-3 py-2 text-xs rounded-xl transition-colors ${
-                pathname === "/ots"
-                  ? "bg-[#EBF5FF] text-[#0B2742] border border-[#019DF4]/30 font-semibold"
-                  : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"
-              }`}
-            >
-              <ClipboardList className="w-4 h-4 text-[#019DF4]" />
-              <span>Despacho de OTs</span>
-            </Link>
-
-            <Link
-              href="/mobile"
-              className={`flex items-center gap-2.5 px-3 py-2 text-xs rounded-xl transition-colors ${
-                pathname === "/mobile"
-                  ? "bg-orange-50 text-orange-700 border border-orange-200 font-semibold"
-                  : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"
-              }`}
-            >
-              <Smartphone className="w-4 h-4 text-[#FF6A13]" />
-              <span>App Técnico en Campo</span>
-            </Link>
-
-            <Link
-              href="/batch"
-              className={`flex items-center gap-2.5 px-3 py-2 text-xs rounded-xl transition-colors ${
-                pathname === "/batch"
-                  ? "bg-[#EBF5FF] text-[#0B2742] border border-[#019DF4]/30 font-semibold"
-                  : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"
-              }`}
-            >
-              <Layers className="w-4 h-4 text-[#019DF4]" />
-              <span>Batch & Liquidaciones</span>
-            </Link>
-          </div>
-        </div>
+    <nav className="flex flex-col gap-5 text-[13px]" aria-label="Arquitectura del sistema">
+      <div className="px-2">
+        <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-mv-muted">Arquitectura</p>
+        <p className="mt-0.5 font-semibold text-mv-ink">{ARQUITECTURA}</p>
       </div>
 
-      {/* Network telemetry quick pill */}
-      <div className="bg-[#F4F6F9] border border-slate-200 rounded-xl p-3 space-y-2">
-        <div className="flex items-center justify-between text-[11px]">
-          <span className="text-slate-500 font-sans">Capacidad Nodos</span>
-          <span className="font-mono text-[#019DF4] font-bold">142/142 OK</span>
+      {MODULOS.filter((m) => moduloVisible(rol, m.id)).map((m) => (
+        <div key={m.id} className="space-y-3">
+          <Link
+            href={m.ruta}
+            onClick={onNavigate}
+            className={`flex items-center justify-between rounded-md px-2 py-1 text-[11px] font-bold uppercase tracking-[0.1em] ${
+              pathname === m.ruta ? "bg-mv-green-50 text-mv-green-800" : "text-mv-ink hover:bg-mv-surface"
+            }`}
+          >
+            <span>Módulo {m.nombre}</span>
+            <span className={`h-1.5 w-1.5 rounded-full ${m.id === "GERENCIAL" ? "bg-mv-green" : "bg-mv-teal"}`} />
+          </Link>
+          {gruposPorModulo(m.id, rol).map((g) => (
+            <div key={g.submodulo} className="space-y-0.5">
+              <p className="px-2 pb-1 text-[11px] font-semibold text-mv-muted">{g.submodulo}</p>
+              {g.funciones.map((f) => {
+                const Icon = f.icon;
+                const activo = pathname === f.ruta || pathname.startsWith(f.ruta + "/");
+                return (
+                  <Link
+                    key={f.id}
+                    href={f.ruta}
+                    onClick={onNavigate}
+                    aria-current={activo ? "page" : undefined}
+                    className={`group relative flex items-center gap-2.5 rounded-md py-1.5 pl-3 pr-2 transition-colors ${
+                      activo ? "bg-mv-green-50 font-semibold text-mv-ink" : "text-mv-ink-2 hover:bg-mv-surface hover:text-mv-ink"
+                    }`}
+                  >
+                    {activo && <span className="absolute bottom-1.5 left-0 top-1.5 w-[3px] rounded-r bg-mv-green" />}
+                    <Icon className={`h-4 w-4 shrink-0 ${activo ? "text-mv-green-700" : "text-mv-muted group-hover:text-mv-ink-2"}`} />
+                    <span className="leading-tight">{f.nombre}</span>
+                    {f.prioritaria && <Star className="ml-auto h-3 w-3 shrink-0 fill-st-warn text-st-warn" aria-label="Prioritaria" />}
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
         </div>
-        <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-          <div className="bg-[#019DF4] h-full rounded-full w-[94%]" />
-        </div>
-        <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono">
-          <span>Latencia: 3.8ms</span>
-          <span>Buffer: 0%</span>
-        </div>
+      ))}
+
+      <div className="space-y-0.5 border-t border-mv-line pt-4">
+        <Link
+          href="/trazabilidad"
+          onClick={onNavigate}
+          className={`flex items-center gap-2.5 rounded-md px-3 py-1.5 ${
+            pathname === "/trazabilidad" ? "bg-mv-green-50 font-semibold text-mv-ink" : "text-mv-ink-2 hover:bg-mv-surface"
+          }`}
+        >
+          <GitBranch className="h-4 w-4 text-mv-muted" />
+          Mapa de trazabilidad
+        </Link>
+        {rol && BATCH.roles.includes(rol) && (
+          <Link
+            href={BATCH.ruta}
+            onClick={onNavigate}
+            className="flex items-center gap-2.5 rounded-md px-3 py-1.5 text-mv-ink-2 hover:bg-mv-surface"
+            title="Módulo del equipo Batch (fuera del alcance ON-LINE)"
+          >
+            <Layers className="h-4 w-4 text-mv-muted" />
+            <span>Batch</span>
+            <ExternalLink className="ml-auto h-3 w-3 text-mv-muted" />
+          </Link>
+        )}
       </div>
+    </nav>
+  );
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function Sidebar(_props: SidebarProps = {}) {
+  return (
+    <aside className="no-print sticky top-14 hidden h-[calc(100vh-3.5rem)] w-64 shrink-0 overflow-y-auto border-r border-mv-line bg-mv-surface-2 px-3 py-5 lg:block">
+      <SidebarNav />
     </aside>
   );
 }

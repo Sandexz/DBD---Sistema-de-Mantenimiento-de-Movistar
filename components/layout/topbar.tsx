@@ -1,277 +1,237 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+// Barra superior común (Gerencial, Operativo y Batch).
+// Se mantiene la firma <Topbar /> sin props para no alterar app/batch/page.tsx.
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
-  Smartphone,
-  Layers,
+  Radio,
   LayoutDashboard,
-  ClipboardList,
-  LogOut,
+  Briefcase,
+  HardHat,
+  Layers,
   Bell,
   ChevronDown,
-  Wrench,
-  BarChart3,
-  Radio,
+  LogOut,
+  UserCog,
+  GitBranch,
+  RotateCcw,
+  Menu,
+  X,
+  Clock,
 } from "lucide-react";
-import { Badge } from "../ui/badge";
-import { useUserProfile, UserRole } from "./user-context";
+import { useSgmr } from "@/lib/store";
+import { ROLES, inicioPorRol, moduloVisible, BATCH } from "@/lib/navigation";
+import { ALERTAS } from "@/lib/data";
+import { fmtFecha } from "@/lib/fechas";
+import { SidebarNav } from "./sidebar";
 
 export function Topbar() {
-  const pathname = usePathname();
-  const { profile, setRole } = useUserProfile();
-  const [time, setTime] = useState<string>("03:00:00");
-  const [profileOpen, setProfileOpen] = useState(false);
+  const pathname = usePathname() ?? "";
+  const router = useRouter();
+  const { sesion, ahora, cerrarSesion, restablecer } = useSgmr();
+  const [perfilAbierto, setPerfilAbierto] = useState(false);
+  const [menuMovil, setMenuMovil] = useState(false);
+  const perfilRef = useRef<HTMLDivElement>(null);
+  const rol = sesion?.rol ?? null;
 
   useEffect(() => {
-    const update = () => {
-      const now = new Date();
-      setTime(
-        now.toTimeString().split(" ")[0] ||
-          now.toLocaleTimeString("es-PE", { hour12: false })
-      );
+    const cerrar = (e: MouseEvent) => {
+      if (perfilRef.current && !perfilRef.current.contains(e.target as Node)) setPerfilAbierto(false);
     };
-    update();
-    const interval = setInterval(update, 1000);
-    return () => clearInterval(interval);
+    document.addEventListener("mousedown", cerrar);
+    return () => document.removeEventListener("mousedown", cerrar);
   }, []);
 
-  const isGerencial = pathname.startsWith("/gerencial");
-  const isOperativo = pathname.startsWith("/operativo");
-  const isBatch = pathname.startsWith("/batch");
-  const isMobile = pathname.startsWith("/mobile") || pathname === "/operativo/mobile";
-  const isOts = pathname.startsWith("/ots") || pathname === "/operativo/ots";
-  const isDashboard = pathname.startsWith("/dashboard");
+  useEffect(() => {
+    setMenuMovil(false);
+  }, [pathname]);
+
+  const items = [
+    { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard, visible: moduloVisible(rol, "GERENCIAL") },
+    { label: "Gerencial", href: "/gerencial", icon: Briefcase, visible: moduloVisible(rol, "GERENCIAL") },
+    { label: "Operativo", href: "/operativo", icon: HardHat, visible: moduloVisible(rol, "OPERATIVO") },
+    { label: "Batch", href: BATCH.ruta, icon: Layers, visible: !!rol && BATCH.roles.includes(rol) },
+  ].filter((i) => i.visible);
+
+  const criticas = ALERTAS.filter((a) => a.severity === "CRITICAL").length;
+  const iniciales = sesion
+    ? sesion.usuario
+        .replace(/^Ing\.\s*/, "")
+        .split(" ")
+        .map((p) => p[0])
+        .slice(0, 2)
+        .join("")
+    : "—";
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-[#0B2742] border-b border-[#019DF4]/30 shadow-lg font-sans text-white">
-      <div className="flex h-14 items-center justify-between px-3 sm:px-6">
-        {/* Brand Logo & Movistar Info */}
-        <div className="flex items-center gap-3">
-          <Link href="/dashboard" className="flex items-center gap-2.5 group">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#061625] border border-[#019DF4]/40 text-[#019DF4] shadow-sm font-grotesk font-extrabold text-base group-hover:scale-105 transition-transform">
-              M
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className="font-grotesk text-sm sm:text-base font-bold tracking-tight text-white group-hover:text-[#019DF4] transition-colors">
-                  Movistar Perú
-                </span>
-                <span className="text-[10px] font-mono bg-[#019DF4]/20 text-[#019DF4] px-1.5 py-0.5 rounded border border-[#019DF4]/40 font-bold">
-                  SGMR
-                </span>
-              </div>
-              <p className="text-[10px] font-sans text-slate-300 hidden md:block">
-                Mantenimiento e Infraestructura de Redes
-              </p>
-            </div>
-          </Link>
-
-          <div className="hidden xl:flex items-center gap-2 pl-3 border-l border-white/15">
-            <span className="inline-flex items-center gap-1.5 text-xs font-mono text-[#5BC500] bg-[#5BC500]/15 px-2.5 py-0.5 rounded-full border border-[#5BC500]/30 font-bold">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#5BC500] animate-ping" />
-              NOC ONLINE
-            </span>
-            <span className="text-xs font-mono text-slate-300 bg-[#061625] px-2 py-0.5 rounded border border-white/10">
-              {time} UTC-5
-            </span>
-          </div>
-        </div>
-
-        {/* Navigation Modules & Quick Links */}
-        <nav className="flex items-center gap-1 sm:gap-1.5">
-          <Link
-            href="/dashboard"
-            className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${
-              isDashboard
-                ? "bg-[#061625] text-[#019DF4] border border-[#019DF4]/50 shadow-inner font-bold"
-                : "text-slate-200 hover:text-white hover:bg-[#123960]"
-            }`}
-          >
-            <LayoutDashboard className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Dashboard</span>
-          </Link>
-
-          <Link
-            href="/gerencial/consulta/disponibilidad"
-            className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${
-              isGerencial
-                ? "bg-[#061625] text-[#5BC500] border border-[#5BC500]/50 shadow-inner font-bold"
-                : "text-slate-200 hover:text-white hover:bg-[#123960]"
-            }`}
-          >
-            <BarChart3 className="w-3.5 h-3.5 text-[#5BC500]" />
-            <span className="hidden sm:inline">Gerencial</span>
-          </Link>
-
-          <Link
-            href="/operativo/ots"
-            className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${
-              isOperativo || (isOts && !pathname.startsWith("/gerencial"))
-                ? "bg-[#061625] text-[#019DF4] border border-[#019DF4]/50 shadow-inner font-bold"
-                : "text-slate-200 hover:text-white hover:bg-[#123960]"
-            }`}
-          >
-            <Wrench className="w-3.5 h-3.5 text-[#019DF4]" />
-            <span className="hidden sm:inline">Operativo (OTs)</span>
-          </Link>
-
-          <Link
-            href="/batch"
-            className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${
-              isBatch
-                ? "bg-[#061625] text-amber-400 border border-amber-400/50 shadow-inner font-bold"
-                : "bg-white/10 text-white hover:bg-white/20 border border-white/15"
-            }`}
-          >
-            <Layers className="w-3.5 h-3.5 text-amber-400" />
-            <span>Batch</span>
-          </Link>
-
-          <Link
-            href="/mobile"
-            className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${
-              isMobile
-                ? "bg-[#5BC500] text-white font-bold shadow-movistar-green"
-                : "bg-[#5BC500]/20 text-[#C6EE94] hover:bg-[#5BC500]/30 border border-[#5BC500]/40 font-medium"
-            }`}
-          >
-            <Smartphone className="w-3.5 h-3.5 text-[#5BC500]" />
-            <span className="hidden xs:inline">App Móvil</span>
-          </Link>
-        </nav>
-
-        {/* Right Section: Alert Bell & Profile Switcher */}
-        <div className="flex items-center gap-2 sm:gap-2.5">
-          {/* Notifications Alert Bell */}
-          <Link
-            href="/dashboard#alertas"
-            className="relative p-2 text-slate-200 hover:text-white hover:bg-[#123960] rounded-xl transition-colors"
-            title="Alertas Activas NOC"
-          >
-            <Bell className="w-4 h-4 text-slate-200" />
-            <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-500 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500" />
-            </span>
-          </Link>
-
-          {/* Profile Switcher Menu */}
-          <div className="relative">
+    <>
+      <header className="no-print sticky top-0 z-40 w-full border-b border-mv-line bg-white">
+        <div className="h-[3px] w-full bg-mv-green" />
+        <div className="flex h-[53px] items-center justify-between gap-3 px-3 sm:px-5">
+          <div className="flex min-w-0 items-center gap-3">
             <button
-              onClick={() => setProfileOpen(!profileOpen)}
-              className="flex items-center gap-2 p-1.5 rounded-xl bg-[#061625] hover:bg-[#061625]/80 border border-white/15 text-xs transition-colors cursor-pointer"
+              onClick={() => setMenuMovil(true)}
+              className="rounded-md p-2 text-mv-ink-2 hover:bg-mv-surface lg:hidden"
+              aria-label="Abrir menú"
             >
-              <div className="w-6 h-6 rounded-full bg-[#019DF4] text-[#0B2742] font-bold flex items-center justify-center text-[10px]">
-                {profile.role === "NOC" ? "NOC" : profile.role === "SUPERVISOR" ? "SUP" : "TEC"}
-              </div>
-              <div className="text-left hidden md:block">
-                <p className="font-semibold text-white leading-tight">{profile.name}</p>
-                <p className="text-[10px] text-[#019DF4] font-mono leading-none">
-                  {profile.roleLabel}
-                </p>
-              </div>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-300" />
+              <Menu className="h-5 w-5" />
             </button>
+            <Link href={rol ? inicioPorRol(rol) : "/login"} className="flex min-w-0 items-center gap-2.5">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-mv-green text-white">
+                <Radio className="h-[18px] w-[18px]" />
+              </span>
+              <span className="min-w-0 leading-tight">
+                <span className="flex items-baseline gap-1.5">
+                  <span className="text-[15px] font-bold tracking-tight text-mv-ink">SGMR</span>
+                  <span className="text-[13px] font-semibold text-mv-green-700">Movistar</span>
+                </span>
+                <span className="hidden truncate text-[11px] text-mv-muted sm:block">
+                  Sistema de Mantenimiento de Redes
+                </span>
+              </span>
+            </Link>
+          </div>
 
-            {profileOpen && (
-              <div className="absolute right-0 mt-2 w-64 bg-white border border-slate-200 text-slate-800 rounded-2xl shadow-xl p-2.5 z-50 animate-in fade-in">
-                <div className="px-3 py-2 border-b border-slate-100 mb-2">
-                  <p className="text-xs font-bold text-slate-900">{profile.name}</p>
-                  <p className="text-[11px] text-slate-500">{profile.roleLabel}</p>
-                  <p className="text-[10px] font-mono text-[#019DF4] mt-0.5">{profile.organization}</p>
-                </div>
+          <nav className="hidden items-center gap-0.5 md:flex" aria-label="Módulos">
+            {items.map((it) => {
+              const Icon = it.icon;
+              const activo =
+                pathname === it.href ||
+                pathname.startsWith(it.href + "/") ||
+                (it.href === "/operativo" && pathname.startsWith("/operativo"));
+              return (
+                <Link
+                  key={it.href}
+                  href={it.href}
+                  className={`relative flex items-center gap-1.5 rounded-md px-3 py-1.5 text-[13px] font-medium transition-colors ${
+                    activo ? "text-mv-ink" : "text-mv-ink-2 hover:bg-mv-surface hover:text-mv-ink"
+                  }`}
+                >
+                  <Icon className={`h-4 w-4 ${activo ? "text-mv-green-700" : ""}`} />
+                  {it.label}
+                  {activo && <span className="absolute -bottom-[11px] left-2 right-2 h-[3px] rounded-t bg-mv-green" />}
+                </Link>
+              );
+            })}
+          </nav>
 
-                <div className="space-y-1 mb-2">
-                  <p className="text-[10px] uppercase font-mono font-bold text-slate-400 px-3">
-                    Cambiar Perfil Activo:
-                  </p>
-                  <button
-                    onClick={() => {
-                      setRole("NOC");
-                      setProfileOpen(false);
-                    }}
-                    className={`w-full text-left px-3 py-1.5 rounded-lg text-xs flex items-center justify-between transition-colors ${
-                      profile.role === "NOC" ? "bg-[#E5F4FD] text-[#0070B8] font-bold" : "hover:bg-slate-100 text-slate-700"
-                    }`}
-                  >
-                    <span>Ingeniero NOC</span>
-                    {profile.role === "NOC" && <span className="text-xs text-[#019DF4]">✓</span>}
-                  </button>
+          <div className="flex items-center gap-1.5 sm:gap-2.5">
+            <span
+              className="hidden items-center gap-1.5 rounded-md bg-mv-surface px-2 py-1 font-mono text-[11px] text-mv-ink-2 xl:flex"
+              title="Hora del sistema (fecha de referencia del prototipo)"
+            >
+              <Clock className="h-3.5 w-3.5" />
+              {fmtFecha(ahora)} {ahora.slice(11, 16)}
+            </span>
+            {rol && rol !== "TECNICO" && (
+              <Link
+                href="/dashboard#alertas"
+                className="relative rounded-md p-2 text-mv-ink-2 hover:bg-mv-surface hover:text-mv-ink"
+                title={`${criticas} alertas críticas activas`}
+              >
+                <Bell className="h-[18px] w-[18px]" />
+                {criticas > 0 && (
+                  <span className="num absolute right-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-st-crit px-1 text-[10px] font-bold text-white">
+                    {criticas}
+                  </span>
+                )}
+              </Link>
+            )}
 
-                  <button
-                    onClick={() => {
-                      setRole("SUPERVISOR");
-                      setProfileOpen(false);
-                    }}
-                    className={`w-full text-left px-3 py-1.5 rounded-lg text-xs flex items-center justify-between transition-colors ${
-                      profile.role === "SUPERVISOR" ? "bg-[#E5F4FD] text-[#0070B8] font-bold" : "hover:bg-slate-100 text-slate-700"
-                    }`}
-                  >
-                    <span>Supervisor de Red</span>
-                    {profile.role === "SUPERVISOR" && <span className="text-xs text-[#019DF4]">✓</span>}
-                  </button>
+            <div className="relative" ref={perfilRef}>
+              <button
+                onClick={() => setPerfilAbierto((v) => !v)}
+                className="flex items-center gap-2 rounded-md border border-mv-line px-1.5 py-1 text-left hover:bg-mv-surface"
+                aria-expanded={perfilAbierto}
+              >
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-mv-green-50 text-[11px] font-bold text-mv-green-800">
+                  {iniciales}
+                </span>
+                <span className="hidden leading-tight sm:block">
+                  <span className="block text-xs font-semibold text-mv-ink">{sesion?.usuario ?? "Sin sesión"}</span>
+                  <span className="block text-[10px] text-mv-muted">{rol ? ROLES[rol].nombre : "Seleccione un perfil"}</span>
+                </span>
+                <ChevronDown className="h-3.5 w-3.5 text-mv-muted" />
+              </button>
 
-                  <button
-                    onClick={() => {
-                      setRole("FIELD");
-                      setProfileOpen(false);
-                    }}
-                    className={`w-full text-left px-3 py-1.5 rounded-lg text-xs flex items-center justify-between transition-colors ${
-                      profile.role === "FIELD" ? "bg-[#F0F9E8] text-[#3F8500] font-bold" : "hover:bg-slate-100 text-slate-700"
-                    }`}
-                  >
-                    <span>Técnico de Campo (Lari)</span>
-                    {profile.role === "FIELD" && <span className="text-xs text-[#5BC500]">✓</span>}
-                  </button>
-                </div>
-
-                <div className="border-t border-slate-100 pt-2 space-y-1">
-                  <p className="text-[10px] uppercase font-mono font-bold text-slate-400 px-3">
-                    Accesos Directos:
-                  </p>
-                  <Link
-                    href="/mobile"
-                    onClick={() => setProfileOpen(false)}
-                    className="flex items-center gap-2 px-3 py-1.5 text-xs text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-colors"
-                  >
-                    <Smartphone className="w-3.5 h-3.5 text-[#5BC500]" />
-                    <span>1. App Móvil Campo (/mobile)</span>
-                  </Link>
-                  <Link
-                    href="/batch"
-                    onClick={() => setProfileOpen(false)}
-                    className="flex items-center gap-2 px-3 py-1.5 text-xs text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-colors"
-                  >
-                    <Layers className="w-3.5 h-3.5 text-[#019DF4]" />
-                    <span>2. Módulo Batch (/batch)</span>
-                  </Link>
-                  <Link
-                    href="/ots"
-                    onClick={() => setProfileOpen(false)}
-                    className="flex items-center gap-2 px-3 py-1.5 text-xs text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-colors"
-                  >
-                    <ClipboardList className="w-3.5 h-3.5 text-slate-500" />
-                    <span>3. Gestión OTs (/ots)</span>
-                  </Link>
-                </div>
-
-                <div className="pt-2 border-t border-slate-100 flex items-center justify-between mt-1">
+              {perfilAbierto && (
+                <div className="absolute right-0 z-50 mt-2 w-64 rounded-lg border border-mv-line bg-white p-1.5 text-[13px] shadow-pop">
+                  {sesion && (
+                    <div className="mb-1 border-b border-mv-line px-3 py-2">
+                      <p className="font-semibold text-mv-ink">{sesion.usuario}</p>
+                      <p className="text-xs text-mv-ink-2">{sesion.cargo}</p>
+                      <p className="mt-1 font-mono text-[10px] text-mv-muted">ID: {sesion.codigo}</p>
+                    </div>
+                  )}
                   <Link
                     href="/login"
-                    onClick={() => setProfileOpen(false)}
-                    className="flex items-center gap-1.5 text-xs text-[#FF6A13] hover:bg-orange-50 px-3 py-1.5 rounded-xl w-full font-medium"
+                    onClick={() => setPerfilAbierto(false)}
+                    className="flex items-center gap-2 rounded-md px-3 py-2 text-mv-ink-2 hover:bg-mv-surface hover:text-mv-ink"
                   >
-                    <LogOut className="w-3.5 h-3.5" />
-                    <span>Cerrar Sesión</span>
+                    <UserCog className="h-4 w-4" /> Cambiar de perfil
                   </Link>
+                  <Link
+                    href="/trazabilidad"
+                    onClick={() => setPerfilAbierto(false)}
+                    className="flex items-center gap-2 rounded-md px-3 py-2 text-mv-ink-2 hover:bg-mv-surface hover:text-mv-ink"
+                  >
+                    <GitBranch className="h-4 w-4" /> Mapa de trazabilidad
+                  </Link>
+                  <button
+                    onClick={() => {
+                      restablecer();
+                      setPerfilAbierto(false);
+                    }}
+                    className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-mv-ink-2 hover:bg-mv-surface hover:text-mv-ink"
+                  >
+                    <RotateCcw className="h-4 w-4" /> Restablecer datos de demostración
+                  </button>
+                  <button
+                    onClick={() => {
+                      cerrarSesion();
+                      setPerfilAbierto(false);
+                      router.push("/login");
+                    }}
+                    className="mt-1 flex w-full items-center gap-2 rounded-md border-t border-mv-line px-3 py-2 text-left text-st-crit-fg hover:bg-st-crit-bg"
+                  >
+                    <LogOut className="h-4 w-4" /> Cerrar sesión
+                  </button>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {menuMovil && (
+        <div className="no-print fixed inset-0 z-50 lg:hidden">
+          <div className="absolute inset-0 bg-mv-ink/40" onClick={() => setMenuMovil(false)} />
+          <div className="absolute inset-y-0 left-0 flex w-[84%] max-w-xs flex-col bg-white shadow-pop">
+            <div className="flex items-center justify-between border-b border-mv-line px-4 py-3">
+              <span className="text-sm font-bold text-mv-ink">
+                SGMR <span className="text-mv-green-700">Movistar</span>
+              </span>
+              <button onClick={() => setMenuMovil(false)} className="rounded-md p-1.5 text-mv-muted hover:bg-mv-surface" aria-label="Cerrar menú">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto px-3 py-4">
+              {items.length > 0 && (
+                <div className="mb-4 grid grid-cols-2 gap-1.5 md:hidden">
+                  {items.map((it) => (
+                    <Link key={it.href} href={it.href} className="rounded-md border border-mv-line px-2.5 py-2 text-xs font-semibold text-mv-ink">
+                      {it.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+              <SidebarNav onNavigate={() => setMenuMovil(false)} />
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

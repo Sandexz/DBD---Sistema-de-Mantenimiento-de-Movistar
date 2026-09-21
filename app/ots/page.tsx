@@ -1,3 +1,23 @@
+"use client";
+
+import React, { useState } from "react";
+import Link from "next/link";
+import {
+  ClipboardList,
+  Layers,
+  Smartphone,
+  ArrowRight,
+  Activity,
+  AlertTriangle,
+  HardHat,
+  Clock,
+  FileText,
+} from "lucide-react";
+import { Topbar } from "@/components/layout/topbar";
+import { OtForm, NewOtPayload } from "@/components/ot-form";
+import { OtTable, OtRecord } from "@/components/ot-table";
+import initialOtsData from "@/mock-data/ots.json";
+
 export default function OtsPage() {
   // Local in-memory React state for OTs
   const [ots, setOts] = useState<OtRecord[]>(initialOtsData as OtRecord[]);

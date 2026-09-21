@@ -179,9 +179,10 @@ export default function BatchPage() {
                 </div>
                 <div className="flex justify-between text-[11px] font-mono text-slate-500">
                   <span>{preventivo.ejecutado} Ejecutadas</span>
-                  <span>{preventivo.totalProgramado - preventivo.ejecutado - preventivo.pendientes} En Progreso</span>
+                  <span>{preventivo.enProgreso} En Progreso</span>
                   <span>{preventivo.pendientes} Pendientes</span>
                 </div>
+
               </div>
 
               {/* Muestreo de Nodos */}

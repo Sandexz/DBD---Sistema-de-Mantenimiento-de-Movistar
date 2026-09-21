@@ -1,3 +1,28 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import {
+  Sliders,
+  Search,
+  History,
+  RefreshCw,
+  Bell,
+  MapPin,
+  CheckCircle2,
+  AlertTriangle,
+  Radio,
+  ArrowRight,
+} from "lucide-react";
+import { Topbar } from "@/components/layout/topbar";
+import { Sidebar } from "@/components/layout/sidebar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { KpiCard, KpiData } from "@/components/kpi-card";
+import { MapPlaceholder } from "@/components/map-placeholder";
+import kpisData from "@/mock-data/kpis.json";
+import alertasData from "@/mock-data/alertas.json";
+
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<string>("general");
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -29,13 +54,18 @@ export default function DashboardPage() {
       <Topbar />
 
       <div className="flex flex-1">
-        {/* Sidebar Navigation */}
-        <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
+        {/* Sidebar Navigation with all action and module buttons on the left */}
+        <Sidebar
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          onRefresh={handleRefresh}
+          isRefreshing={isRefreshing}
+        />
 
         {/* Main Content Area */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full">
-          {/* Dashboard Header Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
+          {/* Clean Dashboard Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-xl sm:text-2xl font-bold font-grotesk tracking-tight text-slate-900">
@@ -53,30 +83,15 @@ export default function DashboardPage() {
               </p>
             </div>
 
-            {/* Quick Action bar */}
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleRefresh}
-                isLoading={isRefreshing}
-                className="font-mono text-xs"
-              >
-                <RefreshCw className="w-3.5 h-3.5 mr-1" />
-                Actualizar Telemetría
-              </Button>
-
-              <Link href="/gerencial/consulta/disponibilidad">
-                <Button variant="outline" size="sm" className="font-sans text-xs">
-                  <span>Módulo Gerencial</span>
-                </Button>
-              </Link>
-
-              <Link href="/ots">
-                <Button variant="orange" size="sm" className="font-sans">
-                  <span>+ Despachar OT</span>
-                </Button>
-              </Link>
+            <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                Telemetría Activa
+              </span>
+              <span className="hidden sm:inline text-slate-300">|</span>
+              <span className="hidden sm:inline">
+                {lastUpdated ? `Sync: ${lastUpdated}` : "Sync en vivo"}
+              </span>
             </div>
           </div>
 

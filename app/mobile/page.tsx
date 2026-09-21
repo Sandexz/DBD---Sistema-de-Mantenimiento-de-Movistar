@@ -1,3 +1,21 @@
+"use client";
+
+import React from "react";
+import Link from "next/link";
+import {
+  ArrowLeft,
+  ClipboardList,
+  Sun,
+  Smartphone,
+  CheckCircle2,
+  AlertTriangle,
+  Radio,
+  Clock,
+  ShieldCheck,
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { MobileFlow } from "@/components/mobile-flow";
+
 export default function MobilePage() {
   return (
     <div className="min-h-screen bg-[#0B0C0E] text-slate-100 flex flex-col font-sans">

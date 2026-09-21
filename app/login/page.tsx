@@ -21,6 +21,7 @@ import {
   BarChart3,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { MovistarLogo } from "@/components/ui/movistar-logo";
 import { useUserProfile, UserRole } from "@/components/layout/user-context";
 
 const quickProfiles: {
@@ -125,8 +126,8 @@ export default function LoginPage() {
       {/* Top Header */}
       <header className="flex items-center justify-between z-10 max-w-5xl mx-auto w-full">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#0B2742] text-[#019DF4] border border-[#019DF4]/30 shadow-sm flex items-center justify-center font-grotesk font-extrabold text-lg">
-            M
+          <div className="bg-[#0B2742] p-2 rounded-2xl border border-[#019DF4]/30 shadow-sm flex items-center justify-center">
+            <MovistarLogo className="h-8 w-auto object-contain" />
           </div>
           <div>
             <div className="flex items-center gap-1.5">
@@ -139,6 +140,7 @@ export default function LoginPage() {
             </p>
           </div>
         </div>
+
 
         <Badge variant="movistar" size="sm" pulse>
           PLATAFORMA MOVISTAR ONLINE

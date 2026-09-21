@@ -70,14 +70,6 @@ const quickProfiles: {
   },
 ];
 
-const quickLinks = [
-  { href: "/dashboard", label: "Dashboard NOC", icon: LayoutDashboard, color: "text-[#019DF4]" },
-  { href: "/gerencial/consulta/disponibilidad", label: "Módulo Gerencial", icon: BarChart3, color: "text-[#5BC500]" },
-  { href: "/operativo/ots", label: "Gestión OTs Operativas", icon: ClipboardList, color: "text-slate-600" },
-  { href: "/batch", label: "Módulo Batch", icon: Layers, color: "text-amber-500" },
-  { href: "/mobile", label: "App de Campo", icon: Smartphone, color: "text-[#5BC500]" },
-];
-
 export default function LoginPage() {
   const router = useRouter();
   const { setRole } = useUserProfile();
@@ -152,18 +144,10 @@ export default function LoginPage() {
         <div className="w-full max-w-md bg-white border border-slate-200 rounded-3xl shadow-xl overflow-hidden relative">
           {/* Brand header */}
           <div className="bg-[#0B2742] px-7 py-6 text-white">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-xl font-bold font-grotesk">Control de Acceso</h1>
-                <p className="text-xs text-slate-300 font-sans mt-0.5">
-                  Ingreso a Supervisión Gerencial y Despacho Operativo
-                </p>
-              </div>
-              <span className="inline-flex items-center gap-1.5 text-[11px] font-mono font-semibold text-[#5BC500] bg-[#5BC500]/15 px-2.5 py-0.5 rounded-full border border-[#5BC500]/30">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#5BC500] animate-ping" />
-                NOC ONLINE
-              </span>
-            </div>
+            <h1 className="text-xl font-bold font-grotesk text-white">Control de Acceso</h1>
+            <p className="text-xs text-white/90 font-sans mt-0.5">
+              Ingreso a Supervisión Gerencial y Despacho Operativo
+            </p>
           </div>
 
           <div className="p-6 sm:p-7 space-y-5">
@@ -215,12 +199,9 @@ export default function LoginPage() {
               </div>
 
               <div className="space-y-1 text-xs">
-                <label className="text-slate-700 font-semibold flex items-center justify-between">
-                  <span className="flex items-center gap-1.5">
-                    <Lock className="w-3.5 h-3.5 text-[#019DF4]" />
-                    <span>Contraseña</span>
-                  </span>
-                  <span className="text-[10px] text-slate-400 font-mono">Demo: {password}</span>
+                <label className="text-slate-700 font-semibold flex items-center gap-1.5">
+                  <Lock className="w-3.5 h-3.5 text-[#019DF4]" />
+                  <span>Contraseña</span>
                 </label>
                 <div className="relative">
                   <input
@@ -261,7 +242,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-[#019DF4] hover:bg-[#0081CB] active:scale-[0.98] text-white font-bold text-xs py-2.5 rounded-xl shadow-md shadow-[#019DF4]/20 transition-all flex items-center justify-center gap-2 disabled:opacity-70 cursor-pointer"
+                className="w-full bg-[#019DF4] hover:bg-[#0081CB] active:scale-[0.98] text-white font-bold text-xs py-2.5 rounded-xl shadow-md shadow-[#019DF4]/20 transition-all flex items-center justify-center gap-2 disabled:opacity-70 cursor-pointer mt-2"
               >
                 {isLoading ? (
                   <>
@@ -276,29 +257,8 @@ export default function LoginPage() {
                 )}
               </button>
             </form>
-
-            {/* Direct module navigation links */}
-            <div className="pt-3 border-t border-slate-100">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">
-                Accesos directos:
-              </p>
-              <div className="grid grid-cols-2 gap-1.5">
-                {quickLinks.map((link) => {
-                  const Icon = link.icon;
-                  return (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200 hover:border-[#019DF4]/40 hover:bg-white text-[11px] font-medium text-slate-700 transition-all truncate"
-                    >
-                      <Icon className={`w-3.5 h-3.5 ${link.color} shrink-0`} />
-                      <span className="truncate">{link.label}</span>
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
           </div>
+
         </div>
       </main>
 

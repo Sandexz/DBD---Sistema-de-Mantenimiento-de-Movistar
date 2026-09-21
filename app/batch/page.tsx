@@ -13,21 +13,12 @@ import {
   FileText,
   Eye,
   CheckCircle2,
-  Clock,
-  TrendingUp,
   Award,
-  Calendar,
   AlertOctagon,
   Smartphone,
-  ClipboardList,
   Sparkles,
-  ArrowRight,
-  ShieldAlert,
-  ChevronRight,
-  Filter,
 } from "lucide-react";
 import { Topbar } from "@/components/layout/topbar";
-import { Card, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Modal } from "@/components/ui/modal";
@@ -61,24 +52,24 @@ export default function BatchPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B0C0E] text-slate-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans">
       <Topbar />
 
       <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full">
         {/* Module Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#1E232B] pb-5">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-5">
           <div className="space-y-1">
             <div className="flex flex-wrap items-center gap-2.5">
-              <div className="w-10 h-10 rounded-xl bg-[#0B2742] border border-[#019DF4]/40 flex items-center justify-center text-[#019DF4] shadow-sm">
+              <div className="w-10 h-10 rounded-xl bg-[#EBF5FF] border border-[#019DF4]/30 flex items-center justify-center text-[#019DF4] shadow-sm">
                 <Layers className="w-5 h-5" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="text-xl sm:text-2xl font-bold font-grotesk tracking-tight text-white">
+                  <h1 className="text-xl sm:text-2xl font-bold font-grotesk tracking-tight text-slate-900">
                     Procesamiento Lote & Auditoría de Contratistas
                   </h1>
                 </div>
-                <p className="text-xs text-slate-400 font-sans mt-0.5">
+                <p className="text-xs text-slate-500 font-sans mt-0.5">
                   Liquidación de servicios de planta externa, auditoría nocturna de SLA y deducción de penalidades · Movistar Perú
                 </p>
               </div>
@@ -88,12 +79,12 @@ export default function BatchPage() {
           {/* Header Action Badges & Buttons */}
           <div className="flex flex-wrap items-center gap-3">
             {/* Badge: BATCH COMPLETO - 03:00 AM */}
-            <div className="inline-flex items-center gap-2 bg-[#061625] border border-[#00A86B]/50 px-3 py-1.5 rounded-xl text-xs font-mono font-bold text-[#00A86B] shadow-sm">
+            <div className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-300/60 px-3 py-1.5 rounded-xl text-xs font-mono font-bold text-emerald-700 shadow-sm">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00A86B] opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#00A86B]" />
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
               </span>
-              <span>BATCH COMPLETO - 03:00 AM</span>
+              <span>BATCH COMPLETO — 03:00 AM</span>
             </div>
 
             {/* Botón Prominente: Exportar Reporte General */}
@@ -110,8 +101,8 @@ export default function BatchPage() {
         </div>
 
         {/* Quick Shortcut Buttons Banner for Diego's modules */}
-        <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 bg-[#121418] border border-[#1E232B] rounded-2xl text-xs">
-          <div className="flex items-center gap-2 text-slate-300">
+        <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 bg-white border border-slate-200 rounded-2xl text-xs shadow-sm">
+          <div className="flex items-center gap-2 text-slate-600">
             <Sparkles className="w-4 h-4 text-[#019DF4]" />
             <span>Módulos Asignados a Diego:</span>
             <span className="font-mono text-[#019DF4] font-bold">
@@ -123,20 +114,20 @@ export default function BatchPage() {
             <button
               type="button"
               onClick={() => setIsPreliqModalOpen(true)}
-              className="px-3 py-1.5 rounded-lg bg-[#0B2742] hover:bg-[#123960] text-[#019DF4] hover:text-white border border-[#019DF4]/30 font-semibold transition-all cursor-pointer"
+              className="px-3 py-1.5 rounded-lg bg-[#EBF5FF] hover:bg-[#019DF4] text-[#019DF4] hover:text-white border border-[#019DF4]/30 font-semibold transition-all cursor-pointer"
             >
               Ver Pre-Liquidaciones
             </button>
             <button
               type="button"
               onClick={() => setIsPenaltiesModalOpen(true)}
-              className="px-3 py-1.5 rounded-lg bg-[#0B2742] hover:bg-[#123960] text-[#FF6A13] hover:text-white border border-[#FF6A13]/30 font-semibold transition-all cursor-pointer"
+              className="px-3 py-1.5 rounded-lg bg-orange-50 hover:bg-[#FF6A13] text-[#FF6A13] hover:text-white border border-[#FF6A13]/30 font-semibold transition-all cursor-pointer"
             >
               Ver Actas de Penalidades
             </button>
             <Link
               href="/mobile"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#00A86B] hover:bg-[#008f5b] text-white font-bold transition-all shadow-sm"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold transition-all shadow-sm"
             >
               <Smartphone className="w-3.5 h-3.5" />
               <span>Ir a App de Campo</span>
@@ -148,8 +139,8 @@ export default function BatchPage() {
             4 TARJETAS DE AUDITORÍA (KPI CARDS)
         ========================================================================= */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* ================= TARJETA 1: MANTENIMIENTO PREVENTIVO ================= */}
-          <Card className="flex flex-col justify-between border-[#1E232B] hover:border-[#019DF4]/40 transition-colors">
+          {/* ═══ TARJETA 1: MANTENIMIENTO PREVENTIVO ═══ */}
+          <div className="bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col hover:border-[#019DF4]/40 transition-colors">
             <div>
               <CardHeader
                 title="Mantenimiento Preventivo (Batch)"
@@ -164,15 +155,15 @@ export default function BatchPage() {
 
               <div className="space-y-4 pt-1">
                 {/* Requerimiento exacto: 1,240 OTs Preventivas Generadas Automáticamente por Vida Útil de Activos */}
-                <div className="p-3.5 bg-[#0B0C0E] rounded-xl border border-[#1E232B] space-y-1">
+                <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-slate-400 font-mono">Lote Automático Nocturno:</span>
-                    <span className="text-xs font-mono font-bold text-[#00A86B]">SLA ÓPTIMO</span>
+                    <span className="text-xs font-mono font-bold text-emerald-600">SLA ÓPTIMO</span>
                   </div>
-                  <p className="text-sm font-bold text-white font-grotesk leading-snug">
+                  <p className="text-sm font-bold text-slate-900 font-grotesk leading-snug">
                     1,240 OTs Preventivas Generadas Automáticamente por Vida Útil de Activos
                   </p>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-[11px] text-slate-500">
                     Algoritmo preventivo basado en horas de operación, atenuación dBm y telemetría de fallas.
                   </p>
                 </div>
@@ -183,7 +174,7 @@ export default function BatchPage() {
                     <span>Cumplimiento del Lote Batch</span>
                     <span className="text-[#019DF4] font-bold">84% Completado</span>
                   </div>
-                  <div className="w-full bg-[#0B0C0E] h-2.5 rounded-full overflow-hidden border border-[#1E232B]">
+                  <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
                     <div
                       className="bg-gradient-to-r from-[#019DF4] to-[#00A86B] h-full rounded-full transition-all duration-700 shadow-sm"
                       style={{ width: "84%" }}
@@ -204,10 +195,10 @@ export default function BatchPage() {
                   {preventivo.detalles.map((d, idx) => (
                     <div
                       key={idx}
-                      className="flex items-center justify-between p-2 bg-[#0B0C0E] rounded-lg border border-[#1E232B] text-xs font-mono"
+                      className="flex items-center justify-between p-2 bg-slate-50 rounded-lg border border-slate-200 text-xs font-mono"
                     >
                       <div>
-                        <span className="text-white font-semibold">{d.nodo}</span>
+                        <span className="text-slate-900 font-semibold">{d.nodo}</span>
                         <span className="text-[10px] text-slate-500 block">{d.tipo}</span>
                       </div>
                       <div className="flex items-center gap-2">
@@ -215,8 +206,8 @@ export default function BatchPage() {
                         <span
                           className={`text-[10px] font-bold px-2 py-0.5 rounded ${
                             d.estado === "CONFORME"
-                              ? "bg-[#00A86B]/20 text-[#00A86B]"
-                              : "bg-amber-500/20 text-amber-400"
+                              ? "bg-emerald-100 text-emerald-700"
+                              : "bg-amber-100 text-amber-700"
                           }`}
                         >
                           {d.estado}
@@ -228,21 +219,21 @@ export default function BatchPage() {
               </div>
             </div>
 
-            <div className="mt-4 pt-3 border-t border-[#1E232B] flex items-center justify-between text-xs text-slate-500 font-mono">
+            <div className="px-5 py-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400 font-mono">
               <span>Próxima Auditoría: 2026-09-30 03:00 AM</span>
-              <span className="text-[#00A86B] font-bold">✓ Sincronizado</span>
+              <span className="text-emerald-600 font-bold">✓ Sincronizado</span>
             </div>
-          </Card>
+          </div>
 
           {/* ================= TARJETA 2: RENDIMIENTO DE CONTRATISTAS ================= */}
-          <Card className="flex flex-col justify-between border-[#1E232B] hover:border-[#019DF4]/40 transition-colors">
+          <div className="bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col hover:border-[#019DF4]/40 transition-colors">
             <div>
               <CardHeader
                 title="Rendimiento de Contratistas"
                 subtitle="Evaluación de cuadrillas y cumplimiento de SLA (Cobra / Lari)"
                 icon={<Users className="w-5 h-5 text-[#019DF4]" />}
                 action={
-                  <span className="text-xs font-mono text-slate-400 bg-[#0B0C0E] px-2 py-0.5 rounded border border-[#1E232B]">
+                  <span className="text-xs font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
                     3 Contratistas
                   </span>
                 }
@@ -250,24 +241,24 @@ export default function BatchPage() {
 
               <div className="space-y-3 pt-1">
                 {/* Contractor 1: Cobra: 94% */}
-                <div className="p-3.5 bg-[#0B0C0E] rounded-xl border border-[#019DF4]/40 text-xs space-y-2">
+                <div className="p-3.5 bg-slate-50 rounded-xl border border-emerald-200/60 text-xs space-y-2">
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-white font-grotesk text-sm">
+                        <span className="font-bold text-slate-900 font-grotesk text-sm">
                           Cobra Instalaciones & Redes
                         </span>
-                        <span className="text-[10px] font-bold font-mono px-2 py-0.5 rounded-full bg-[#00A86B]/20 text-[#00A86B]">
+                        <span className="text-[10px] font-bold font-mono px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
                           ÓPTIMO
                         </span>
                       </div>
-                      <p className="text-[11px] text-slate-400 font-mono mt-0.5">
+                      <p className="text-[11px] text-slate-500 font-mono mt-0.5">
                         Zona: Lima Norte / Callao · 14 Cuadrillas activas
                       </p>
                     </div>
 
                     <div className="text-right">
-                      <span className="text-lg font-bold font-mono text-[#00A86B]">
+                      <span className="text-lg font-bold font-mono text-emerald-600">
                         94%
                       </span>
                       <span className="text-[10px] text-slate-400 block font-mono">
@@ -276,32 +267,32 @@ export default function BatchPage() {
                     </div>
                   </div>
 
-                  <div className="w-full bg-[#121418] h-2 rounded-full overflow-hidden border border-[#1E232B]">
-                    <div className="bg-[#00A86B] h-full rounded-full" style={{ width: "94%" }} />
+                  <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                    <div className="bg-emerald-500 h-full rounded-full" style={{ width: "94%" }} />
                   </div>
 
-                  <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 pt-1 border-t border-[#1E232B]">
-                    <span>SLA Cumplido: <strong className="text-white">98.2%</strong></span>
+                  <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 pt-1 border-t border-slate-200">
+                    <span>SLA Cumplido: <strong className="text-slate-800">98.2%</strong></span>
                     <span>480 OTs Conformes</span>
-                    <span className="text-amber-400 font-bold flex items-center gap-1">
+                    <span className="text-amber-500 font-bold flex items-center gap-1">
                       <Award className="w-3.5 h-3.5" /> 4.9 / 5.0
                     </span>
                   </div>
                 </div>
 
                 {/* Contractor 2: Lari: 88% */}
-                <div className="p-3.5 bg-[#0B0C0E] rounded-xl border border-[#1E232B] text-xs space-y-2">
+                <div className="p-3.5 bg-slate-50 rounded-xl border border-[#019DF4]/20 text-xs space-y-2">
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-white font-grotesk text-sm">
+                        <span className="font-bold text-slate-900 font-grotesk text-sm">
                           Lari Telecomunicaciones S.A.C.
                         </span>
                         <span className="text-[10px] font-bold font-mono px-2 py-0.5 rounded-full bg-[#019DF4]/20 text-[#019DF4]">
                           CONFORME
                         </span>
                       </div>
-                      <p className="text-[11px] text-slate-400 font-mono mt-0.5">
+                      <p className="text-[11px] text-slate-500 font-mono mt-0.5">
                         Zona: Lima Este / Centro · 11 Cuadrillas activas
                       </p>
                     </div>
@@ -316,23 +307,23 @@ export default function BatchPage() {
                     </div>
                   </div>
 
-                  <div className="w-full bg-[#121418] h-2 rounded-full overflow-hidden border border-[#1E232B]">
+                  <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
                     <div className="bg-[#019DF4] h-full rounded-full" style={{ width: "88%" }} />
                   </div>
 
-                  <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 pt-1 border-t border-[#1E232B]">
-                    <span>SLA Cumplido: <strong className="text-white">91.5%</strong></span>
+                  <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 pt-1 border-t border-slate-200">
+                    <span>SLA Cumplido: <strong className="text-slate-800">91.5%</strong></span>
                     <span>360 OTs Conformes</span>
-                    <span className="text-amber-400 font-bold flex items-center gap-1">
+                    <span className="text-amber-500 font-bold flex items-center gap-1">
                       <Award className="w-3.5 h-3.5" /> 4.3 / 5.0
                     </span>
                   </div>
                 </div>
 
                 {/* Contractor 3: CAM Perú */}
-                <div className="p-2.5 bg-[#0B0C0E] rounded-xl border border-[#FF6A13]/30 text-xs flex items-center justify-between font-mono">
+                <div className="p-2.5 bg-orange-50 rounded-xl border border-orange-200/60 text-xs flex items-center justify-between font-mono">
                   <div>
-                    <span className="text-slate-300 font-bold">CAM Perú Servicios</span>
+                    <span className="text-slate-700 font-bold">CAM Perú Servicios</span>
                     <span className="text-[10px] text-[#FF6A13] block">Bajo Observación (SLA 84.0%)</span>
                   </div>
                   <div className="text-right">
@@ -343,14 +334,14 @@ export default function BatchPage() {
               </div>
             </div>
 
-            <div className="mt-4 pt-3 border-t border-[#1E232B] flex items-center justify-between text-xs text-slate-500 font-mono">
+            <div className="px-5 py-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400 font-mono">
               <span>Auditoría de Cuadrillas en Línea</span>
               <span className="text-[#019DF4]">Ranking Semanal Cerrado</span>
             </div>
-          </Card>
+          </div>
 
           {/* ================= TARJETA 3: PRE-LIQUIDACIONES MENSUALES ================= */}
-          <Card className="flex flex-col justify-between border-[#1E232B] hover:border-[#019DF4]/40 transition-colors">
+          <div className="bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col hover:border-emerald-400/40 transition-colors">
             <div>
               <CardHeader
                 title="Pre-Liquidaciones Mensuales"
@@ -365,12 +356,12 @@ export default function BatchPage() {
 
               <div className="space-y-4 pt-1">
                 {/* Monto Requerido: S/ 452,180.00 */}
-                <div className="bg-[#0B0C0E] p-4 rounded-2xl border border-[#1E232B] flex items-baseline justify-between shadow-inner">
+                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 flex items-baseline justify-between">
                   <div>
                     <span className="text-xs text-slate-400 block font-sans">
                       Monto Total Calculado para Pago de Servicios:
                     </span>
-                    <span className="text-3xl sm:text-4xl font-extrabold text-white font-grotesk tracking-tight">
+                    <span className="text-3xl sm:text-4xl font-extrabold text-slate-900 font-grotesk tracking-tight" suppressHydrationWarning>
                       S/ 452,180.00
                     </span>
                   </div>
@@ -392,10 +383,10 @@ export default function BatchPage() {
                   {preliquidaciones.desglose.map((item, idx) => (
                     <div
                       key={idx}
-                      className="flex items-center justify-between p-2.5 bg-[#0B0C0E] rounded-xl border border-[#1E232B] text-xs font-mono"
+                      className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs font-mono"
                     >
-                      <span className="text-slate-300">{item.rubro}</span>
-                      <span className="text-white font-bold">{item.monto}</span>
+                      <span className="text-slate-600">{item.rubro}</span>
+                      <span className="text-slate-900 font-bold">{item.monto}</span>
                     </div>
                   ))}
                 </div>
@@ -403,25 +394,24 @@ export default function BatchPage() {
             </div>
 
             {/* Botón Prominente: Ver Detalle de Pre-Liquidaciones */}
-            <div className="mt-5 pt-4 border-t border-[#1E232B] flex items-center justify-between">
+            <div className="px-5 py-3 border-t border-slate-100 flex items-center justify-between">
               <span className="text-xs text-slate-400 font-mono">
                 Período: {preliquidaciones.periodo}
               </span>
 
-              <Button
-                variant="primary"
-                size="sm"
+              <button
+                type="button"
                 onClick={() => setIsPreliqModalOpen(true)}
-                className="bg-[#0B2742] hover:bg-[#123960] text-white border-[#019DF4]/40 font-bold"
+                className="flex items-center gap-1.5 text-xs font-bold text-[#019DF4] hover:underline"
               >
-                <Eye className="w-3.5 h-3.5 mr-1.5 text-[#019DF4]" />
-                <span>Ver Detalle de Pre-Liquidaciones</span>
-              </Button>
+                <Eye className="w-3.5 h-3.5" />
+                Ver Detalle de Pre-Liquidaciones
+              </button>
             </div>
-          </Card>
+          </div>
 
           {/* ================= TARJETA 4: PENALIDADES SLA ================= */}
-          <Card className="flex flex-col justify-between border-[#1E232B] hover:border-[#FF6A13]/40 transition-colors">
+          <div className="bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col hover:border-orange-400/40 transition-colors">
             <div>
               <CardHeader
                 title="Penalidades SLA"
@@ -436,12 +426,12 @@ export default function BatchPage() {
 
               <div className="space-y-4 pt-1">
                 {/* Monto Requerido: -S/ 28,400.00 */}
-                <div className="bg-[#0B0C0E] p-4 rounded-2xl border border-[#FF6A13]/40 flex items-baseline justify-between shadow-inner">
+                <div className="bg-orange-50 p-4 rounded-xl border border-orange-200/60 flex items-baseline justify-between">
                   <div>
                     <span className="text-xs text-slate-400 block font-sans">
                       Monto Acumulado por Penalidades SLA:
                     </span>
-                    <span className="text-3xl sm:text-4xl font-extrabold text-[#FF6A13] font-grotesk tracking-tight">
+                    <span className="text-3xl sm:text-4xl font-extrabold text-[#FF6A13] font-grotesk tracking-tight" suppressHydrationWarning>
                       -S/ 28,400.00
                     </span>
                   </div>
@@ -457,25 +447,25 @@ export default function BatchPage() {
 
                 {/* Motivos Clave de Penalización */}
                 <div className="space-y-2">
-                  <div className="p-3 bg-[#0B0C0E] rounded-xl border border-[#1E232B] text-xs space-y-1">
-                    <div className="flex items-center justify-between text-slate-400 font-mono text-[11px]">
+                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-1">
+                    <div className="flex items-center justify-between text-slate-500 font-mono text-[11px]">
                       <span>Incumplimiento Crítico MTTR:</span>
                       <span className="text-[#FF6A13] font-bold">S/ 4,500.00 + S/ 8,200.00</span>
                     </div>
-                    <p className="font-bold text-white font-grotesk">
+                    <p className="font-bold text-slate-900 font-grotesk">
                       Cobra: Incumplimiento MTTR &gt; 4hrs
                     </p>
-                    <p className="text-slate-400 text-[11px]">
+                    <p className="text-slate-500 text-[11px]">
                       Enlace troncal en Nodo NOD-CARABAYLLO-04 y San Martín de Porres.
                     </p>
                   </div>
 
-                  <div className="p-3 bg-[#0B0C0E] rounded-xl border border-[#1E232B] text-xs space-y-1">
-                    <div className="flex items-center justify-between text-slate-400 font-mono text-[11px]">
+                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-1">
+                    <div className="flex items-center justify-between text-slate-500 font-mono text-[11px]">
                       <span>Reincidencia de Averías:</span>
                       <span className="text-[#FF6A13] font-bold">S/ 8,200.00 + S/ 7,500.00</span>
                     </div>
-                    <p className="font-bold text-white font-grotesk">
+                    <p className="font-bold text-slate-900 font-grotesk">
                       Lari: Reincidencia en Nodo NOD-LIM-02
                     </p>
                     <p className="text-slate-400 text-[11px]">
@@ -487,7 +477,7 @@ export default function BatchPage() {
             </div>
 
             {/* Botón Prominente: Ver Actas de Penalidades */}
-            <div className="mt-5 pt-4 border-t border-[#1E232B] flex items-center justify-between">
+            <div className="px-5 py-3 border-t border-slate-100 flex items-center justify-between">
               <span className="text-xs text-slate-400 font-mono">
                 {penalidades.casos.length} Actas formalizadas
               </span>
@@ -496,13 +486,13 @@ export default function BatchPage() {
                 variant="outline"
                 size="sm"
                 onClick={() => setIsPenaltiesModalOpen(true)}
-                className="text-white hover:bg-[#121418] border-[#FF6A13]/40 font-bold"
+                className="flex items-center gap-1.5 text-xs font-bold text-[#FF6A13] hover:underline text-left"
               >
                 <AlertOctagon className="w-3.5 h-3.5 mr-1.5 text-[#FF6A13]" />
                 <span>Ver Actas de Penalidades</span>
               </Button>
             </div>
-          </Card>
+          </div>
         </div>
       </main>
 

@@ -1,17 +1,11 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Public_Sans, IBM_Plex_Mono } from "next/font/google";
+import { Inter, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { UserProvider } from "@/components/layout/user-context";
 
-const spaceGrotesk = Space_Grotesk({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-space-grotesk",
-  display: "swap",
-});
-
-const publicSans = Public_Sans({
-  subsets: ["latin"],
-  variable: "--font-public-sans",
+  variable: "--font-inter",
   display: "swap",
 });
 
@@ -35,7 +29,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${spaceGrotesk.variable} ${publicSans.variable} ${ibmPlexMono.variable}`}
+      className={`${inter.variable} ${ibmPlexMono.variable}`}
     >
       <body className="min-h-screen bg-[#F8FAFC] text-slate-800 antialiased selection:bg-[#019DF4]/20 selection:text-[#0B2742]">
         <UserProvider>
@@ -45,3 +39,4 @@ export default function RootLayout({
     </html>
   );
 }
+

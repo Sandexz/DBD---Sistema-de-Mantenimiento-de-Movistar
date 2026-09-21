@@ -62,10 +62,11 @@ module.exports = {
         }
       },
       fontFamily: {
-        grotesk: ['var(--font-space-grotesk)', 'sans-serif'],
-        sans: ['var(--font-public-sans)', 'sans-serif'],
+        grotesk: ['var(--font-inter)', '-apple-system', 'system-ui', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'sans-serif'],
+        sans: ['var(--font-inter)', '-apple-system', 'system-ui', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'sans-serif'],
         mono: ['var(--font-ibm-plex-mono)', 'monospace'],
       },
+
       boxShadow: {
         'glow-cyan': '0 0 15px rgba(1, 157, 244, 0.35)',
         'glow-blue': '0 0 15px rgba(1, 157, 244, 0.35)',

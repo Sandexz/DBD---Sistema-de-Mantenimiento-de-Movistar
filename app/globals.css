@@ -5,8 +5,13 @@
 @layer base {
   :root {
     --bg-dark: #0B0C0E;
-    --brand-blue: #0A2E5C;
-    --brand-cyan: #00AEEF;
+    --movistar-navy: #0B2742;
+    --movistar-blue: #019DF4;
+    --movistar-green: #00A86B;
+    --movistar-light: #F4F6F9;
+    --movistar-white: #FFFFFF;
+    --brand-blue: #0B2742;
+    --brand-cyan: #019DF4;
     --brand-orange: #FF6A13;
     --brand-white: #FFFFFF;
   }
@@ -76,4 +81,24 @@
 
 .animate-radar {
   animation: radar-sweep 8s linear infinite;
+}
+
+/* Laser camera scanner viewfinder animation */
+@keyframes scan-beam {
+  0% {
+    top: 5%;
+    opacity: 0.8;
+  }
+  50% {
+    top: 90%;
+    opacity: 1;
+  }
+  100% {
+    top: 5%;
+    opacity: 0.8;
+  }
+}
+
+.animate-scan-beam {
+  animation: scan-beam 2.2s ease-in-out infinite;
 }

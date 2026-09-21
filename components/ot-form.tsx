@@ -332,14 +332,14 @@ export function OtForm({ onAddOt, onResetLast }: OtFormProps) {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-2xl text-xs font-bold text-white bg-[#FF6A13] hover:bg-[#E5590B] active:scale-[0.98] shadow-md shadow-orange-500/20 transition-all disabled:opacity-50 cursor-pointer"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-2xl text-xs font-bold text-white bg-[#019DF4] hover:bg-[#0081CB] active:scale-[0.98] shadow-md shadow-[#019DF4]/20 transition-all disabled:opacity-50 cursor-pointer"
             >
               {isSubmitting ? (
                 <span>Despachando orden...</span>
               ) : (
                 <>
                   <Send className="w-3.5 h-3.5" />
-                  <span>Generar & Despachar OT</span>
+                  <span>Generar OT</span>
                 </>
               )}
             </button>

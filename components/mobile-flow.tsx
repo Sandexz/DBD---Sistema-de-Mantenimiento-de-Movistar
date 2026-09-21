@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   MapPin,
   QrCode,
@@ -19,480 +19,823 @@ import {
   FileCheck2,
   AlertCircle,
   Smartphone,
+  Navigation,
+  Sparkles,
+  Zap,
+  Trash2,
+  Maximize2,
+  ScanLine,
 } from "lucide-react";
-import { Button } from "./ui/button";
 
 export function MobileFlow() {
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Simulated state for step actions
-  const [checkInDone, setCheckInDone] = useState(false);
-  const [materialScanned, setMaterialScanned] = useState(false);
-  const [evidenceCaptured, setEvidenceCaptured] = useState(false);
-  const [signatureDone, setSignatureDone] = useState(false);
-  const [otClosed, setOtClosed] = useState(false);
+  // Paso 1: GPS Arribo
+  const [gpsConfirmed, setGpsConfirmed] = useState(false);
 
-  // Step 1: Check-in Action
-  const handleCheckIn = () => {
+  // Paso 2: Materiales escaneados
+  const [scannedItems, setScannedItems] = useState<
+    Array<{ id: string; name: string; sn: string; category: string }>
+  >([]);
+  const [isScanningActive, setIsScanningActive] = useState(false);
+
+  // Paso 3: Evidencia y Firma
+  const [evidencePhoto, setEvidencePhoto] = useState<boolean>(false);
+  const [hasSignature, setHasSignature] = useState(false);
+  const [signerName, setSignerName] = useState("Ing. Roberto Mendoza (Supervisor Planta)");
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [isDrawing, setIsDrawing] = useState(false);
+
+  // Initialize Canvas for Signature
+  useEffect(() => {
+    if (currentStep === 3 && canvasRef.current) {
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.strokeStyle = "#0B2742";
+        ctx.lineWidth = 2.5;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+      }
+    }
+  }, [currentStep]);
+
+  // Handle Canvas Drawing (Mouse & Touch)
+  const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    setIsDrawing(true);
+    const rect = canvas.getBoundingClientRect();
+    const x = "touches" in e ? e.touches[0].clientX - rect.left : e.clientX - rect.left;
+    const y = "touches" in e ? e.touches[0].clientY - rect.top : e.clientY - rect.top;
+
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+  };
+
+  const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    if (!isDrawing) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = "touches" in e ? e.touches[0].clientX - rect.left : e.clientX - rect.left;
+    const y = "touches" in e ? e.touches[0].clientY - rect.top : e.clientY - rect.top;
+
+    ctx.lineTo(x, y);
+    ctx.stroke();
+    setHasSignature(true);
+  };
+
+  const stopDrawing = () => {
+    setIsDrawing(false);
+  };
+
+  const handleClearSignature = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    setHasSignature(false);
+  };
+
+  const handleAutoSign = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = "#0B2742";
+    ctx.lineWidth = 2.5;
+
+    // Draw realistic curve signature
+    ctx.beginPath();
+    ctx.moveTo(25, 45);
+    ctx.bezierCurveTo(45, 15, 65, 60, 95, 25);
+    ctx.bezierCurveTo(120, 10, 135, 55, 170, 35);
+    ctx.lineTo(240, 45);
+    ctx.moveTo(110, 50);
+    ctx.lineTo(210, 50);
+    ctx.stroke();
+
+    setHasSignature(true);
+  };
+
+  // Step 1: Confirmar Arribo al Sitio
+  const handleConfirmArrival = () => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      setCheckInDone(true);
+      setGpsConfirmed(true);
       setTimeout(() => {
         setCurrentStep(2);
-      }, 1000);
-    }, 800);
-  };
-
-  // Step 2: Scan Material Action
-  const handleScanCode = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      setMaterialScanned(true);
-      setTimeout(() => {
-        setCurrentStep(3);
-      }, 1000);
-    }, 800);
-  };
-
-  // Step 3: Evidencia
-  const handleCaptureEvidence = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      setEvidenceCaptured(true);
+      }, 700);
     }, 600);
   };
 
-  // Step 3: Signature
-  const handleGetSignature = () => {
+  // Step 2: Escanear Repuesto
+  const availableItemsToScan = [
+    {
+      id: "REP-01",
+      name: "Mufa Óptica 24 hilos",
+      sn: "SN: M-9921",
+      category: "Fibra Óptica FTTH",
+    },
+    {
+      id: "REP-02",
+      name: "10m Cable Drop FTTH",
+      sn: "Lote #DP-4402",
+      category: "Conectividad Planta Externa",
+    },
+    {
+      id: "REP-03",
+      name: "Conector Rápido SC/APC (x2)",
+      sn: "SN: CN-8812",
+      category: "Accesorios de Terminación",
+    },
+  ];
+
+  const handleScanRepuesto = () => {
+    setIsScanningActive(true);
+    setIsLoading(true);
+
+    setTimeout(() => {
+      setIsLoading(false);
+      setIsScanningActive(false);
+
+      if (scannedItems.length === 0) {
+        setScannedItems([availableItemsToScan[0]]);
+      } else if (scannedItems.length === 1) {
+        setScannedItems([availableItemsToScan[0], availableItemsToScan[1]]);
+      } else if (scannedItems.length === 2) {
+        setScannedItems(availableItemsToScan);
+      }
+    }, 700);
+  };
+
+  // Step 3: Simular Foto OTDR
+  const handleSimulatePhoto = () => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      setSignatureDone(true);
-    }, 600);
+      setEvidencePhoto(true);
+    }, 500);
   };
 
-  // Step 3: Close OT
-  const handleCloseOt = () => {
+  // Step 3: Cerrar y Despachar OT
+  const handleCloseAndDispatch = () => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      setOtClosed(true);
-      setCurrentStep(4); // Summary / Success
-    }, 900);
+      setCurrentStep(4);
+    }, 800);
   };
 
-  const handleResetFlow = () => {
+  // Step 4: Reiniciar Simulación
+  const handleReset = () => {
     setCurrentStep(1);
-    setCheckInDone(false);
-    setMaterialScanned(false);
-    setEvidenceCaptured(false);
-    setSignatureDone(false);
-    setOtClosed(false);
+    setGpsConfirmed(false);
+    setScannedItems([]);
+    setEvidencePhoto(false);
+    setHasSignature(false);
   };
 
   return (
     <div className="flex flex-col items-center justify-center w-full">
-      {/* Mobile Device Frame Mockup for testing and outdoor visual preview */}
-      <div className="w-full max-w-[420px] bg-white text-slate-900 rounded-3xl shadow-2xl border-4 border-slate-700 overflow-hidden flex flex-col min-h-[720px] font-sans">
-        {/* Mobile Status Bar (Theme: White/Outdoor) */}
-        <div className="bg-slate-900 text-white px-5 py-2 flex items-center justify-between text-xs font-mono select-none">
-          <span className="font-bold">14:32</span>
+      {/* Smartphone Outer Shell */}
+      <div className="w-full max-w-[420px] bg-white rounded-[40px] shadow-2xl border-[8px] border-[#0B2742] overflow-hidden flex flex-col min-h-[760px] font-sans relative ring-1 ring-black/10">
+        {/* Mobile Top Speaker & Camera Notch */}
+        <div className="bg-[#0B2742] text-white px-6 pt-3 pb-2 flex items-center justify-between text-xs font-mono select-none">
+          <span className="font-bold tracking-tight text-slate-100">09:41</span>
+          {/* Hardware Dynamic Island Notch */}
+          <div className="w-20 h-3.5 bg-black/70 rounded-full flex items-center justify-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#019DF4]/60" />
+            <span className="w-2 h-2 rounded-full bg-slate-800" />
+          </div>
           <div className="flex items-center gap-2">
-            <Signal className="w-3.5 h-3.5 text-white" />
+            <Signal className="w-3.5 h-3.5 text-[#019DF4]" />
             <Wifi className="w-3.5 h-3.5 text-white" />
-            <span className="text-[10px]">98%</span>
-            <Battery className="w-4 h-4 text-emerald-400" />
+            <Battery className="w-4 h-4 text-[#00A86B]" />
           </div>
         </div>
 
-        {/* Mobile Header: SGMR Campo */}
-        <div className="bg-[#0A2E5C] text-white px-4 py-3 border-b border-[#061D3A] flex items-center justify-between shadow-md">
-          <div className="flex items-center gap-2">
-            <div className="p-1 bg-white/10 rounded">
-              <HardHat className="w-4 h-4 text-[#00AEEF]" />
-            </div>
-            <div>
-              <h1 className="text-sm font-bold font-grotesk tracking-wide leading-none">
-                SGMR Móvil Campo
-              </h1>
-              <span className="text-[10px] text-slate-300 font-mono">
-                Téc. Luis Ramos (Cuadrilla Alfa 01)
-              </span>
-            </div>
-          </div>
-          <span className="text-[10px] font-mono bg-[#00AEEF] text-[#061D3A] px-2 py-0.5 rounded-full font-bold">
-            4G OK
-          </span>
-        </div>
-
-        {/* 3-Step Progress Indicator Bar (Required Specification) */}
-        <div className="bg-slate-100 border-b border-slate-200 px-4 py-3">
+        {/* Encabezado Corporativo Movistar Campo */}
+        <div className="bg-[#0B2742] text-white px-5 py-3 border-b border-[#019DF4]/30 shadow-md">
           <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded-lg bg-[#019DF4] text-white flex items-center justify-center font-bold text-xs shadow-sm">
+                M
+              </div>
+              <div>
+                <h1 className="text-sm font-bold font-grotesk tracking-wide leading-tight text-white">
+                  Movistar Campo - OT #89421
+                </h1>
+                <p className="text-[10px] text-slate-300 font-mono">
+                  Cuadrilla Alfa 01 · Téc. Diego Quispe
+                </p>
+              </div>
+            </div>
+
+            {/* Badge de Estado: EN PROGRESO */}
+            <span className="inline-flex items-center gap-1.5 bg-[#019DF4]/20 border border-[#019DF4] text-[#019DF4] px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono uppercase">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#019DF4] animate-pulse" />
+              EN PROGRESO
+            </span>
+          </div>
+        </div>
+
+        {/* Barra de Progreso de 4 Pasos */}
+        <div className="bg-[#F4F6F9] border-b border-slate-200 px-4 py-3">
+          <div className="flex items-center justify-between relative">
             {/* Step 1 */}
-            <div className="flex flex-col items-center flex-1">
+            <div className="flex flex-col items-center flex-1 z-10">
               <div
                 className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold font-mono transition-all ${
-                  currentStep > 1 || checkInDone
-                    ? "bg-emerald-600 text-white"
+                  currentStep > 1 || gpsConfirmed
+                    ? "bg-[#00A86B] text-white shadow-sm"
                     : currentStep === 1
-                    ? "bg-[#0A2E5C] text-white ring-2 ring-[#00AEEF]"
+                    ? "bg-[#0B2742] text-white ring-2 ring-[#019DF4]"
                     : "bg-slate-300 text-slate-600"
                 }`}
               >
-                {currentStep > 1 || checkInDone ? <Check className="w-4 h-4" /> : "1"}
+                {currentStep > 1 || gpsConfirmed ? (
+                  <Check className="w-4 h-4" />
+                ) : (
+                  "1"
+                )}
               </div>
-              <span className="text-[10px] font-bold mt-1 text-slate-700">
+              <span className="text-[9px] font-bold mt-1 text-slate-700">
                 1. Llegada
               </span>
             </div>
 
             <div
-              className={`h-0.5 flex-1 mx-1 ${
-                currentStep > 1 ? "bg-emerald-600" : "bg-slate-300"
+              className={`h-0.5 flex-1 mx-0.5 -mt-3 transition-colors ${
+                currentStep > 1 ? "bg-[#00A86B]" : "bg-slate-300"
               }`}
             />
 
             {/* Step 2 */}
-            <div className="flex flex-col items-center flex-1">
+            <div className="flex flex-col items-center flex-1 z-10">
               <div
                 className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold font-mono transition-all ${
-                  currentStep > 2 || materialScanned
-                    ? "bg-emerald-600 text-white"
+                  currentStep > 2 || scannedItems.length >= 2
+                    ? "bg-[#00A86B] text-white shadow-sm"
                     : currentStep === 2
-                    ? "bg-[#0A2E5C] text-white ring-2 ring-[#00AEEF]"
+                    ? "bg-[#0B2742] text-white ring-2 ring-[#019DF4]"
                     : "bg-slate-300 text-slate-600"
                 }`}
               >
-                {currentStep > 2 || materialScanned ? <Check className="w-4 h-4" /> : "2"}
+                {currentStep > 2 || scannedItems.length >= 2 ? (
+                  <Check className="w-4 h-4" />
+                ) : (
+                  "2"
+                )}
               </div>
-              <span className="text-[10px] font-bold mt-1 text-slate-700">
+              <span className="text-[9px] font-bold mt-1 text-slate-700">
                 2. Material
               </span>
             </div>
 
             <div
-              className={`h-0.5 flex-1 mx-1 ${
-                currentStep > 2 ? "bg-emerald-600" : "bg-slate-300"
+              className={`h-0.5 flex-1 mx-0.5 -mt-3 transition-colors ${
+                currentStep > 2 ? "bg-[#00A86B]" : "bg-slate-300"
               }`}
             />
 
             {/* Step 3 */}
-            <div className="flex flex-col items-center flex-1">
+            <div className="flex flex-col items-center flex-1 z-10">
               <div
                 className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold font-mono transition-all ${
-                  otClosed
-                    ? "bg-emerald-600 text-white"
+                  currentStep > 3
+                    ? "bg-[#00A86B] text-white shadow-sm"
                     : currentStep === 3
-                    ? "bg-[#0A2E5C] text-white ring-2 ring-[#00AEEF]"
+                    ? "bg-[#0B2742] text-white ring-2 ring-[#019DF4]"
                     : "bg-slate-300 text-slate-600"
                 }`}
               >
-                {otClosed ? <Check className="w-4 h-4" /> : "3"}
+                {currentStep > 3 ? <Check className="w-4 h-4" /> : "3"}
               </div>
-              <span className="text-[10px] font-bold mt-1 text-slate-700">
+              <span className="text-[9px] font-bold mt-1 text-slate-700">
                 3. Cierre
+              </span>
+            </div>
+
+            <div
+              className={`h-0.5 flex-1 mx-0.5 -mt-3 transition-colors ${
+                currentStep === 4 ? "bg-[#00A86B]" : "bg-slate-300"
+              }`}
+            />
+
+            {/* Step 4 */}
+            <div className="flex flex-col items-center flex-1 z-10">
+              <div
+                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold font-mono transition-all ${
+                  currentStep === 4
+                    ? "bg-[#00A86B] text-white ring-2 ring-[#00A86B]/40 shadow-sm"
+                    : "bg-slate-300 text-slate-600"
+                }`}
+              >
+                {currentStep === 4 ? <Check className="w-4 h-4" /> : "4"}
+              </div>
+              <span className="text-[9px] font-bold mt-1 text-slate-700">
+                4. Éxito
               </span>
             </div>
           </div>
         </div>
 
-        {/* OT Context Card Info */}
-        <div className="bg-slate-50 border-b border-slate-200 p-3 text-xs">
+        {/* Sub-header de Orden (Fondo blanco de alto contraste) */}
+        <div className="bg-white border-b border-slate-100 p-3.5 text-xs">
           <div className="flex items-center justify-between">
-            <span className="font-mono font-bold text-[#0A2E5C] text-sm">
-              OT-2026-9041
+            <span className="font-mono font-bold text-[#0B2742] text-sm">
+              OT #89421 — FTTH / HFC
             </span>
-            <span className="bg-[#FF6A13] text-white font-mono text-[10px] font-bold px-2 py-0.5 rounded">
-              CRITICIDAD ALTA
+            <span className="bg-[#019DF4]/10 text-[#019DF4] border border-[#019DF4]/40 font-mono text-[10px] font-bold px-2 py-0.5 rounded-full">
+              SLA: 120 MIN
             </span>
           </div>
-          <p className="text-slate-600 text-xs font-medium mt-1">
-            Infraestructura: <strong className="text-slate-800">POP-03 / ODF Troncal 96FO</strong>
+          <p className="text-slate-600 text-xs mt-1">
+            Destino: <strong className="text-[#0B2742]">Nodo NOD-CARABAYLLO-04</strong>
           </p>
           <p className="text-[11px] text-slate-500 font-mono">
-            Ubicación: Av. Panamericana Km 18.5
+            Ubicación: Av. Túpac Amaru Km 21.5 · Carabayllo, Lima
           </p>
         </div>
 
-        {/* Dynamic Step Content Container */}
-        <div className="flex-1 p-4 flex flex-col justify-between space-y-4 bg-white">
-          {/* ================= STEP 1: LLEGADA ================= */}
+        {/* Dynamic Step Content Container (White Background #FFFFFF) */}
+        <div className="flex-1 p-4 flex flex-col justify-between space-y-4 bg-white text-slate-800">
+          {/* =========================================================================
+              PASO 1: LLEGADA GPS
+          ========================================================================= */}
           {currentStep === 1 && (
             <div className="space-y-4 flex-1 flex flex-col justify-between">
               <div className="space-y-3">
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 flex items-start gap-3">
-                  <MapPin className="w-6 h-6 text-[#00AEEF] shrink-0 mt-0.5" />
-                  <div>
-                    <h3 className="font-bold text-sm text-[#0A2E5C] font-grotesk">
-                      Paso 1: Confirmación de Arribo
-                    </h3>
-                    <p className="text-xs text-slate-600 mt-0.5">
-                      Verifica que te encuentras a menos de 50 metros del nodo según el GPS simulado.
+                {/* Simulated GPS Map */}
+                <div className="relative w-full h-48 bg-slate-900 rounded-2xl overflow-hidden border border-slate-200 shadow-inner">
+                  {/* Vectorial Map Background */}
+                  <svg
+                    className="w-full h-full opacity-60"
+                    viewBox="0 0 400 200"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    {/* Street Grids */}
+                    <path
+                      d="M0 40 H400 M0 100 H400 M0 160 H400"
+                      stroke="#1E3A5F"
+                      strokeWidth="2"
+                    />
+                    <path
+                      d="M60 0 V200 M160 0 V200 M260 0 V200 M360 0 V200"
+                      stroke="#1E3A5F"
+                      strokeWidth="2"
+                    />
+                    {/* Diagonal Avenue */}
+                    <path
+                      d="M-20 180 L280 20 L420 80"
+                      stroke="#019DF4"
+                      strokeWidth="3"
+                      strokeDasharray="6 4"
+                    />
+                    {/* Concentric GPS Radar Rings */}
+                    <circle
+                      cx="210"
+                      cy="95"
+                      r="45"
+                      stroke="#00A86B"
+                      strokeWidth="1.5"
+                      strokeDasharray="3 3"
+                    />
+                    <circle
+                      cx="210"
+                      cy="95"
+                      r="25"
+                      stroke="#00A86B"
+                      strokeWidth="1.5"
+                    />
+                  </svg>
+
+                  {/* Target Node Pin (NOD-CARABAYLLO-04) */}
+                  <div className="absolute top-[80px] left-[195px] flex flex-col items-center">
+                    <div className="w-8 h-8 rounded-full bg-[#0B2742] border-2 border-[#019DF4] flex items-center justify-center text-white shadow-lg animate-pulse">
+                      <MapPin className="w-4 h-4 text-[#019DF4]" />
+                    </div>
+                    <span className="text-[9px] font-bold font-mono bg-[#0B2742] text-white px-2 py-0.5 rounded shadow mt-0.5 whitespace-nowrap">
+                      NOD-CARABAYLLO-04
+                    </span>
+                  </div>
+
+                  {/* Technician Location Pin */}
+                  <div className="absolute top-[105px] left-[165px] flex items-center gap-1 bg-[#00A86B] text-white px-2 py-0.5 rounded-full text-[10px] font-bold shadow-md">
+                    <span className="w-2 h-2 rounded-full bg-white animate-ping" />
+                    <span>Técnico (Tú)</span>
+                  </div>
+
+                  {/* Telemetry HUD Badge */}
+                  <div className="absolute top-2.5 left-2.5 bg-black/80 backdrop-blur-md px-2.5 py-1 rounded-lg text-[10px] font-mono text-slate-200 border border-white/10">
+                    <span className="text-[#019DF4] font-bold">WGS-84:</span> -11.8542, -77.0345
+                  </div>
+                  <div className="absolute bottom-2.5 right-2.5 bg-[#0B2742]/90 backdrop-blur-md px-2 py-0.5 rounded text-[10px] font-mono text-white">
+                    Distancia: <span className="text-[#00A86B] font-bold">12 m</span>
+                  </div>
+                </div>
+
+                {/* Alerta Verde de Validación */}
+                <div className="p-3 bg-[#E6F6F0] border-2 border-[#00A86B] rounded-2xl flex items-start gap-2.5 text-[#00A86B] shadow-sm animate-in fade-in">
+                  <CheckCircle2 className="w-5 h-5 text-[#00A86B] shrink-0 mt-0.5" />
+                  <div className="text-xs">
+                    <p className="font-bold font-grotesk text-[#00A86B]">
+                      ✓ GPS Validado: Estás a 12 metros del Nodo NOD-CARABAYLLO-04
+                    </p>
+                    <p className="text-[11px] text-slate-600 mt-0.5">
+                      Coordenadas satelitales en rango de tolerancia (&lt; 50m). Autorizado para iniciar trabajos.
                     </p>
                   </div>
                 </div>
 
-                {/* Simulated GPS Status box */}
-                <div className="border border-slate-200 rounded-xl p-3 bg-slate-50 text-xs space-y-1.5 font-mono">
+                {/* Info Card */}
+                <div className="p-3 bg-[#F4F6F9] rounded-xl border border-slate-200 text-xs font-mono space-y-1">
                   <div className="flex justify-between text-slate-600">
-                    <span>GPS Telemetría:</span>
-                    <span className="text-emerald-600 font-bold">PRECISIÓN ALTA (3m)</span>
+                    <span>Precisión del Dispositivo:</span>
+                    <span className="text-[#00A86B] font-bold">ALTA (±2.8m)</span>
                   </div>
                   <div className="flex justify-between text-slate-600">
-                    <span>Coordenadas:</span>
-                    <span className="text-slate-800">-12.0463, -77.0427</span>
-                  </div>
-                  <div className="flex justify-between text-slate-600">
-                    <span>Distancia al POP:</span>
-                    <span className="text-slate-800 font-bold">12 metros (En rango)</span>
+                    <span>Hora Check-in:</span>
+                    <span className="text-slate-800 font-bold">{new Date().toLocaleTimeString()}</span>
                   </div>
                 </div>
-
-                {checkInDone && (
-                  <div className="p-3 bg-emerald-50 border border-emerald-300 rounded-xl flex items-center gap-2 text-emerald-800 text-xs font-bold animate-in fade-in">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-                    <span>Check-in exitoso. Avanzando al Paso 2...</span>
-                  </div>
-                )}
               </div>
 
-              {/* Step 1 Action Button */}
+              {/* Botón Interactivo: Confirmar Arribo al Sitio */}
               <button
                 type="button"
-                onClick={handleCheckIn}
-                disabled={isLoading || checkInDone}
-                className="w-full py-3.5 px-4 bg-[#0A2E5C] hover:bg-[#144585] text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 text-sm transition-all active:scale-[0.98] disabled:opacity-50"
+                onClick={handleConfirmArrival}
+                disabled={isLoading || gpsConfirmed}
+                className="w-full py-3.5 px-4 bg-[#0B2742] hover:bg-[#061625] text-white font-bold rounded-2xl shadow-lg shadow-[#0B2742]/20 flex items-center justify-center gap-2 text-sm transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer"
               >
                 {isLoading ? (
-                  <span>Registrando GPS...</span>
-                ) : checkInDone ? (
-                  <span>✓ Check-in Realizado</span>
+                  <span>Registrando coordenadas en NOC...</span>
+                ) : gpsConfirmed ? (
+                  <span className="flex items-center gap-1.5 text-white">
+                    <Check className="w-4 h-4 text-[#00A86B]" /> Arribo Confirmado
+                  </span>
                 ) : (
                   <>
-                    <MapPin className="w-4 h-4 text-[#00AEEF]" />
-                    <span>Marcar llegada (Check-in)</span>
+                    <Navigation className="w-4 h-4 text-[#019DF4]" />
+                    <span>Confirmar Arribo al Sitio</span>
                   </>
                 )}
               </button>
             </div>
           )}
 
-          {/* ================= STEP 2: MATERIAL ================= */}
+          {/* =========================================================================
+              PASO 2: MATERIALES Y REPUESTOS
+          ========================================================================= */}
           {currentStep === 2 && (
             <div className="space-y-4 flex-1 flex flex-col justify-between">
               <div className="space-y-3">
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 flex items-start gap-3">
-                  <QrCode className="w-6 h-6 text-[#00AEEF] shrink-0 mt-0.5" />
-                  <div>
-                    <h3 className="font-bold text-sm text-[#0A2E5C] font-grotesk">
-                      Paso 2: Asignación de Material
-                    </h3>
-                    <p className="text-xs text-slate-600 mt-0.5">
-                      Escanea el código de barras/QR de los repuestos utilizados para descontar del stock de cuadrilla.
-                    </p>
-                  </div>
-                </div>
+                {/* Recuadro simulador de escáner QR/Código de Barras con animación */}
+                <div className="border-2 border-slate-300 bg-slate-900 rounded-2xl p-4 flex flex-col items-center justify-center text-center relative overflow-hidden h-48 shadow-inner">
+                  {/* Visor de Cámara con esquinas */}
+                  <div className="w-36 h-36 border-2 border-[#019DF4] rounded-xl relative flex items-center justify-center bg-black/40">
+                    {/* Animated Scanning Laser Beam */}
+                    <div className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#019DF4] to-transparent shadow-[0_0_12px_#019DF4] animate-scan-beam" />
 
-                {/* Simulated Scanner viewfinder placeholder */}
-                <div className="border-2 border-dashed border-slate-300 bg-slate-50 rounded-xl p-4 flex flex-col items-center justify-center text-center space-y-2">
-                  <div className="w-20 h-20 border-2 border-[#00AEEF] rounded-lg relative flex items-center justify-center bg-white shadow-inner">
-                    <div className="w-16 h-0.5 bg-[#FF6A13] animate-pulse" />
-                    <Package className="w-8 h-8 text-slate-400" />
+                    {/* Viewfinder Target Icon */}
+                    <QrCode className="w-16 h-16 text-white/50" />
+
+                    {/* Viewfinder Corner Brackets */}
+                    <div className="absolute top-1 left-1 w-3 h-3 border-t-2 border-l-2 border-white" />
+                    <div className="absolute top-1 right-1 w-3 h-3 border-t-2 border-r-2 border-white" />
+                    <div className="absolute bottom-1 left-1 w-3 h-3 border-b-2 border-l-2 border-white" />
+                    <div className="absolute bottom-1 right-1 w-3 h-3 border-b-2 border-r-2 border-white" />
                   </div>
-                  <p className="text-[11px] font-mono text-slate-500">
-                    Cámara Scanner QR/Barcode (Simulación)
+
+                  <p className="text-[11px] font-mono text-slate-300 mt-2 flex items-center gap-1.5">
+                    <ScanLine className="w-3.5 h-3.5 text-[#019DF4] animate-pulse" />
+                    <span>Apunta la cámara al código de barras o QR</span>
                   </p>
                 </div>
 
-                {materialScanned && (
-                  <div className="p-3 bg-emerald-50 border border-emerald-300 rounded-xl flex items-center gap-2 text-emerald-800 text-xs font-bold animate-in fade-in">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-                    <div>
-                      <p>Material asignado correctamente:</p>
-                      <p className="font-mono text-[11px] font-normal text-emerald-700">
-                        • Mufa 48FO 3M (SN: #MUF-9982)
-                        <br />• Pigtail SC/APC x4 (Lote #L-204)
-                      </p>
+                {/* Botón "Escanear Repuesto" */}
+                <button
+                  type="button"
+                  onClick={handleScanRepuesto}
+                  disabled={isLoading || scannedItems.length >= 3}
+                  className="w-full py-2.5 px-4 bg-[#019DF4] hover:bg-[#0081CB] text-white font-bold rounded-xl shadow-md flex items-center justify-center gap-2 text-xs transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer"
+                >
+                  <QrCode className="w-4 h-4" />
+                  <span>
+                    {isLoading
+                      ? "Procesando código de barras..."
+                      : scannedItems.length === 0
+                      ? "Escanear Repuesto (Mufa Óptica 24 hilos)"
+                      : scannedItems.length === 1
+                      ? "Escanear Siguiente Repuesto (Cable Drop)"
+                      : "Escanear Repuesto Adicional"}
+                  </span>
+                </button>
+
+                {/* Lista de Repuestos Escaneados */}
+                <div className="space-y-2">
+                  <span className="text-[11px] font-mono uppercase tracking-wider text-slate-500 block font-bold">
+                    Materiales Escaneados ({scannedItems.length}):
+                  </span>
+
+                  {scannedItems.length === 0 ? (
+                    <div className="p-3 bg-slate-50 border border-dashed border-slate-300 rounded-xl text-center text-xs text-slate-400">
+                      Ningún repuesto escaneado aún. Pulsa el botón superior para registrar.
                     </div>
+                  ) : (
+                    scannedItems.map((item, idx) => (
+                      <div
+                        key={idx}
+                        className="p-2.5 bg-[#F4F6F9] border border-slate-200 rounded-xl flex items-center justify-between text-xs animate-in fade-in"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Package className="w-4 h-4 text-[#019DF4]" />
+                          <div>
+                            <p className="font-bold text-[#0B2742]">{item.name}</p>
+                            <p className="text-[10px] font-mono text-slate-500">
+                              {item.sn} · {item.category}
+                            </p>
+                          </div>
+                        </div>
+                        <span className="text-[10px] font-bold text-[#00A86B] bg-[#E6F6F0] px-2 py-0.5 rounded-full">
+                          ✓ OK
+                        </span>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {/* Alerta Verde de Validación de Stock */}
+                {scannedItems.length > 0 && (
+                  <div className="p-2.5 bg-[#E6F6F0] border border-[#00A86B] rounded-xl flex items-center gap-2 text-[#00A86B] text-xs font-bold animate-in fade-in">
+                    <CheckCircle2 className="w-4 h-4 shrink-0 text-[#00A86B]" />
+                    <span>✓ Stock verificado en camioneta del técnico</span>
                   </div>
                 )}
               </div>
 
-              {/* Step 2 Action Button */}
+              {/* Botón: Continuar a Evidencia */}
               <button
                 type="button"
-                onClick={handleScanCode}
-                disabled={isLoading || materialScanned}
-                className="w-full py-3.5 px-4 bg-[#0A2E5C] hover:bg-[#144585] text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 text-sm transition-all active:scale-[0.98] disabled:opacity-50"
+                onClick={() => setCurrentStep(3)}
+                disabled={scannedItems.length === 0}
+                className="w-full py-3.5 px-4 bg-[#0B2742] hover:bg-[#061625] text-white font-bold rounded-2xl shadow-lg flex items-center justify-center gap-2 text-sm transition-all active:scale-[0.98] disabled:opacity-40 cursor-pointer"
               >
-                {isLoading ? (
-                  <span>Leyendo código...</span>
-                ) : materialScanned ? (
-                  <span>✓ Material Registrado</span>
-                ) : (
-                  <>
-                    <QrCode className="w-4 h-4 text-[#00AEEF]" />
-                    <span>Escanear código de material</span>
-                  </>
-                )}
+                <span>Continuar a Evidencia</span>
+                <ArrowRight className="w-4 h-4 text-[#019DF4]" />
               </button>
             </div>
           )}
 
-          {/* ================= STEP 3: EVIDENCIA, FIRMA & CIERRE ================= */}
+          {/* =========================================================================
+              PASO 3: CIERRE Y EVIDENCIA
+          ========================================================================= */}
           {currentStep === 3 && (
-            <div className="space-y-3 flex-1 flex flex-col justify-between">
-              <div className="space-y-2.5">
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 flex items-start gap-3">
-                  <FileCheck2 className="w-6 h-6 text-[#00AEEF] shrink-0 mt-0.5" />
-                  <div>
-                    <h3 className="font-bold text-sm text-[#0A2E5C] font-grotesk">
-                      Paso 3: Evidencias y Cierre de OT
-                    </h3>
-                    <p className="text-xs text-slate-600 mt-0.5">
-                      Adjunta la foto de la mufa fusionada y la firma de conformidad del cliente/supervisor.
-                    </p>
+            <div className="space-y-3.5 flex-1 flex flex-col justify-between">
+              <div className="space-y-3">
+                {/* 1. Subida de Foto de Evidencia (Fusión OTDR) */}
+                <div className="border border-slate-200 rounded-2xl p-3 bg-slate-50">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-bold text-xs text-[#0B2742] flex items-center gap-1.5">
+                      <Camera className="w-4 h-4 text-[#019DF4]" />
+                      Evidencia de Trabajo (Fusión OTDR)
+                    </span>
+                    {evidencePhoto ? (
+                      <span className="text-[10px] font-mono font-bold text-[#00A86B] bg-[#E6F6F0] px-2 py-0.5 rounded-full">
+                        ✓ FOTO ADJUNTA
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-mono text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
+                        Pendiente
+                      </span>
+                    )}
                   </div>
-                </div>
 
-                {/* Sub-action 1: Foto Evidencia */}
-                <div className="border border-slate-200 rounded-xl p-2.5 bg-slate-50 flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-xs">
-                    <Camera className="w-4 h-4 text-[#0A2E5C]" />
-                    <span className="font-semibold text-slate-800">
-                      Foto de Fusión OTDR
-                    </span>
-                  </div>
-                  {evidenceCaptured ? (
-                    <span className="text-xs font-bold text-emerald-600 font-mono flex items-center gap-1">
-                      <Check className="w-3.5 h-3.5" /> 1 Foto Lista
-                    </span>
+                  {evidencePhoto ? (
+                    <div className="p-2.5 bg-white border border-[#00A86B]/40 rounded-xl flex items-center gap-3">
+                      <div className="w-14 h-14 bg-slate-800 rounded-lg flex items-center justify-center relative overflow-hidden shrink-0 border border-slate-700">
+                        {/* Simulated OTDR curve */}
+                        <svg className="w-full h-full p-1" viewBox="0 0 50 50">
+                          <polyline
+                            points="5,40 15,25 25,25 35,10 45,10"
+                            fill="none"
+                            stroke="#00A86B"
+                            strokeWidth="2"
+                          />
+                        </svg>
+                        <span className="absolute bottom-0.5 right-0.5 text-[8px] font-mono text-white bg-black/60 px-1 rounded">
+                          OTDR
+                        </span>
+                      </div>
+                      <div className="text-xs space-y-0.5">
+                        <p className="font-bold text-[#0B2742]">Fusión_FO_OTDR_0942.jpg</p>
+                        <p className="text-[11px] font-mono text-[#00A86B] font-semibold">
+                          Atenuación: 0.02 dB (Conforme &lt; 0.05)
+                        </p>
+                        <p className="text-[10px] text-slate-400 font-mono">
+                          Longitud de Onda: 1310 / 1550nm
+                        </p>
+                      </div>
+                    </div>
                   ) : (
                     <button
                       type="button"
-                      onClick={handleCaptureEvidence}
-                      className="px-2.5 py-1 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded text-xs font-medium"
+                      onClick={handleSimulatePhoto}
+                      disabled={isLoading}
+                      className="w-full py-2.5 px-3 border border-dashed border-[#019DF4] bg-[#019DF4]/5 hover:bg-[#019DF4]/10 rounded-xl text-xs font-semibold text-[#019DF4] flex items-center justify-center gap-2 transition-colors cursor-pointer"
                     >
-                      Capturar evidencia
+                      <Camera className="w-4 h-4" />
+                      <span>{isLoading ? "Cargando archivo..." : "Tomar Foto de Fusión OTDR"}</span>
                     </button>
                   )}
                 </div>
 
-                {/* Sub-action 2: Firma */}
-                <div className="border border-slate-200 rounded-xl p-2.5 bg-slate-50 flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-xs">
-                    <PenTool className="w-4 h-4 text-[#0A2E5C]" />
-                    <span className="font-semibold text-slate-800">
-                      Firma de Conformidad
+                {/* 2. Área de Firma Digital (HTML5 Canvas Interactivo) */}
+                <div className="border border-slate-200 rounded-2xl p-3 bg-slate-50 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-xs text-[#0B2742] flex items-center gap-1.5">
+                      <PenTool className="w-4 h-4 text-[#019DF4]" />
+                      Firma Digital del Cliente / Supervisor
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={handleClearSignature}
+                        title="Borrar Firma"
+                        className="text-slate-400 hover:text-slate-700 p-1 rounded hover:bg-slate-200 text-[10px] font-mono"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleAutoSign}
+                        className="text-[10px] font-mono font-bold text-[#019DF4] hover:underline"
+                      >
+                        Auto-Firma
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Canvas Pad */}
+                  <div className="bg-white border border-slate-300 rounded-xl overflow-hidden shadow-inner relative">
+                    <canvas
+                      ref={canvasRef}
+                      width={340}
+                      height={90}
+                      onMouseDown={startDrawing}
+                      onMouseMove={draw}
+                      onMouseUp={stopDrawing}
+                      onMouseLeave={stopDrawing}
+                      onTouchStart={startDrawing}
+                      onTouchMove={draw}
+                      onTouchEnd={stopDrawing}
+                      className="w-full h-[90px] cursor-crosshair touch-none"
+                    />
+                    {!hasSignature && (
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-slate-300 text-xs font-mono">
+                        Dibuja tu firma aquí con mouse o dedo
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-between text-[10px] font-mono text-slate-500">
+                    <span>Firmante: {signerName}</span>
+                    <span className={hasSignature ? "text-[#00A86B] font-bold" : "text-amber-600"}>
+                      {hasSignature ? "✓ Firma Registrada" : "Falta Firma"}
                     </span>
                   </div>
-                  {signatureDone ? (
-                    <span className="text-xs font-bold text-emerald-600 font-mono flex items-center gap-1">
-                      <Check className="w-3.5 h-3.5" /> Firmado
-                    </span>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={handleGetSignature}
-                      className="px-2.5 py-1 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded text-xs font-medium"
-                    >
-                      Obtener firma
-                    </button>
-                  )}
                 </div>
 
-                {/* Summary checklist */}
-                <div className="p-2.5 bg-slate-100 rounded-xl text-[11px] font-mono text-slate-600 space-y-1">
+                {/* Resumen Checklist */}
+                <div className="p-2.5 bg-[#F4F6F9] rounded-xl text-[11px] font-mono text-slate-600 space-y-1">
                   <div className="flex justify-between">
-                    <span>Arribo validado:</span>
-                    <span className="text-emerald-700 font-bold">SÍ (GPS)</span>
+                    <span>GPS Arribo Validado:</span>
+                    <span className="text-[#00A86B] font-bold">12m (OK)</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Materiales descargados:</span>
-                    <span className="text-emerald-700 font-bold">2 ÍTEMS</span>
+                    <span>Repuestos Consumidos:</span>
+                    <span className="text-[#00A86B] font-bold">
+                      {scannedItems.length} ítems liquidados
+                    </span>
                   </div>
                   <div className="flex justify-between">
-                    <span>SLA Cumplido:</span>
-                    <span className="text-emerald-700 font-bold">1h 12m / 2h 00m</span>
+                    <span>SLA Consumido:</span>
+                    <span className="text-[#00A86B] font-bold">34 min / 120 min</span>
                   </div>
                 </div>
               </div>
 
-              {/* Close OT Action Button */}
+              {/* Botón Principal: Cerrar y Despachar OT */}
               <button
                 type="button"
-                onClick={handleCloseOt}
-                disabled={isLoading || !evidenceCaptured || !signatureDone}
-                className="w-full py-3.5 px-4 bg-[#FF6A13] hover:bg-[#E5590B] text-white font-bold rounded-xl shadow-lg shadow-[#FF6A13]/25 flex items-center justify-center gap-2 text-sm transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
+                onClick={handleCloseAndDispatch}
+                disabled={isLoading || !evidencePhoto || !hasSignature}
+                className="w-full py-3.5 px-4 bg-[#00A86B] hover:bg-[#008f5b] text-white font-bold rounded-2xl shadow-lg shadow-[#00A86B]/25 flex items-center justify-center gap-2 text-sm transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
               >
                 {isLoading ? (
-                  <span>Sincronizando cierre con NOC...</span>
+                  <span>Sincronizando cierre con NOC Movistar...</span>
                 ) : (
                   <>
                     <FileCheck2 className="w-4 h-4" />
-                    <span>Cerrar OT #OT-2026-9041</span>
+                    <span>Cerrar y Despachar OT</span>
                   </>
                 )}
               </button>
             </div>
           )}
 
-          {/* ================= STEP 4: FINALIZADO / SUCCESS ================= */}
+          {/* =========================================================================
+              PASO 4: ÉXITO
+          ========================================================================= */}
           {currentStep === 4 && (
             <div className="space-y-4 flex-1 flex flex-col items-center justify-center text-center p-4">
-              <div className="w-16 h-16 rounded-full bg-emerald-100 border-2 border-emerald-500 text-emerald-600 flex items-center justify-center animate-bounce">
-                <Check className="w-8 h-8" />
+              {/* Ícono gigante de verificación verde */}
+              <div className="w-20 h-20 rounded-full bg-[#E6F6F0] border-4 border-[#00A86B] text-[#00A86B] flex items-center justify-center shadow-lg animate-bounce">
+                <Check className="w-10 h-10 stroke-[3]" />
               </div>
-              <div>
-                <h3 className="text-lg font-bold text-[#0A2E5C] font-grotesk">
-                  ¡Orden de Trabajo Cerrada!
+
+              <div className="space-y-1">
+                <h3 className="text-xl font-extrabold text-[#0B2742] font-grotesk tracking-tight">
+                  ¡Orden de Trabajo Cerrada / Conforme!
                 </h3>
-                <p className="text-xs text-slate-600 mt-1">
-                  El ticket ha sido liquidado en el sistema con SLA conforme.
+                <p className="text-xs text-slate-600">
+                  La orden ha sido liquidada en el sistema central de Movistar Perú con SLA óptimo.
                 </p>
-                <div className="mt-3 p-3 bg-slate-100 rounded-xl text-xs font-mono text-slate-700 text-left space-y-1">
-                  <p>• Folio: OT-2026-9041</p>
-                  <p>• Estado: CONFORME / LIQUIDADO</p>
-                  <p>• Notificación enviada al NOC</p>
+              </div>
+
+              {/* Resumen del Tiempo de Atención */}
+              <div className="w-full bg-[#F4F6F9] border border-slate-200 rounded-2xl p-4 text-xs font-mono text-left space-y-2">
+                <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                  <span className="text-slate-500">Tiempo de Atención:</span>
+                  <span className="text-base font-bold text-[#00A86B]">34 min</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500">Folio:</span>
+                  <span className="text-slate-800 font-bold">OT #89421</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500">Nodo:</span>
+                  <span className="text-slate-800 font-bold">NOD-CARABAYLLO-04</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500">Materiales Asignados:</span>
+                  <span className="text-[#019DF4] font-bold">
+                    {scannedItems.length || 2} repuestos descargados
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500">Estado de Liquidación:</span>
+                  <span className="text-[#00A86B] font-bold">LIQUIDADO / CONFORME</span>
                 </div>
               </div>
 
+              {/* Botón para Reiniciar Simulación */}
               <button
                 type="button"
-                onClick={handleResetFlow}
-                className="w-full py-2.5 px-4 bg-slate-800 hover:bg-slate-900 text-white font-medium rounded-xl text-xs flex items-center justify-center gap-2"
+                onClick={handleReset}
+                className="w-full py-3 px-4 bg-[#0B2742] hover:bg-[#061625] text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md"
               >
-                <RotateCcw className="w-3.5 h-3.5" />
-                <span>Simular nueva orden de campo</span>
+                <RotateCcw className="w-4 h-4 text-[#019DF4]" />
+                <span>Reiniciar Simulación</span>
               </button>
             </div>
           )}
         </div>
 
-        {/* Mobile Navigation Step Bar Buttons for Demonstration */}
-        <div className="bg-slate-100 border-t border-slate-200 px-4 py-2 flex items-center justify-between text-xs">
+        {/* Step Navigation Pill Bar (Footer for testing & review) */}
+        <div className="bg-[#F4F6F9] border-t border-slate-200 px-4 py-2 flex items-center justify-between text-xs">
           <button
             type="button"
             onClick={() => setCurrentStep((prev) => (prev > 1 ? ((prev - 1) as any) : 1))}
             disabled={currentStep === 1}
-            className="text-slate-600 hover:text-slate-900 disabled:opacity-30 font-medium"
+            className="text-slate-600 hover:text-[#0B2742] disabled:opacity-30 font-medium cursor-pointer"
           >
             ← Paso Anterior
           </button>
           <span className="font-mono text-[11px] text-slate-500">
-            Paso {Math.min(currentStep, 3)} de 3
+            Paso {currentStep} de 4
           </span>
           <button
             type="button"
-            onClick={() => setCurrentStep((prev) => (prev < 3 ? ((prev + 1) as any) : 3))}
-            disabled={currentStep >= 3}
-            className="text-[#0A2E5C] hover:underline font-bold disabled:opacity-30"
+            onClick={() => setCurrentStep((prev) => (prev < 4 ? ((prev + 1) as any) : 4))}
+            disabled={currentStep >= 4}
+            className="text-[#019DF4] hover:underline font-bold disabled:opacity-30 cursor-pointer"
           >
-            Siguiente →
+            Paso Siguiente →
           </button>
         </div>
       </div>

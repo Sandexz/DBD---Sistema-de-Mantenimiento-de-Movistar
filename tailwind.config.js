@@ -7,14 +7,27 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        movistar: {
+          navy: '#0B2742',
+          'navy-dark': '#061625',
+          'navy-light': '#123960',
+          blue: '#019DF4',
+          'blue-dark': '#0081CB',
+          'blue-light': '#33B1F6',
+          green: '#00A86B',
+          'green-light': '#E6F6F0',
+          light: '#F4F6F9',
+          white: '#FFFFFF',
+        },
         brand: {
-          blue: '#0A2E5C',
-          'blue-dark': '#061D3A',
-          'blue-light': '#144585',
-          cyan: '#00AEEF',
-          'cyan-muted': '#00AEEF1A',
+          blue: '#0B2742',
+          'blue-dark': '#061625',
+          'blue-light': '#123960',
+          cyan: '#019DF4',
+          'cyan-muted': '#019DF41A',
           orange: '#FF6A13',
           'orange-muted': '#FF6A131A',
+          green: '#00A86B',
           dark: '#0B0C0E',
           'dark-card': '#121418',
           'dark-card-hover': '#181B21',
@@ -22,7 +35,7 @@ module.exports = {
           'dark-border-light': '#2A313C',
           white: '#FFFFFF',
           'gray-muted': '#8A99AD',
-          'gray-light': '#D2D9E2',
+          'gray-light': '#F4F6F9',
         }
       },
       fontFamily: {
@@ -31,7 +44,9 @@ module.exports = {
         mono: ['var(--font-ibm-plex-mono)', 'monospace'],
       },
       boxShadow: {
-        'glow-cyan': '0 0 15px rgba(0, 174, 239, 0.35)',
+        'glow-cyan': '0 0 15px rgba(1, 157, 244, 0.35)',
+        'glow-blue': '0 0 15px rgba(1, 157, 244, 0.35)',
+        'glow-green': '0 0 15px rgba(0, 168, 107, 0.35)',
         'glow-orange': '0 0 15px rgba(255, 106, 19, 0.35)',
         'card-dark': '0 4px 20px -2px rgba(0, 0, 0, 0.5)',
       }

@@ -5,21 +5,20 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Activity,
-  Radio,
   Smartphone,
   Layers,
   LayoutDashboard,
   ClipboardList,
   LogOut,
   Bell,
-  ShieldCheck,
   ChevronDown,
+  Sparkles,
 } from "lucide-react";
 import { Badge } from "../ui/badge";
 
 export function Topbar() {
   const pathname = usePathname();
-  const [time, setTime] = useState<string>("22:15:00");
+  const [time, setTime] = useState<string>("03:00:00");
   const [profileOpen, setProfileOpen] = useState(false);
 
   useEffect(() => {
@@ -36,48 +35,49 @@ export function Topbar() {
   }, []);
 
   const navItems = [
-    { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { label: "Gestión OTs", href: "/ots", icon: ClipboardList },
     { label: "App Móvil (Campo)", href: "/mobile", icon: Smartphone, highlight: true },
-    { label: "Batch / Liquidación", href: "/batch", icon: Layers },
+    { label: "Batch & Liquidación", href: "/batch", icon: Layers, highlight: true },
+    { label: "Gestión OTs", href: "/ots", icon: ClipboardList },
+    { label: "Dashboard NOC", href: "/dashboard", icon: LayoutDashboard },
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-[#0A2E5C] border-b border-[#144585] shadow-lg">
+    <header className="sticky top-0 z-40 w-full bg-[#0B2742] border-b border-[#019DF4]/30 shadow-lg font-sans">
       <div className="flex h-14 items-center justify-between px-4 sm:px-6">
-        {/* Brand Logo & System Info */}
+        {/* Brand Logo & Movistar Info */}
         <div className="flex items-center gap-4">
-          <Link href="/dashboard" className="flex items-center gap-2.5 group">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#061D3A] border border-[#00AEEF]/40 text-[#00AEEF] shadow-sm">
-              <Radio className="h-5 w-5 animate-pulse" />
+          <Link href="/batch" className="flex items-center gap-2.5 group">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#061625] border border-[#019DF4]/40 text-[#019DF4] shadow-sm font-grotesk font-extrabold text-base">
+              M
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-grotesk text-lg font-bold tracking-tight text-white group-hover:text-[#00AEEF] transition-colors">
-                  SGMR
+                <span className="font-grotesk text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-[#019DF4] transition-colors">
+                  Movistar Perú
                 </span>
-                <span className="text-[10px] font-mono bg-[#00AEEF]/20 text-[#00AEEF] px-1.5 py-0.2 rounded border border-[#00AEEF]/30">
-                  v2.6-NOC
+                <span className="text-[10px] font-mono bg-[#019DF4]/20 text-[#019DF4] px-1.5 py-0.2 rounded border border-[#019DF4]/40 font-bold">
+                  SGMR
                 </span>
               </div>
               <p className="text-[10px] font-sans text-slate-300 hidden sm:block">
-                Gestión de Mantenimiento de Redes
+                Mantenimiento e Infraestructura de Redes
               </p>
             </div>
           </Link>
 
           <div className="hidden lg:flex items-center gap-2 pl-4 border-l border-white/15">
-            <Badge variant="cyan" size="sm" pulse>
-              CORE TELECOM ONLINE
-            </Badge>
-            <span className="text-xs font-mono text-slate-300 bg-[#061D3A]/60 px-2 py-0.5 rounded border border-white/10">
+            <span className="inline-flex items-center gap-1.5 text-xs font-mono text-[#00A86B] bg-[#00A86B]/15 px-2.5 py-0.5 rounded-full border border-[#00A86B]/30 font-bold">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#00A86B] animate-ping" />
+              NOC ONLINE
+            </span>
+            <span className="text-xs font-mono text-slate-300 bg-[#061625] px-2 py-0.5 rounded border border-white/10">
               {time} UTC-5
             </span>
           </div>
         </div>
 
         {/* Navigation Quick Links */}
-        <nav className="hidden md:flex items-center gap-1">
+        <nav className="hidden md:flex items-center gap-1.5">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname.startsWith(item.href);
@@ -85,12 +85,12 @@ export function Topbar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-xl transition-all ${
                   isActive
-                    ? "bg-[#061D3A] text-[#00AEEF] border border-[#00AEEF]/40 shadow-inner"
+                    ? "bg-[#061625] text-[#019DF4] border border-[#019DF4]/50 shadow-inner font-bold"
                     : item.highlight
-                    ? "bg-white/10 text-white hover:bg-white/20 border border-white/20 font-semibold"
-                    : "text-slate-200 hover:text-white hover:bg-[#144585]"
+                    ? "bg-white/10 text-white hover:bg-white/20 border border-white/15 font-semibold"
+                    : "text-slate-200 hover:text-white hover:bg-[#123960]"
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
@@ -103,11 +103,11 @@ export function Topbar() {
         {/* Right Section: Alerts & Profile */}
         <div className="flex items-center gap-3">
           <Link
-            href="/dashboard#alertas"
-            className="relative p-2 text-slate-200 hover:text-white hover:bg-[#144585] rounded-lg transition-colors"
+            href="/batch#alertas"
+            className="relative p-2 text-slate-200 hover:text-white hover:bg-[#123960] rounded-xl transition-colors"
             title="Alertas Activas NOC"
           >
-            <Bell className="w-4 h-4" />
+            <Bell className="w-4 h-4 text-slate-200" />
             <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF6A13] opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-[#FF6A13]" />
@@ -118,39 +118,55 @@ export function Topbar() {
           <div className="relative">
             <button
               onClick={() => setProfileOpen(!profileOpen)}
-              className="flex items-center gap-2 p-1.5 rounded-lg bg-[#061D3A] hover:bg-[#061D3A]/80 border border-white/15 text-xs transition-colors"
+              className="flex items-center gap-2 p-1.5 rounded-xl bg-[#061625] hover:bg-[#061625]/80 border border-white/15 text-xs transition-colors cursor-pointer"
             >
-              <div className="w-6 h-6 rounded-full bg-[#00AEEF] text-[#0A2E5C] font-bold flex items-center justify-center text-[10px]">
-                NO
+              <div className="w-6 h-6 rounded-full bg-[#019DF4] text-[#0B2742] font-bold flex items-center justify-center text-[10px]">
+                DQ
               </div>
               <div className="text-left hidden sm:block">
-                <p className="font-semibold text-white leading-tight">Ing. NOC Central</p>
-                <p className="text-[10px] text-[#00AEEF] font-mono leading-none">ID: NOC-9912</p>
+                <p className="font-semibold text-white leading-tight">Diego Quispe</p>
+                <p className="text-[10px] text-[#019DF4] font-mono leading-none">Téc. / Supervisor</p>
               </div>
               <ChevronDown className="w-3.5 h-3.5 text-slate-300" />
             </button>
 
             {profileOpen && (
-              <div className="absolute right-0 mt-2 w-56 bg-[#121418] border border-[#1E232B] rounded-lg shadow-2xl p-2 z-50 animate-in fade-in">
+              <div className="absolute right-0 mt-2 w-56 bg-[#121418] border border-[#1E232B] rounded-2xl shadow-2xl p-2 z-50 animate-in fade-in">
                 <div className="px-3 py-2 border-b border-[#1E232B] mb-1">
-                  <p className="text-xs font-semibold text-white">Ing. Luis Valdivia</p>
-                  <p className="text-[11px] text-slate-400">Supervisor NOC Nivel 3</p>
-                  <Badge variant="cyan" size="sm" className="mt-1">
-                    Turno Noche Activo
+                  <p className="text-xs font-semibold text-white">Diego Quispe</p>
+                  <p className="text-[11px] text-slate-400">Cuadrilla Alfa 01 & Auditoría</p>
+                  <Badge variant="cyan" size="sm" className="mt-1 bg-[#019DF4]/20 text-[#019DF4] border-[#019DF4]/40">
+                    Módulos Asignados
                   </Badge>
                 </div>
                 <Link
                   href="/mobile"
                   onClick={() => setProfileOpen(false)}
-                  className="flex items-center gap-2 px-3 py-2 text-xs text-slate-300 hover:text-white hover:bg-[#181B21] rounded-md transition-colors"
+                  className="flex items-center gap-2 px-3 py-2 text-xs text-slate-300 hover:text-white hover:bg-[#181B21] rounded-xl transition-colors"
                 >
-                  <Smartphone className="w-4 h-4 text-[#00AEEF]" />
-                  <span>Modo Técnico de Campo</span>
+                  <Smartphone className="w-4 h-4 text-[#00A86B]" />
+                  <span>1. App Móvil Campo (/mobile)</span>
+                </Link>
+                <Link
+                  href="/batch"
+                  onClick={() => setProfileOpen(false)}
+                  className="flex items-center gap-2 px-3 py-2 text-xs text-slate-300 hover:text-white hover:bg-[#181B21] rounded-xl transition-colors"
+                >
+                  <Layers className="w-4 h-4 text-[#019DF4]" />
+                  <span>2. Módulo Batch (/batch)</span>
+                </Link>
+                <Link
+                  href="/ots"
+                  onClick={() => setProfileOpen(false)}
+                  className="flex items-center gap-2 px-3 py-2 text-xs text-slate-300 hover:text-white hover:bg-[#181B21] rounded-xl transition-colors"
+                >
+                  <ClipboardList className="w-4 h-4 text-slate-300" />
+                  <span>3. Gestión OTs (/ots)</span>
                 </Link>
                 <Link
                   href="/login"
                   onClick={() => setProfileOpen(false)}
-                  className="flex items-center gap-2 px-3 py-2 text-xs text-[#FF6A13] hover:bg-[#FF6A13]/10 rounded-md transition-colors border-t border-[#1E232B] mt-1"
+                  className="flex items-center gap-2 px-3 py-2 text-xs text-[#FF6A13] hover:bg-[#FF6A13]/10 rounded-xl transition-colors border-t border-[#1E232B] mt-1"
                 >
                   <LogOut className="w-4 h-4" />
                   <span>Cerrar Sesión</span>

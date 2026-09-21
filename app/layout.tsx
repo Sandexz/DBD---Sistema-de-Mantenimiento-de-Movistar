@@ -22,8 +22,8 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SGMR — Sistema de Gestión de Mantenimiento de Redes",
-  description: "Plataforma Integral de Monitoreo NOC, Gestión de OTs y Despacho de Cuadrillas en Campo",
+  title: "Movistar Perú — Sistema de Mantenimiento e Infraestructura de Redes",
+  description: "Plataforma Integral NOC, Gestión de OTs, Auditoría Batch de Contratistas y App Móvil de Campo para Movistar Perú",
 };
 
 export default function RootLayout({
@@ -36,7 +36,7 @@ export default function RootLayout({
       lang="es"
       className={`${spaceGrotesk.variable} ${publicSans.variable} ${ibmPlexMono.variable}`}
     >
-      <body className="min-h-screen bg-[#0B0C0E] text-slate-100 antialiased selection:bg-[#00AEEF]/20 selection:text-[#00AEEF]">
+      <body className="min-h-screen bg-[#0B0C0E] text-slate-100 antialiased selection:bg-[#019DF4]/25 selection:text-[#019DF4]">
         {children}
       </body>
     </html>

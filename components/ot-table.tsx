@@ -198,11 +198,11 @@ export function OtTable({ ots }: OtTableProps) {
                     {/* ID & Date */}
                     <td className="py-4 px-5 whitespace-nowrap">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono font-bold text-slate-900 group-hover:text-[#0066CC] transition-colors">
+                        <span className="font-mono font-bold text-slate-900 group-hover:text-[#019DF4] transition-colors">
                           {ot.id}
                         </span>
                         {ot.isNew && (
-                          <span className="inline-flex items-center gap-1 text-[9px] font-bold bg-[#0066CC] text-white px-2 py-0.5 rounded-full shadow-sm">
+                          <span className="inline-flex items-center gap-1 text-[9px] font-bold bg-[#019DF4] text-white px-2 py-0.5 rounded-full shadow-sm animate-pulse">
                             <Sparkles className="w-2.5 h-2.5" /> NUEVA
                           </span>
                         )}

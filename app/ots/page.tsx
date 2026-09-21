@@ -74,20 +74,20 @@ export default function OtsPage() {
       <Topbar />
 
       <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-7 max-w-7xl mx-auto w-full">
-        {/* Apple-style minimalist Header */}
+        {/* Movistar Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/80">
           <div>
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-2xl bg-[#0A2E5C] text-white flex items-center justify-center shadow-sm">
-                <ClipboardList className="w-5 h-5 text-[#00AEEF]" />
+              <div className="w-9 h-9 rounded-2xl bg-[#0B2742] text-white flex items-center justify-center shadow-sm">
+                <ClipboardList className="w-5 h-5 text-[#019DF4]" />
               </div>
               <div>
                 <h1 className="text-xl sm:text-2xl font-bold font-grotesk tracking-tight text-slate-900">
                   Gestión de Incidencias & Despacho
                 </h1>
               </div>
-              <span className="text-[11px] font-bold font-mono px-2.5 py-0.5 rounded-full bg-blue-50 text-[#0066CC] border border-blue-200/70">
-                NOC DISPATCH
+              <span className="text-[11px] font-bold font-mono px-2.5 py-0.5 rounded-full bg-[#019DF4]/10 text-[#019DF4] border border-[#019DF4]/30">
+                MOVISTAR NOC
               </span>
             </div>
             <p className="text-xs text-slate-500 font-sans mt-1">
@@ -97,11 +97,19 @@ export default function OtsPage() {
 
           <div className="flex items-center gap-2.5">
             <Link
-              href="/mobile"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 shadow-sm transition-all hover:border-[#FF6A13]/50 group"
+              href="/batch"
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 shadow-sm transition-all hover:border-[#019DF4]/50 group"
             >
-              <Smartphone className="w-4 h-4 text-[#FF6A13]" />
-              <span>Ver App del Técnico</span>
+              <Layers className="w-4 h-4 text-[#019DF4]" />
+              <span>Módulo Batch</span>
+            </Link>
+
+            <Link
+              href="/mobile"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-[#0B2742] hover:bg-[#061625] text-xs font-bold text-white shadow-sm transition-all group"
+            >
+              <Smartphone className="w-4 h-4 text-[#019DF4]" />
+              <span>App del Técnico</span>
               <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
             </Link>
           </div>

@@ -70,7 +70,6 @@ export default function TicketsConsultaPage() {
             <span className="text-xs font-mono font-bold text-[#0070B8] bg-[#E5F4FD] px-2 py-0.5 rounded border border-[#B8E2FB]">
               CONSULTA GERENCIAL
             </span>
-            <span className="text-xs text-slate-400 font-mono">/ Estado de Tickets</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-bold font-grotesk tracking-tight text-slate-900 mt-1">
             Estado de Tickets e Incidencias en Red
@@ -86,15 +85,14 @@ export default function TicketsConsultaPage() {
       </div>
 
       {/* Info Card: Modo Consulta */}
-      <div className="bg-[#E5F4FD] border border-[#B8E2FB] rounded-xl p-3.5 flex items-start gap-2.5 text-xs text-slate-700">
+      <div className="bg-[#E5F4FD] border border-[#B8E2FB] rounded-xl p-3.5 flex items-start gap-3 text-xs text-slate-700 shadow-xs">
         <ShieldCheck className="w-5 h-5 text-[#0070B8] shrink-0 mt-0.5" />
-        <div>
-          <strong className="text-[#0070B8] block font-grotesk">
-            Interfaz de Supervisión y Consulta Sin Alteración de Datos
+        <div className="space-y-0.5">
+          <strong className="text-[#0070B8] block font-grotesk text-xs tracking-wide">
+            Consola NOC / Supervisión Gerencial en Tiempo Real (Solo Lectura)
           </strong>
-          <span>
-            Esta pantalla está diseñada exclusivamente para supervisores y NOC con fines de auditoría y trazabilidad.
-            Para ingresar nuevas incidencias u órdenes de trabajo, utilice el módulo <strong>Data Entry</strong>.
+          <span className="leading-relaxed text-slate-600 block">
+            Sesión con perfil de auditoría activa. Vista de telemetría y trazabilidad operacional vinculada a NMS/OSS para monitoreo de SLA e incidencias sin riesgo de mutación de registros. Para altas de tickets o despacho de cuadrillas en campo, diríjase al módulo de <strong>Data Entry Operativo</strong>.
           </span>
         </div>
       </div>

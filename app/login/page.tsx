@@ -116,6 +116,7 @@ export default function LoginPage() {
 
       {/* Top Header */}
       <header className="flex items-center justify-between z-10 max-w-5xl mx-auto w-full">
+        <NavigationHeader />
         <div className="flex items-center gap-3">
           <div className="bg-[#0B2742] p-2 rounded-2xl border border-[#019DF4]/30 shadow-sm flex items-center justify-center">
             <MovistarLogo className="h-8 w-auto object-contain" />

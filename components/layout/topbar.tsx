@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Bell,
   ChevronDown,
@@ -14,12 +14,15 @@ import {
   HardHat,
   User,
   Radio,
+  ArrowLeft,
+  ArrowRight,
 } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { MovistarLogo } from "../ui/movistar-logo";
 import { useUserProfile, UserRole } from "./user-context";
 
 export function Topbar() {
+  const router = useRouter();
   const pathname = usePathname();
   const { profile, setRole } = useUserProfile();
   const [time, setTime] = useState<string>("09:45:00");
@@ -41,8 +44,28 @@ export function Topbar() {
   return (
     <header className="sticky top-0 z-40 w-full bg-[#0B2742] border-b border-[#019DF4]/30 shadow-md font-sans text-white">
       <div className="flex h-16 items-center justify-between px-4 sm:px-8">
-        {/* Left Section: Official Movistar Logo & System Badge */}
-        <div className="flex items-center gap-4">
+        {/* Left Section: Nav History Buttons & Official Movistar Logo */}
+        <div className="flex items-center gap-3 sm:gap-4">
+          {/* Botones de Navegación: Flecha Atrás y Flecha Adelante */}
+          <div className="flex items-center gap-1 bg-[#061625] p-1 rounded-xl border border-white/10 shadow-inner">
+            <button
+              type="button"
+              onClick={() => router.back()}
+              title="Volver atrás (Página anterior)"
+              className="p-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/15 active:scale-95 transition-all flex items-center justify-center cursor-pointer"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => router.forward()}
+              title="Avanzar (Página siguiente)"
+              className="p-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/15 active:scale-95 transition-all flex items-center justify-center cursor-pointer"
+            >
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+
           <Link href="/dashboard" className="flex items-center gap-3 group transition-opacity hover:opacity-95">
             {/* Movistar Logo Asset */}
             <div className="bg-white/10 hover:bg-white/15 px-2.5 py-1.5 rounded-xl border border-white/10 flex items-center justify-center transition-colors">

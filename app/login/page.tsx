@@ -102,10 +102,9 @@ export default function LoginPage() {
     setRole(selectedRole);
 
     setTimeout(() => {
-      setStatusMessage("Perfil verificado. Redirigiendo...");
+      setStatusMessage("Perfil verificado. Redirigiendo a módulos...");
       setTimeout(() => {
-        const found = quickProfiles.find((p) => p.id === selectedRole);
-        router.push(found ? found.defaultRoute : "/dashboard");
+        router.push("/dashboard");
       }, 500);
     }, 800);
   };

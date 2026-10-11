@@ -13,6 +13,12 @@ import {
   AlertTriangle,
   Radio,
   ArrowRight,
+  BarChart3,
+  FileSpreadsheet,
+  Smartphone,
+  Layers,
+  ShieldCheck,
+  ChevronRight,
 } from "lucide-react";
 import { Topbar } from "@/components/layout/topbar";
 import { Sidebar } from "@/components/layout/sidebar";
@@ -92,6 +98,141 @@ export default function DashboardPage() {
               <span className="hidden sm:inline">
                 {lastUpdated ? `Sync: ${lastUpdated}` : "Sync en vivo"}
               </span>
+            </div>
+          </div>
+
+          {/* ================= 4 MÓDULOS DEL SISTEMA SGMR (CUADRADOS SEPARADOS) ================= */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xs uppercase font-mono tracking-wider font-bold text-slate-500">
+                  Módulos de Gestión SGMR
+                </h2>
+                <p className="text-xs text-slate-400">
+                  Seleccione un módulo operativo o gerencial para acceder a sus funciones y herramientas
+                </p>
+              </div>
+              <span className="text-[11px] font-mono text-[#019DF4] bg-[#E5F4FD] px-2.5 py-1 rounded-lg border border-[#B8E2FB] font-semibold">
+                4 Módulos Activos
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* MÓDULO 1: GERENCIAL */}
+              <Link
+                href="/gerencial/consulta/disponibilidad"
+                className="group relative bg-white border border-slate-200 hover:border-[#019DF4] rounded-2xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 w-24 h-24 bg-[#E5F4FD] rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none group-hover:bg-[#B8E2FB] transition-all" />
+                <div className="space-y-3 relative z-10">
+                  <div className="w-12 h-12 rounded-2xl bg-[#E5F4FD] border border-[#B8E2FB] flex items-center justify-center text-[#0070B8] group-hover:scale-105 group-hover:bg-[#019DF4] group-hover:text-white transition-all shadow-xs">
+                    <BarChart3 className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-mono uppercase tracking-wider font-bold text-[#0070B8] block">
+                      Módulo 01
+                    </span>
+                    <h3 className="font-bold text-base font-grotesk text-slate-900 group-hover:text-[#019DF4] transition-colors">
+                      Módulo Gerencial
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                      SLA, Gestión de Activos, Zonas Operativas, Seguimiento de OTs y Disponibilidad de Red.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="pt-4 mt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-[#0070B8] group-hover:text-[#019DF4] relative z-10">
+                  <span>Ingresar al Módulo</span>
+                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </Link>
+
+              {/* MÓDULO 2: OPERATIVO */}
+              <Link
+                href="/operativo/tickets"
+                className="group relative bg-white border border-slate-200 hover:border-[#5BC500] rounded-2xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 w-24 h-24 bg-[#F0F9E8] rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none group-hover:bg-[#C6EE94] transition-all" />
+                <div className="space-y-3 relative z-10">
+                  <div className="w-12 h-12 rounded-2xl bg-[#F0F9E8] border border-[#C6EE94] flex items-center justify-center text-[#3F8500] group-hover:scale-105 group-hover:bg-[#5BC500] group-hover:text-white transition-all shadow-xs">
+                    <FileSpreadsheet className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-mono uppercase tracking-wider font-bold text-[#3F8500] block">
+                      Módulo 02
+                    </span>
+                    <h3 className="font-bold text-base font-grotesk text-slate-900 group-hover:text-[#3F8500] transition-colors">
+                      Módulo Operativo
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                      Data Entry de Incidencias, Despacho de OTs Preventivas/Correctivas y Reportes Digitales.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="pt-4 mt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-[#3F8500] group-hover:text-[#2d6100] relative z-10">
+                  <span>Ingresar al Módulo</span>
+                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </Link>
+
+              {/* MÓDULO 3: APP MÓVIL DE CAMPO */}
+              <Link
+                href="/mobile"
+                className="group relative bg-white border border-slate-200 hover:border-[#FF6A13] rounded-2xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 w-24 h-24 bg-orange-50 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none group-hover:bg-orange-100 transition-all" />
+                <div className="space-y-3 relative z-10">
+                  <div className="w-12 h-12 rounded-2xl bg-orange-50 border border-orange-200 flex items-center justify-center text-[#FF6A13] group-hover:scale-105 group-hover:bg-[#FF6A13] group-hover:text-white transition-all shadow-xs">
+                    <Smartphone className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-mono uppercase tracking-wider font-bold text-[#FF6A13] block">
+                      Módulo 03
+                    </span>
+                    <h3 className="font-bold text-base font-grotesk text-slate-900 group-hover:text-[#FF6A13] transition-colors">
+                      App Móvil de Campo
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                      Check-in GPS, Asistencia y Cierre digital de trabajos para técnicos y cuadrillas de contrata.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="pt-4 mt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-[#FF6A13] group-hover:text-[#d44f00] relative z-10">
+                  <span>Ingresar al Módulo</span>
+                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </Link>
+
+              {/* MÓDULO 4: BATCH & LIQUIDACIONES */}
+              <Link
+                href="/batch"
+                className="group relative bg-white border border-slate-200 hover:border-[#0B2742] rounded-2xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 w-24 h-24 bg-slate-100 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none group-hover:bg-slate-200 transition-all" />
+                <div className="space-y-3 relative z-10">
+                  <div className="w-12 h-12 rounded-2xl bg-[#0B2742] border border-[#0B2742] flex items-center justify-center text-white group-hover:scale-105 group-hover:bg-[#061625] transition-all shadow-xs">
+                    <Layers className="w-6 h-6 text-[#019DF4]" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-mono uppercase tracking-wider font-bold text-[#0B2742] block">
+                      Módulo 04
+                    </span>
+                    <h3 className="font-bold text-base font-grotesk text-slate-900 group-hover:text-[#0B2742] transition-colors">
+                      Batch & Liquidaciones
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                      Liquidación de contratas, deducción de penalidades SLA y procesamiento nocturno automático.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="pt-4 mt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-[#0B2742] group-hover:text-[#019DF4] relative z-10">
+                  <span>Ingresar al Módulo</span>
+                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </Link>
             </div>
           </div>
 

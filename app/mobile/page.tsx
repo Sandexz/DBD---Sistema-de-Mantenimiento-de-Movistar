@@ -2,8 +2,10 @@
 
 import React from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
+  ArrowRight,
   ClipboardList,
   Sun,
   Smartphone,
@@ -17,18 +19,39 @@ import { Badge } from "@/components/ui/badge";
 import { MobileFlow } from "@/components/mobile-flow";
 
 export default function MobilePage() {
+  const router = useRouter();
+
   return (
     <div className="min-h-screen bg-[#0B0C0E] text-slate-100 flex flex-col font-sans">
       {/* Top Bar for Simulator Context & Navigation Back to Movistar NOC */}
       <header className="bg-[#0B2742] border-b border-[#019DF4]/30 px-4 py-3 sticky top-0 z-40 shadow-lg">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
+            {/* History nav arrows */}
+            <div className="flex items-center gap-1 bg-[#061625] p-1 rounded-xl border border-white/10 shadow-inner">
+              <button
+                type="button"
+                onClick={() => router.back()}
+                title="Volver atrás (Página anterior)"
+                className="p-1 rounded-lg text-slate-300 hover:text-white hover:bg-white/15 active:scale-95 transition-all flex items-center justify-center cursor-pointer"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => router.forward()}
+                title="Avanzar (Página siguiente)"
+                className="p-1 rounded-lg text-slate-300 hover:text-white hover:bg-white/15 active:scale-95 transition-all flex items-center justify-center cursor-pointer"
+              >
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
             <Link
-              href="/batch"
+              href="/dashboard"
               className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-200 hover:text-white bg-[#061625] px-3 py-1.5 rounded-lg border border-white/15 transition-colors"
             >
-              <ArrowLeft className="w-3.5 h-3.5 text-[#019DF4]" />
-              <span>Módulo Batch</span>
+              <span>Dashboard SGMR</span>
             </Link>
 
             <Link

@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -11,28 +13,38 @@ import { useRouter } from 'next/navigation';
 export default function NavigationHeader() {
   const router = useRouter();
   const [prevDate, setPrevDate] = useState<string | null>(null);
-  const currentDate = new Date().toLocaleDateString();
+  const [currentDate, setCurrentDate] = useState<string>('');
 
   useEffect(() => {
-    const stored = sessionStorage.getItem('lastVisitDate');
-    if (stored) {
-      setPrevDate(stored);
+    const today = new Date().toLocaleDateString('es-PE');
+    setCurrentDate(today);
+
+    try {
+      const stored = sessionStorage.getItem('lastVisitDate');
+      if (stored) {
+        setPrevDate(stored);
+      }
+      // Update storage with the current date for the next page
+      sessionStorage.setItem('lastVisitDate', today);
+    } catch {
+      // Ignore sessionStorage errors in SSR or restricted environments
     }
-    // Update storage with the current date for the next page
-    sessionStorage.setItem('lastVisitDate', currentDate);
-  }, [currentDate]);
+  }, []);
 
   const handleBack = () => {
     router.back();
   };
 
   return (
-    <div className="flex items-center justify-between py-2 px-4 bg-[#0B2742] text-white">
-      <p className="text-sm">Fecha: {currentDate}</p>
+    <div className="flex items-center justify-between py-1 px-3 bg-[#0B2742] text-white rounded-xl border border-[#019DF4]/30 text-xs shadow-xs gap-3">
+      <p className="text-xs font-mono text-slate-300">
+        {currentDate ? `Fecha: ${currentDate}` : 'Cargando fecha...'}
+      </p>
       {prevDate && (
         <button
+          type="button"
           onClick={handleBack}
-          className="text-xs underline hover:text-[#E5F4FD]"
+          className="text-xs underline hover:text-[#019DF4] text-[#E5F4FD] transition-colors cursor-pointer font-medium"
         >
           Regresar (Fecha: {prevDate})
         </button>
@@ -40,3 +52,4 @@ export default function NavigationHeader() {
     </div>
   );
 }
+

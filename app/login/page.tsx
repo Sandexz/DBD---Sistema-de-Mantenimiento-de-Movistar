@@ -23,6 +23,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { MovistarLogo } from "@/components/ui/movistar-logo";
 import { useUserProfile, UserRole } from "@/components/layout/user-context";
+import NavigationHeader from "@/app/components/NavigationHeader";
 
 const quickProfiles: {
   id: UserRole;
@@ -115,8 +116,7 @@ export default function LoginPage() {
       <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] opacity-60 pointer-events-none" />
 
       {/* Top Header */}
-      <header className="flex items-center justify-between z-10 max-w-5xl mx-auto w-full">
-        <NavigationHeader />
+      <header className="flex flex-col sm:flex-row items-center justify-between gap-4 z-10 max-w-5xl mx-auto w-full">
         <div className="flex items-center gap-3">
           <div className="bg-[#0B2742] p-2 rounded-2xl border border-[#019DF4]/30 shadow-sm flex items-center justify-center">
             <MovistarLogo className="h-8 w-auto object-contain" />
@@ -133,10 +133,12 @@ export default function LoginPage() {
           </div>
         </div>
 
-
-        <Badge variant="movistar" size="sm" pulse>
-          PLATAFORMA MOVISTAR ONLINE
-        </Badge>
+        <div className="flex items-center gap-3">
+          <NavigationHeader />
+          <Badge variant="movistar" size="sm" pulse>
+            PLATAFORMA MOVISTAR ONLINE
+          </Badge>
+        </div>
       </header>
 
       {/* Main Login Card */}
@@ -264,7 +266,7 @@ export default function LoginPage() {
 
       {/* Footer System Info */}
       <footer className="text-center text-xs text-slate-400 font-mono z-10 max-w-5xl mx-auto w-full flex flex-col sm:flex-row items-center justify-between gap-2">
-        <span>© 2026 Telefónica del Perú S.A.A. · SGMR v3.0</span>
+        <span>© 2026 Telefónica del Perú S.A.A. · v3.0</span>
         <span>Supervisión Gerencial & Despacho Operativo NOC</span>
       </footer>
     </div>

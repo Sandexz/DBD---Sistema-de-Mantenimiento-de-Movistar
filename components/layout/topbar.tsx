@@ -77,8 +77,8 @@ export function Topbar() {
                 <span className="font-grotesk text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-[#019DF4] transition-colors">
                   Movistar Perú
                 </span>
-                <span className="text-[10px] font-mono bg-[#019DF4]/25 text-[#019DF4] px-2 py-0.5 rounded-full border border-[#019DF4]/40 font-bold">
-                  SGMR v3.0
+                <span className="text-xs font-mono bg-[#019DF4]/25 text-[#019DF4] px-2 py-0.5 rounded-full border border-[#019DF4]/40 font-bold">
+                  v3.0
                 </span>
               </div>
               <p className="text-[11px] text-slate-300 font-sans hidden sm:block">
